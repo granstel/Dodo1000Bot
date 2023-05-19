@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Dialogflow.V2" Version="3.*" />
+    <PackageReference Include="GranSteL.Helpers.Redis" Version="1.*" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.*" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.*" />
+    <PackageReference Include="StackExchange.Redis" Version="2.*" />
+    <PackageReference Include="AutoMapper" Version="10.*" />
+    <PackageReference Include="System.ServiceModel.Duplex" Version="4.*" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.*" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.*" />
+    <PackageReference Include="System.ServiceModel.Security" Version="4.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dodo1000Bot.Models\Dodo1000Bot.Models.csproj" />
+  </ItemGroup>
+
+</Project>
