@@ -1,0 +1,11 @@
+﻿**/.vs/
+**/obj/
+**/bin/
+**/packages/
+**/deploy/
+**/.config/
+**/Properties/
+**/.idea/
+**/.etc
+*.pfx
+*.user
