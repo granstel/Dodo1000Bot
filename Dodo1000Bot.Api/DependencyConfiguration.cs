@@ -23,6 +23,8 @@ namespace Dodo1000Bot.Api
             services.AddSingleton(configuration.Units);
 
             services.AddInternalServices();
+            services.AddJobs();
+
             services.AddExternalServices();
 
             var names = GetAssembliesNames();
