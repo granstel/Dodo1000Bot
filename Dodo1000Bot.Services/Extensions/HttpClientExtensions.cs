@@ -8,7 +8,7 @@ namespace Dodo1000Bot.Services.Extensions
     public static class HttpClientExtensions
     {
         public static async Task<TResult> GetAsync<TResult>(this HttpClient httpClient, string url,
-            JsonSerializerSettings serializerOptions, CancellationToken cancellationToken)
+            JsonSerializerSettings serializerSettings, CancellationToken cancellationToken)
         {
             url = url.ToLower();
 
@@ -17,7 +17,7 @@ namespace Dodo1000Bot.Services.Extensions
             response.EnsureSuccessStatusCode();
             var allUnitsString = await response.Content.ReadAsStringAsync(/*cancellationToken*/);
 
-            var result = JsonConvert.DeserializeObject<TResult>(allUnitsString, serializerOptions);
+            var result = JsonConvert.DeserializeObject<TResult>(allUnitsString, serializerSettings);
 
             return result;
         }
