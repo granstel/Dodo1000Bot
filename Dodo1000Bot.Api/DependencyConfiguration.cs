@@ -20,6 +20,7 @@ namespace Dodo1000Bot.Api
             services.AddSingleton(configuration.HttpLog);
             services.AddSingleton(configuration.Redis);
             services.AddSingleton(configuration.Dialogflow);
+            services.AddSingleton(configuration.Units);
 
             services.AddInternalServices();
             services.AddExternalServices();
