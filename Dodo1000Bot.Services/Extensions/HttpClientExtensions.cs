@@ -15,7 +15,7 @@ namespace Dodo1000Bot.Services.Extensions
             var response = await httpClient.GetAsync(url, cancellationToken);
 
             response.EnsureSuccessStatusCode();
-            var allUnitsString = await response.Content.ReadAsStringAsync(/*cancellationToken*/);
+            var allUnitsString = await response.Content.ReadAsStringAsync(cancellationToken);
 
             var result = JsonConvert.DeserializeObject<TResult>(allUnitsString, serializerSettings);
 
