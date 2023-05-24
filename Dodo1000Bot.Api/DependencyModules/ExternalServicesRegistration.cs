@@ -1,4 +1,7 @@
 ﻿using System;
+using Dodo1000Bot.Api.Extensions;
+using Dodo1000Bot.Services;
+using Dodo1000Bot.Services.Clients;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Dialogflow.V2;
 using Dodo1000Bot.Services.Configuration;
@@ -11,13 +14,15 @@ namespace Dodo1000Bot.Api.DependencyModules
 {
     internal static class ExternalServicesRegistration
     {
-        internal static void AddExternalServices(this IServiceCollection services)
+        internal static void AddExternalServices(this IServiceCollection services, AppConfiguration configuration)
         {
             services.AddSingleton<SessionsClient>(RegisterDialogflowSessionsClient);
 
             services.AddSingleton<IDatabase>(RegisterRedisClient);
 
             services.AddSingleton<IRedisCacheService>(RegisterCacheService);
+
+            services.AddHttpClient<IGlobalApiClient, GlobalApiClient>(configuration.GlobalApiEndpoint, nameof(configuration.GlobalApiEndpoint));
         }
 
         private static SessionsClient RegisterDialogflowSessionsClient(IServiceProvider provider)
