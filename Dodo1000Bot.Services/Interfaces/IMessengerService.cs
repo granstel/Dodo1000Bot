@@ -2,7 +2,7 @@
 
 namespace Dodo1000Bot.Services
 {
-    public interface IMessengerService<TInput, TOutput>
+    public interface IMessengerService<in TInput, TOutput>
     {
         Task<TOutput> ProcessIncomingAsync(TInput input);
 
