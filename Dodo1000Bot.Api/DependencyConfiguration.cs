@@ -25,7 +25,7 @@ namespace Dodo1000Bot.Api
             services.AddInternalServices();
             services.AddJobs();
 
-            services.AddExternalServices();
+            services.AddExternalServices(configuration);
 
             var names = GetAssembliesNames();
             services.AddMapping(names);
