@@ -29,7 +29,7 @@ public class UnitsService : IUnitsService
 
         foreach (var totalAtBrand in totalAtBrands)
         {
-            if (totalAtBrand.Value % 1000 != 0)
+            if (!CheckTheRule(totalAtBrand.Value))
             {
                 continue;
             }
@@ -47,7 +47,7 @@ public class UnitsService : IUnitsService
         {
             foreach (var totalAtCountry in totalAtBrandAtCountry.Value)
             {
-                if (totalAtCountry.Value % 1000 != 0)
+                if (!CheckTheRule(totalAtCountry.Value))
                 {
                     continue;
                 }
@@ -56,5 +56,10 @@ public class UnitsService : IUnitsService
                 await _notifyService.Notify(notification, cancellationToken);
             }
         }
+    }
+
+    private bool CheckTheRule(int value)
+    {
+        return value % 1000 != 0;
     }
 }
