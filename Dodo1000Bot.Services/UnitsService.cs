@@ -20,7 +20,20 @@ public class UnitsService : IUnitsService
     {
         var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
 
+        await AboutTotalOverall(unitsCount, cancellationToken);
         await AboutTotalAtBrands(unitsCount, cancellationToken);
+        await AboutTotalAtCountries(unitsCount, cancellationToken);
+    }
+
+    private async Task AboutTotalOverall(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
+    {
+        var totalOverall = unitsCount.Brands.Sum(b => b.Total);
+
+        if (CheckTheRule(totalOverall))
+        {
+            var notification = $"There is {totalOverall} units!";
+            await _notifyService.Notify(notification, cancellationToken);
+        }
     }
 
     private async Task AboutTotalAtBrands(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
