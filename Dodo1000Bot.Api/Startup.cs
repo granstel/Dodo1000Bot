@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Dodo1000Bot.Api.Extensions;
 using Dodo1000Bot.Api.Middleware;
@@ -10,6 +12,7 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -18,10 +21,12 @@ namespace Dodo1000Bot.Api
     public class Startup
     {
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
 
-        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
+        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory, IWebHostEnvironment environment)
         {
             _configuration = configuration;
+            _environment = environment;
             InternalLoggerFactory.Factory = loggerFactory;
         }
 
@@ -29,6 +34,24 @@ namespace Dodo1000Bot.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddLogging(logging =>
+                {
+                    logging.AddJsonConsole(o =>
+                    {
+                        var options = new JsonWriterOptions
+                        {
+                            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                        };
+
+                        if (_environment.IsDevelopment())
+                        {
+                            options.Indented = true;
+                            o.TimestampFormat = "O";
+                        }
+
+                        o.JsonWriterOptions = options;
+                    });
+                })
                 .AddSingleton(s =>
                 {
                     var configureOptions = s.GetService<IConfigureOptions<JsonOptions>>();
