@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
     <PackageReference Include="Google.Cloud.Dialogflow.V2" Version="3.*" />
     <PackageReference Include="GranSteL.Helpers.Redis" Version="1.*" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.*" />
