@@ -7,6 +7,7 @@ using Dodo1000Bot.Services.Configuration;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MySql.Data.MySqlClient;
 
 namespace Dodo1000Bot.Api
 {
@@ -21,6 +22,8 @@ namespace Dodo1000Bot.Api
             services.AddSingleton(configuration.Redis);
             services.AddSingleton(configuration.Dialogflow);
             services.AddSingleton(configuration.Units);
+
+            services.AddSingleton(_ => new MySqlConnection(configuration.MysqlConnectionString));
 
             services.AddInternalServices();
             services.AddJobs();

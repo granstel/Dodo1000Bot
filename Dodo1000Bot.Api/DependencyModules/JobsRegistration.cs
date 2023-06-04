@@ -7,6 +7,7 @@ public static class JobsRegistration
 {
     internal static void AddJobs(this IServiceCollection services)
     {
+        services.AddHostedService<MigrationsJob>();
         services.AddHostedService<UnitsJob>();
     }
 }
