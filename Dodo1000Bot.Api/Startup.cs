@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text.Json.Serialization;
 using Dodo1000Bot.Api.Extensions;
 using Dodo1000Bot.Api.Middleware;
 using Dodo1000Bot.Services;
@@ -6,9 +7,11 @@ using Dodo1000Bot.Services.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Dodo1000Bot.Api
 {
@@ -26,8 +29,21 @@ namespace Dodo1000Bot.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddSingleton(s =>
+                {
+                    var configureOptions = s.GetService<IConfigureOptions<JsonOptions>>();
+
+                    var options = new JsonOptions();
+                    configureOptions?.Configure(options);
+
+                    return options.JsonSerializerOptions;
+                })
                 .AddMvc()
-                .AddNewtonsoftJson();
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                });
 
             services.AddHttpLogging(o =>
             {
