@@ -1,7 +1,9 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using FluentMigrator.Runner;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MySql.Data.MySqlClient;
 
@@ -10,12 +12,12 @@ namespace Dodo1000Bot.Api.Jobs;
 public class MigrationsJob : BackgroundService
 {
     private readonly MySqlConnection _mySqlConnection;
-    private readonly IMigrationRunner _migrationRunner;
+    private readonly IServiceProvider _provider;
 
-    public MigrationsJob(MySqlConnection mySqlConnection, IMigrationRunner migrationRunner)
+    public MigrationsJob(MySqlConnection mySqlConnection, IServiceProvider provider)
     {
         _mySqlConnection = mySqlConnection;
-        _migrationRunner = migrationRunner;
+        _provider = provider;
     }
 
     protected override async Task ExecuteAsync(CancellationToken ct)
@@ -30,7 +32,11 @@ public class MigrationsJob : BackgroundService
 
         await _mySqlConnection.OpenAsync(ct);
         await _mySqlConnection.ExecuteAsync($"CREATE DATABASE IF NOT EXISTS `{databaseName}`");
-        _migrationRunner.MigrateUp();
+
+        await using var scope = _provider.CreateAsyncScope();
+        var runner = scope.ServiceProvider
+            .GetRequiredService<IMigrationRunner>();
+        runner.MigrateUp();
     }
 
     static string StripDatabaseName(string connectionString)
