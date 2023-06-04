@@ -11,5 +11,7 @@
         public UnitsConfiguration Units { get; set; }
 
         public string GlobalApiEndpoint { get; set; }
+
+        public string MysqlConnectionString { get; set; }
     }
 }
