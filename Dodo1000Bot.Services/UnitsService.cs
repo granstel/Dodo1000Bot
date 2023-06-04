@@ -29,11 +29,13 @@ public class UnitsService : IUnitsService
     {
         var totalOverall = unitsCount.Brands.Sum(b => b.Total);
 
-        if (CheckTheRule(totalOverall))
+        if (!CheckTheRule(totalOverall))
         {
-            var notification = $"There is {totalOverall} units!";
-            await _notifyService.Notify(notification, cancellationToken);
+            return;
         }
+
+        var notification = $"There is {totalOverall} units!";
+            await _notifyService.Notify(notification, cancellationToken);
     }
 
     private async Task AboutTotalAtBrands(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
@@ -73,6 +75,6 @@ public class UnitsService : IUnitsService
 
     private bool CheckTheRule(int value)
     {
-        return value % 1000 != 0;
+        return value % 1000 == 0;
     }
 }
