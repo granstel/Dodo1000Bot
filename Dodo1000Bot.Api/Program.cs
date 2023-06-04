@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using NLog.Web;
 
 namespace Dodo1000Bot.Api
 {
@@ -26,7 +25,6 @@ namespace Dodo1000Bot.Api
             var host = builder
                 .UseSetting(WebHostDefaults.HostingStartupAssembliesKey, concatenatedNames)
                 .UseStartup<Startup>()
-                .UseNLog()
                 .Build();
 
             return host;
