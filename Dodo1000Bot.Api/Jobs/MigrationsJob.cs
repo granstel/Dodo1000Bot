@@ -9,7 +9,7 @@ using MySql.Data.MySqlClient;
 
 namespace Dodo1000Bot.Api.Jobs;
 
-public class MigrationsJob : BackgroundService
+public class MigrationsJob : IHostedService
 {
     private readonly MySqlConnection _mySqlConnection;
     private readonly IServiceProvider _provider;
@@ -20,18 +20,24 @@ public class MigrationsJob : BackgroundService
         _provider = provider;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken ct)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await MigrateDatabase(ct);
+        await MigrateDatabase(cancellationToken);
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
     }
 
     private async Task MigrateDatabase(CancellationToken ct)
     {
         var rawConnectionString = _mySqlConnection.ConnectionString;
-        var databaseName = StripDatabaseName(rawConnectionString);
+        var (connectionString, databaseName) = StripDatabaseName(rawConnectionString);
 
-        await _mySqlConnection.OpenAsync(ct);
-        await _mySqlConnection.ExecuteAsync($"CREATE DATABASE IF NOT EXISTS `{databaseName}`");
+        await using var connection = new MySqlConnection(connectionString);
+        await connection.OpenAsync(ct);
+        await connection.ExecuteAsync($"CREATE DATABASE IF NOT EXISTS `{databaseName}`");
 
         await using var scope = _provider.CreateAsyncScope();
         var runner = scope.ServiceProvider
@@ -39,11 +45,11 @@ public class MigrationsJob : BackgroundService
         runner.MigrateUp();
     }
 
-    static string StripDatabaseName(string connectionString)
+    static (string connectionString, string databaseName) StripDatabaseName(string connectionString)
     {
         var builder = new MySqlConnectionStringBuilder(connectionString);
         var databaseName = builder.Database;
         builder.Database = null;
-        return databaseName;
+        return (builder.ConnectionString, databaseName);
     }
 }
