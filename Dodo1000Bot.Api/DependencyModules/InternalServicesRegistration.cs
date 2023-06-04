@@ -8,6 +8,9 @@ namespace Dodo1000Bot.Api.DependencyModules
         internal static void AddInternalServices(this IServiceCollection services)
         {
             services.AddTransient<IConversationService, ConversationService>();
+            services.AddTransient<IUnitsService, UnitsService>();
+            services.AddTransient<INotifyService, NotifyService>();
+
             services.AddScoped<IDialogflowService, DialogflowService>();
         }
     }
