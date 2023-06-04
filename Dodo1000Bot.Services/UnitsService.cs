@@ -7,8 +7,8 @@ namespace Dodo1000Bot.Services;
 
 public class UnitsService : IUnitsService
 {
-    private IGlobalApiClient _globalApiClient;
-    private INotifyService _notifyService;
+    private readonly IGlobalApiClient _globalApiClient;
+    private readonly INotifyService _notifyService;
 
     public UnitsService(IGlobalApiClient globalApiClient, INotifyService notifyService)
     {
