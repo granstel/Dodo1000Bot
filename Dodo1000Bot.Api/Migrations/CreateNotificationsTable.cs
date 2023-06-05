@@ -9,7 +9,7 @@ public class CreateNotificationsTable: Migration
     {
         Execute.Sql
         (@"
-            CREATE TABLE notifications (
+            CREATE TABLE IF NOT EXISTS notifications (
               `Id` INT NOT NULL AUTO_INCREMENT,
               `Payload` JSON NOT NULL,
               `CreatedAt` DATETIME NOT NULL,
