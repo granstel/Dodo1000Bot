@@ -12,7 +12,7 @@ public class CreateNotificationsTable: Migration
             CREATE TABLE IF NOT EXISTS notifications (
               `Id` INT NOT NULL AUTO_INCREMENT,
               `Payload` JSON NOT NULL,
-              `CreatedAt` DATETIME NOT NULL,
+              `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
               PRIMARY KEY (`Id`),
               UNIQUE INDEX `Id_UNIQUE` (`Id` ASC) INVISIBLE);
         ");

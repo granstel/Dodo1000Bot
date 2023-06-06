@@ -13,6 +13,7 @@ public class CreateUsersTable: Migration
                 `Id` INT NOT NULL AUTO_INCREMENT,
                 `MessengerUserId` VARCHAR(45) NOT NULL,
                 `MessengerType` INT NOT NULL,
+                `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (`Id`),
                 UNIQUE INDEX `Id_UNIQUE` (`Id` ASC) VISIBLE);
         ");
