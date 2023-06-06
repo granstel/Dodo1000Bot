@@ -11,10 +11,10 @@ namespace Dodo1000Bot.Api.Jobs;
 
 public class MigrationsJob : IHostedService
 {
-    private readonly MySqlConnection _mySqlConnection;
+    private readonly string _mySqlConnection;
     private readonly IServiceProvider _provider;
 
-    public MigrationsJob(MySqlConnection mySqlConnection, IServiceProvider provider)
+    public MigrationsJob(string mySqlConnection, IServiceProvider provider)
     {
         _mySqlConnection = mySqlConnection;
         _provider = provider;
@@ -32,7 +32,7 @@ public class MigrationsJob : IHostedService
 
     private async Task MigrateDatabase(CancellationToken ct)
     {
-        var rawConnectionString = _mySqlConnection.ConnectionString;
+        var rawConnectionString = _mySqlConnection;
         var (connectionString, databaseName) = StripDatabaseName(rawConnectionString);
 
         await using var connection = new MySqlConnection(connectionString);
