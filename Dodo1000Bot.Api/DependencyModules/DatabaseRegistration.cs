@@ -10,9 +10,9 @@ public static class DatabaseRegistration
     internal static void AddMigrations(this IServiceCollection services, AppConfiguration configuration)
     {
         services.AddFluentMigratorCore()
-            .ConfigureRunner(rb =>
+            .ConfigureRunner(builder =>
             {
-                rb
+                builder
                     .AddMySql5()
                     .WithGlobalConnectionString(_ => configuration.MysqlConnectionString)
                     .WithMigrationsIn()
