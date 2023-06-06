@@ -32,8 +32,7 @@ public class MigrationsJob : IHostedService
 
     private async Task MigrateDatabase(CancellationToken ct)
     {
-        var rawConnectionString = _mySqlConnection;
-        var (connectionString, databaseName) = StripDatabaseName(rawConnectionString);
+        var (connectionString, databaseName) = StripDatabaseName(_mySqlConnection);
 
         await using var connection = new MySqlConnection(connectionString);
         await connection.OpenAsync(ct);
