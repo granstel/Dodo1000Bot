@@ -14,7 +14,7 @@ namespace Dodo1000Bot.Api
     {
         internal static void Configure(IServiceCollection services, IConfiguration appConfiguration)
         {
-            var configuration = appConfiguration.GetSection($"{nameof(AppConfiguration)}").Get<AppConfiguration>();
+            var configuration = appConfiguration.Get<AppConfiguration>();
             
             services.AddSingleton(configuration);
             services.AddSingleton(configuration.HttpLog);
@@ -23,9 +23,10 @@ namespace Dodo1000Bot.Api
             services.AddSingleton(configuration.Units);
 
             services.AddInternalServices();
-            services.AddJobs();
+            services.AddJobs(configuration);
 
             services.AddExternalServices(configuration);
+            services.AddMigrations(configuration);
 
             var names = GetAssembliesNames();
             services.AddMapping(names);

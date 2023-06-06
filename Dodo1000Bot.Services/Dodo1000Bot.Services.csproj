@@ -6,9 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
     <PackageReference Include="Google.Cloud.Dialogflow.V2" Version="3.*" />
     <PackageReference Include="GranSteL.Helpers.Redis" Version="1.*" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.*" />
+    <PackageReference Include="MySql.Data" Version="8.0.33" />
     <PackageReference Include="StackExchange.Redis" Version="2.*" />
     <PackageReference Include="AutoMapper" Version="10.*" />
     <PackageReference Include="System.ServiceModel.Duplex" Version="4.*" />
