@@ -15,8 +15,7 @@ public static class DatabaseRegistration
                 builder
                     .AddMySql5()
                     .WithGlobalConnectionString(_ => configuration.MysqlConnectionString)
-                    .WithMigrationsIn()
-                    .ScanIn(Assembly.GetExecutingAssembly()).For.Migrations();
+                    .WithMigrationsIn(Assembly.GetExecutingAssembly());
             });
     }
 }
