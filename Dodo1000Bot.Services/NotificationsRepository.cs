@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Dodo1000Bot.Models;
@@ -6,7 +7,7 @@ using MySql.Data.MySqlClient;
 
 namespace Dodo1000Bot.Services;
 
-public class NotificationsRepository
+public class NotificationsRepository : INotificationsRepository
 {
     private readonly MySqlConnection _connection;
 
@@ -15,7 +16,7 @@ public class NotificationsRepository
         _connection = connection;
     }
 
-    public async Task Save(Notification notification)
+    public async Task Save(Notification notification, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(notification);
         await _connection.ExecuteAsync(
