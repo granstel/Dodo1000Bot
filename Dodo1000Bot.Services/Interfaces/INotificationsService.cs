@@ -7,4 +7,6 @@ namespace Dodo1000Bot.Services;
 public interface INotificationsService
 {
     Task Save(Notification notification, CancellationToken cancellationToken);
+
+    Task PushNotifications(CancellationToken cancellationToken);
 }
