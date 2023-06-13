@@ -10,5 +10,6 @@ public static class JobsRegistration
     {
         services.AddHostedService(serviceProvider => new MigrationsJob(appConfiguration.MysqlConnectionString, serviceProvider));
         services.AddHostedService<UnitsJob>();
+        services.AddHostedService<PushNotificationsJob>();
     }
 }
