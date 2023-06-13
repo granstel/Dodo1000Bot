@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
@@ -25,5 +26,16 @@ public class NotificationsRepository : INotificationsRepository
             {
                 payload = payload
             });
+    }
+
+    public async Task<IEnumerable<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
+    {
+        var notifications = await _connection.QueryAsync<Notification>(
+            @"SELECT * FROM notification n 
+                 LEFT JOIN pushed_notifications pn 
+                    ON n.id = pn.id
+                  WHERE pn.id IS NULL");
+
+        return notifications;
     }
 }
