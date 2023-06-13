@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.GlobalApi;
 
 namespace Dodo1000Bot.Services;
@@ -34,8 +35,11 @@ public class UnitsService : IUnitsService
             return;
         }
 
-        var notification = $"There is {totalOverall} units!";
-            await _notifyService.Notify(notification, cancellationToken);
+        var notification = new Notification
+        {
+            Text = $"There is {totalOverall} units!"
+        };
+        await _notifyService.Notify(notification, cancellationToken);
     }
 
     private async Task AboutTotalAtBrands(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
@@ -49,7 +53,10 @@ public class UnitsService : IUnitsService
                 continue;
             }
 
-            var notification = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand";
+            var notification = new Notification
+            {
+                Text = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand"
+            };
             await _notifyService.Notify(notification, cancellationToken);
         }
     }
@@ -67,7 +74,11 @@ public class UnitsService : IUnitsService
                     continue;
                 }
 
-                var notification = $"There is {totalAtCountry.Value} units of {totalAtBrandAtCountry.Key} at {totalAtCountry.Key}";
+                var notification = new Notification
+                {
+                    Text =
+                        $"There is {totalAtCountry.Value} units of {totalAtBrandAtCountry.Key} at {totalAtCountry.Key}"
+                };
                 await _notifyService.Notify(notification, cancellationToken);
             }
         }
