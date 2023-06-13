@@ -31,7 +31,7 @@ public class NotificationsRepository : INotificationsRepository
     public async Task<IEnumerable<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
     {
         var notifications = await _connection.QueryAsync<Notification>(
-            @"SELECT * FROM notification n 
+            @"SELECT * FROM notifications n 
                  LEFT JOIN pushed_notifications pn 
                     ON n.id = pn.id
                   WHERE pn.id IS NULL");
