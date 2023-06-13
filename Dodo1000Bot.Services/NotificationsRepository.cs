@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text.Json;
+using System.Threading.Tasks;
 using Dapper;
+using Dodo1000Bot.Models;
 using MySql.Data.MySqlClient;
 
 namespace Dodo1000Bot.Services;
@@ -13,13 +15,14 @@ public class NotificationsRepository
         _connection = connection;
     }
 
-    public async Task Save(string notification)
+    public async Task Save(Notification notification)
     {
+        var payload = JsonSerializer.Serialize(notification);
         await _connection.ExecuteAsync(
             "INSERT INTO notification (payload) VALUES (@payload)",
             new
             {
-                payload = notification
+                payload = payload
             });
     }
 }
