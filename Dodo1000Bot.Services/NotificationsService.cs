@@ -18,8 +18,8 @@ public class NotificationsService : INotificationsService
         return _notificationsRepository.Save(notification, cancellationToken);
     }
 
-    public Task PushNotifications(CancellationToken cancellationToken)
+    public async Task PushNotifications(CancellationToken cancellationToken)
     {
-        throw new System.NotImplementedException();
+        var notifications = await _notificationsRepository.GetNotPushedNotifications(cancellationToken);
     }
 }
