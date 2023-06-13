@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 
@@ -18,8 +20,12 @@ public class NotificationsService : INotificationsService
         return _notificationsRepository.Save(notification, cancellationToken);
     }
 
-    public async Task PushNotifications(CancellationToken cancellationToken)
+    public async Task PushNotifications(IEnumerable<INotifyService> notifyServices, CancellationToken cancellationToken)
     {
         var notifications = await _notificationsRepository.GetNotPushedNotifications(cancellationToken);
+
+        var tasks = notifyServices.Select(s => s.NotifyAbout(notifications, cancellationToken));
+
+        await Task.WhenAll(tasks);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 
@@ -8,5 +9,5 @@ public interface INotificationsService
 {
     Task Save(Notification notification, CancellationToken cancellationToken);
 
-    Task PushNotifications(CancellationToken cancellationToken);
+    Task PushNotifications(IEnumerable<INotifyService> notifyServices, CancellationToken cancellationToken);
 }
