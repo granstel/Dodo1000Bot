@@ -9,12 +9,12 @@ namespace Dodo1000Bot.Services;
 public class UnitsService : IUnitsService
 {
     private readonly IGlobalApiClient _globalApiClient;
-    private readonly INotifyService _notifyService;
+    private readonly INotificationsService _notificationsService;
 
-    public UnitsService(IGlobalApiClient globalApiClient, INotifyService notifyService)
+    public UnitsService(IGlobalApiClient globalApiClient, INotificationsService notificationsService)
     {
         _globalApiClient = globalApiClient;
-        _notifyService = notifyService;
+        _notificationsService = notificationsService;
     }
 
     public async Task CheckAndNotify(CancellationToken cancellationToken)
@@ -39,7 +39,7 @@ public class UnitsService : IUnitsService
         {
             Text = $"There is {totalOverall} units!"
         };
-        await _notifyService.Notify(notification, cancellationToken);
+        await _notificationsService.Save(notification, cancellationToken);
     }
 
     private async Task AboutTotalAtBrands(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
@@ -57,7 +57,7 @@ public class UnitsService : IUnitsService
             {
                 Text = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand"
             };
-            await _notifyService.Notify(notification, cancellationToken);
+            await _notificationsService.Save(notification, cancellationToken);
         }
     }
 
@@ -79,7 +79,7 @@ public class UnitsService : IUnitsService
                     Text =
                         $"There is {totalAtCountry.Value} units of {totalAtBrandAtCountry.Key} at {totalAtCountry.Key}"
                 };
-                await _notifyService.Notify(notification, cancellationToken);
+                await _notificationsService.Save(notification, cancellationToken);
             }
         }
     }

@@ -4,16 +4,16 @@ using Dodo1000Bot.Models;
 
 namespace Dodo1000Bot.Services;
 
-public class NotifyService : INotifyService
+public class NotificationsService : INotificationsService
 {
     private readonly INotificationsRepository _notificationsRepository;
 
-    public NotifyService(INotificationsRepository notificationsRepository)
+    public NotificationsService(INotificationsRepository notificationsRepository)
     {
         _notificationsRepository = notificationsRepository;
     }
 
-    public Task Notify(Notification notification, CancellationToken cancellationToken)
+    public Task Save(Notification notification, CancellationToken cancellationToken)
     {
         return _notificationsRepository.Save(notification, cancellationToken);
     }

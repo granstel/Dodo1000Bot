@@ -4,7 +4,7 @@ using Dodo1000Bot.Models;
 
 namespace Dodo1000Bot.Services;
 
-public interface INotifyService
+public interface INotificationsService
 {
-    Task Notify(Notification notification, CancellationToken cancellationToken);
+    Task Save(Notification notification, CancellationToken cancellationToken);
 }
