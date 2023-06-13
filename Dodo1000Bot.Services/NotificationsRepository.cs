@@ -20,7 +20,7 @@ public class NotificationsRepository : INotificationsRepository
     {
         var payload = JsonSerializer.Serialize(notification);
         await _connection.ExecuteAsync(
-            "INSERT INTO notification (payload) VALUES (@payload)",
+            "INSERT INTO notifications (payload) VALUES (@payload)",
             new
             {
                 payload = payload
