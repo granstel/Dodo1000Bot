@@ -31,7 +31,7 @@ public class NotificationsRepository : INotificationsRepository
     public async Task<IEnumerable<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
     {
         var notifications = await _connection.QueryAsync<Notification>(
-            @"SELECT Id, Payload FROM notifications n 
+            @"SELECT n.id, n.payload FROM notifications n 
                  LEFT JOIN pushed_notifications pn 
                     ON n.id = pn.id
                   WHERE pn.id IS NULL");
@@ -41,6 +41,7 @@ public class NotificationsRepository : INotificationsRepository
 
     public async Task Save(IEnumerable<PushedNotification> pushedNotifications, CancellationToken cancellationToken)
     {
+        await _connection.OpenAsync(cancellationToken);
         var transaction = await _connection.BeginTransactionAsync(cancellationToken);
 
         foreach(var pushedNotification in pushedNotifications)
