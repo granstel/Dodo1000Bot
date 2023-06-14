@@ -19,7 +19,7 @@ namespace Dodo1000Bot.Messengers.Telegram
 
                 services.AddTransient<ITelegramService, TelegramService>();
                 services.AddTransient<ITelegramBotClient>(RegisterTelegramClient);
-                services.AddSingleton<INotifyService, TelegramNotifyService>();
+                services.AddTransient<INotifyService, TelegramNotifyService>();
             });
         }
 
