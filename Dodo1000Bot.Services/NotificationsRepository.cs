@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
-using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using MySql.Data.MySqlClient;
 
