@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Dodo1000Bot.Models;
+using Dodo1000Bot.Models.Domain;
 using MySql.Data.MySqlClient;
 
 namespace Dodo1000Bot.Services;
@@ -37,5 +38,23 @@ public class NotificationsRepository : INotificationsRepository
                   WHERE pn.id IS NULL");
 
         return notifications;
+    }
+
+    public async Task Save(IEnumerable<PushedNotification> pushedNotifications, CancellationToken cancellationToken)
+    {
+        var transaction = await _connection.BeginTransactionAsync(cancellationToken);
+
+        foreach(var pushedNotification in pushedNotifications)
+        {
+            await _connection.ExecuteAsync(
+            "INSERT INTO pushed_notifications (NotificationId, UserId) VALUES (@notificationId, @userId)",
+            new
+            {
+                notificationId = pushedNotification.NotificationId,
+                userId = pushedNotification.UserId
+            }, transaction);
+        }
+
+        await transaction.CommitAsync(cancellationToken);
     }
 }
