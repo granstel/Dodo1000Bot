@@ -33,7 +33,7 @@ public class TelegramNotifyService: INotifyService
         {
             foreach (var user in users)
             {
-                await SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text);
+                await SendTextMessageAsync(user.MessengerUserId, notification.DeserializedPayload.Text);
 
                 pushedNotifications.Add(new PushedNotification
                 {
