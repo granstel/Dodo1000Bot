@@ -9,8 +9,33 @@ namespace Dodo1000Bot.Messengers.Telegram;
 
 public class TelegramNotifyService: INotifyService
 {
-    public Task<PushedNotification> NotifyAbout(IEnumerable<Notification> notifications, CancellationToken cancellationToken)
+    private readonly IUsersRepository _usersRepository;
+
+    public TelegramNotifyService(UsersRepository usersRepository)
     {
-        throw new System.NotImplementedException();
+        _usersRepository = usersRepository;
+    }
+
+    public async Task<IEnumerable<PushedNotification>> NotifyAbout(IEnumerable<Notification> notifications, CancellationToken cancellationToken)
+    {
+        IEnumerable<User> users = await _usersRepository.GetUsers(Source.Telegram, cancellationToken);
+
+        var pushedNotifications = new List<PushedNotification>();
+
+        foreach (var notification in notifications)
+        {
+            foreach (var user in users)
+            {
+                //TODO: magic
+
+                pushedNotifications.Add(new PushedNotification
+                {
+                    NotificationId = notification.Id,
+                    UserId = user.Id
+                });
+            }
+        }
+
+        return pushedNotifications;
     }
 }
