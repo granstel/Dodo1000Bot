@@ -15,9 +15,9 @@ public class NotificationsService : INotificationsService
         _notificationsRepository = notificationsRepository;
     }
 
-    public Task Save(Notification notification, CancellationToken cancellationToken)
+    public Task Save(NotificationPayload notificationPayload, CancellationToken cancellationToken)
     {
-        return _notificationsRepository.Save(notification, cancellationToken);
+        return _notificationsRepository.Save(notificationPayload, cancellationToken);
     }
 
     public async Task PushNotifications(IEnumerable<INotifyService> notifyServices, CancellationToken cancellationToken)
@@ -26,7 +26,7 @@ public class NotificationsService : INotificationsService
 
         var tasks = notifyServices.Select(s => s.NotifyAbout(notifications, cancellationToken));
 
-        IEnumerable<PushedNotification> pushedNotifications = await Task.WhenAll(tasks);
+        var pushedNotifications = await Task.WhenAll(tasks);
 
         await _notificationsRepository.Save(pushedNotifications, cancellationToken);
     }

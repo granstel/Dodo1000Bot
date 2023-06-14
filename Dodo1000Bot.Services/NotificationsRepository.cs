@@ -17,21 +17,21 @@ public class NotificationsRepository : INotificationsRepository
         _connection = connection;
     }
 
-    public async Task Save(Notification notification, CancellationToken cancellationToken)
+    public async Task Save(NotificationPayload notificationPayload, CancellationToken cancellationToken)
     {
-        var payload = JsonSerializer.Serialize(notification);
+        var payload = JsonSerializer.Serialize(notificationPayload);
         await _connection.ExecuteAsync(
             "INSERT INTO notifications (payload) VALUES (@payload)",
             new
             {
-                payload = payload
+                payload
             });
     }
 
     public async Task<IEnumerable<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
     {
         var notifications = await _connection.QueryAsync<Notification>(
-            @"SELECT * FROM notifications n 
+            @"SELECT Id, Payload FROM notifications n 
                  LEFT JOIN pushed_notifications pn 
                     ON n.id = pn.id
                   WHERE pn.id IS NULL");
