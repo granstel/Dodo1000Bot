@@ -26,7 +26,9 @@ public class NotificationsService : INotificationsService
 
         var tasks = notifyServices.Select(s => s.NotifyAbout(notifications, cancellationToken));
 
-        var pushedNotifications = await Task.WhenAll(tasks);
+        var tasksResults = await Task.WhenAll(tasks);
+
+        var pushedNotifications = tasksResults.SelectMany(n => n);
 
         await _notificationsRepository.Save(pushedNotifications, cancellationToken);
     }
