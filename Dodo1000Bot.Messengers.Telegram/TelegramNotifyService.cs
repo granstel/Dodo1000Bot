@@ -16,7 +16,7 @@ public class TelegramNotifyService: INotifyService
     private readonly ITelegramBotClient _client;
     private readonly ILogger<TelegramNotifyService> _log;
 
-    public TelegramNotifyService(UsersRepository usersRepository, ITelegramBotClient client, ILogger<TelegramNotifyService> log)
+    public TelegramNotifyService(IUsersRepository usersRepository, ITelegramBotClient client, ILogger<TelegramNotifyService> log)
     {
         _usersRepository = usersRepository;
         _client = client;
