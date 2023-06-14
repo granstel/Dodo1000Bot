@@ -24,11 +24,11 @@ public class NotificationsService : INotificationsService
     {
         IEnumerable<Notification> notifications = await _notificationsRepository.GetNotPushedNotifications(cancellationToken);
 
-        var tasks = notifyServices.Select(s => s.NotifyAbout(notifications, cancellationToken));
+        IEnumerable<Task<IEnumerable<PushedNotification>>> tasks = notifyServices.Select(s => s.NotifyAbout(notifications, cancellationToken));
 
-        var tasksResults = await Task.WhenAll(tasks);
+        IEnumerable<PushedNotification>[] tasksResults = await Task.WhenAll(tasks);
 
-        var pushedNotifications = tasksResults.SelectMany(n => n);
+        IEnumerable<PushedNotification> pushedNotifications = tasksResults.SelectMany(r => r);
 
         await _notificationsRepository.Save(pushedNotifications, cancellationToken);
     }
