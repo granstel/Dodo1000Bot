@@ -25,5 +25,6 @@ public static class DatabaseRegistration
     {
         services.AddTransient(_ => new MySqlConnection(configuration.MysqlConnectionString));
         services.AddTransient<INotificationsRepository, NotificationsRepository>();
+        services.AddTransient<IUsersRepository, UsersRepository>();
     }
 }
