@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Services;
+using Dodo1000Bot.Services.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Api.Jobs;
@@ -15,7 +16,8 @@ public class PushNotificationsJob: RepeatableJob
     public PushNotificationsJob(
         ILogger<PushNotificationsJob> log, 
         INotificationsService notificationsService,
-        IEnumerable<INotifyService> notifyServices) : base(log, TimeSpan.MaxValue)
+        IEnumerable<INotifyService> notifyServices,
+        PushNotificationsConfiguration configuration) : base(log, configuration.EveryTime)
     {
         _notificationsService = notificationsService;
         _notifyServices = notifyServices;
