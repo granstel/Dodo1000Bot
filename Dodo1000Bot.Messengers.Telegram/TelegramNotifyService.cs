@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
@@ -29,9 +30,14 @@ public class TelegramNotifyService: INotifyService
 
         var pushedNotifications = new List<PushedNotification>();
 
-        foreach (var notification in notifications)
+        if (!notifications.Any() || !users.Any())
         {
-            foreach (var user in users)
+            return pushedNotifications;
+        }
+
+        foreach (var user in users)
+        {
+            foreach (var notification in notifications)
             {
                 await SendTextMessageAsync(user.MessengerUserId, notification.DeserializedPayload.Text);
 
