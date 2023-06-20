@@ -60,5 +60,20 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
 
             Assert.IsEmpty(result);
         }
+
+        [Test]
+        public async Task NotifyAbout_NoAnyUsers_NothingHappened()
+        {
+            var notifications = _fixture.CreateMany<Notification>();
+            var users = Enumerable.Empty<User>();
+
+            var ct = CancellationToken.None;
+
+            _usersRepositoryMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(users);
+
+            var result = await _target.NotifyAbout(notifications, ct);
+
+            Assert.IsEmpty(result);
+        }
     }
 }
