@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System.Collections.Generic;
+using AutoFixture;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Services;
@@ -9,6 +10,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
+using Domain = Dodo1000Bot.Models.Domain;
 
 namespace Dodo1000Bot.Messengers.Telegram.Tests
 {
@@ -64,7 +69,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         public async Task NotifyAbout_NoAnyUsers_NothingHappened()
         {
             var notifications = _fixture.CreateMany<Notification>();
-            var users = Enumerable.Empty<User>();
+            var users = Enumerable.Empty<Domain.User>();
 
             var ct = CancellationToken.None;
 
@@ -78,17 +83,29 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         [Test]
         public async Task NotifyAbout_AnyNotificationsAndUsers_SentAllNotificationsToAllUsers()
         {
-            var notifications = _fixture.CreateMany<Notification>();
-            var users = _fixture.CreateMany<User>();
+            var notification = _fixture.Create<Notification>();
+            var user = _fixture.Build<Domain.User>()
+                .With(u => u.Id)
+                .With(u => u.MessengerUserId, _fixture.Create<long>().ToString)
+                .Create();
 
             var ct = CancellationToken.None;
 
-            _usersRepositoryMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(users);
-            _clientMock.Setup(c => c.SendTextMessageAsync(It.IsAny<string>(), It.IsAny<string>()));
+            _usersRepositoryMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(new []{user});
+            _clientMock.Setup(c => c.SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text,
+            It.IsAny<ParseMode>(), It.IsAny<IEnumerable<MessageEntity>>(), 
+            It.IsAny<bool>(), It.IsAny<bool>(), 
+            It.IsAny<int>(), It.IsAny<bool>(), 
+            It.IsAny<IReplyMarkup>(), ct)).ReturnsAsync(() => null);
 
-            var result = await _target.NotifyAbout(notifications, ct);
+            var pushedNotifications = (await _target.NotifyAbout(new []{notification}, ct)).ToArray();
 
-            Assert.IsEmpty(result);
+            Assert.IsNotEmpty(pushedNotifications);
+
+            var pushedNotification = pushedNotifications.First();
+
+            Assert.AreEqual(notification.Id, pushedNotification.NotificationId);
+            Assert.AreEqual(user.Id, pushedNotification.UserId);
         }
     }
 }
