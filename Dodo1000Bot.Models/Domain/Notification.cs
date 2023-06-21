@@ -6,13 +6,6 @@ namespace Dodo1000Bot.Models.Domain
     {
         public int Id { get; set; }
 
-        public string Payload { get; set; }
-        public NotificationPayload DeserializedPayload
-        {
-            get
-            {
-                return JsonSerializer.Deserialize<NotificationPayload>(Payload);
-            }
-        }
+        public NotificationPayload Payload { get; set; }
     }
 }

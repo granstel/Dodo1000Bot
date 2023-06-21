@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,12 +31,18 @@ public class NotificationsRepository : INotificationsRepository
 
     public async Task<IEnumerable<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
     {
-        var notifications = await _connection.QueryAsync<Notification>(
+        var records = await _connection.QueryAsync(
             @"SELECT n.id, n.payload FROM notifications n 
                  LEFT JOIN pushed_notifications pn 
                     ON n.id = pn.id
                   WHERE pn.id IS NULL");
 
+        var notifications = records.Select(r => new Notification
+        {
+            Id = r.Id,
+            Payload = JsonSerializer.Deserialize<NotificationPayload>(r.Payload)
+        });
+        
         return notifications;
     }
 
