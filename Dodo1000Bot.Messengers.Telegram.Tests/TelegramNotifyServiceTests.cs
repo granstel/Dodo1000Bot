@@ -5,7 +5,6 @@ using Dodo1000Bot.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -70,6 +69,22 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
             var ct = CancellationToken.None;
 
             _usersRepositoryMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(users);
+
+            var result = await _target.NotifyAbout(notifications, ct);
+
+            Assert.IsEmpty(result);
+        }
+
+        [Test]
+        public async Task NotifyAbout_AnyNotificationsAndUsers_SentAllNotificationsToAllUsers()
+        {
+            var notifications = _fixture.CreateMany<Notification>();
+            var users = _fixture.CreateMany<User>();
+
+            var ct = CancellationToken.None;
+
+            _usersRepositoryMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(users);
+            _clientMock.Setup(c => c.SendTextMessageAsync(It.IsAny<string>(), It.IsAny<string>()));
 
             var result = await _target.NotifyAbout(notifications, ct);
 
