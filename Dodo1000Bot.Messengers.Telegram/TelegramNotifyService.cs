@@ -28,16 +28,19 @@ public class TelegramNotifyService: INotifyService
     {
         IEnumerable<User> users = await _usersRepository.GetUsers(Source.Telegram, cancellationToken);
 
+        var notificationsArray = notifications.ToArray();
+        var usersArray = users.ToArray();
+
         var pushedNotifications = new List<PushedNotification>();
 
-        if (!notifications.Any() || !users.Any())
+        if (!notificationsArray.Any() || !usersArray.Any())
         {
             return pushedNotifications;
         }
 
-        foreach (var user in users)
+        foreach (var user in usersArray)
         {
-            foreach (var notification in notifications)
+            foreach (var notification in notificationsArray)
             {
                 await SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text);
 
