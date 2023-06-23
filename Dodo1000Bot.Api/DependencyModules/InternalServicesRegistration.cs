@@ -9,7 +9,7 @@ namespace Dodo1000Bot.Api.DependencyModules
         {
             services.AddTransient<IConversationService, ConversationService>();
             services.AddTransient<IUnitsService, UnitsService>();
-            services.AddTransient<INotifyService, NotifyService>();
+            services.AddTransient<INotificationsService, NotificationsService>();
 
             services.AddScoped<IDialogflowService, DialogflowService>();
         }

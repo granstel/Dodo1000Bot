@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
 
 namespace Dodo1000Bot.Services;
@@ -8,12 +9,12 @@ namespace Dodo1000Bot.Services;
 public class UnitsService : IUnitsService
 {
     private readonly IGlobalApiClient _globalApiClient;
-    private readonly INotifyService _notifyService;
+    private readonly INotificationsService _notificationsService;
 
-    public UnitsService(IGlobalApiClient globalApiClient, INotifyService notifyService)
+    public UnitsService(IGlobalApiClient globalApiClient, INotificationsService notificationsService)
     {
         _globalApiClient = globalApiClient;
-        _notifyService = notifyService;
+        _notificationsService = notificationsService;
     }
 
     public async Task CheckAndNotify(CancellationToken cancellationToken)
@@ -34,8 +35,11 @@ public class UnitsService : IUnitsService
             return;
         }
 
-        var notification = $"There is {totalOverall} units!";
-            await _notifyService.Notify(notification, cancellationToken);
+        var notificationPayload = new NotificationPayload
+        {
+            Text = $"There is {totalOverall} units!"
+        };
+        await _notificationsService.Save(notificationPayload, cancellationToken);
     }
 
     private async Task AboutTotalAtBrands(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
@@ -49,8 +53,11 @@ public class UnitsService : IUnitsService
                 continue;
             }
 
-            var notification = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand";
-            await _notifyService.Notify(notification, cancellationToken);
+            var notificationPayload = new NotificationPayload
+            {
+                Text = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand"
+            };
+            await _notificationsService.Save(notificationPayload, cancellationToken);
         }
     }
 
@@ -67,8 +74,12 @@ public class UnitsService : IUnitsService
                     continue;
                 }
 
-                var notification = $"There is {totalAtCountry.Value} units of {totalAtBrandAtCountry.Key} at {totalAtCountry.Key}";
-                await _notifyService.Notify(notification, cancellationToken);
+                var notificationPayload = new NotificationPayload
+                {
+                    Text =
+                        $"There is {totalAtCountry.Value} units of {totalAtBrandAtCountry.Key} at {totalAtCountry.Key}"
+                };
+                await _notificationsService.Save(notificationPayload, cancellationToken);
             }
         }
     }

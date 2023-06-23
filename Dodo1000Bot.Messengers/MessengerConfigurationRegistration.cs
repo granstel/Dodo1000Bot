@@ -7,7 +7,7 @@ namespace Dodo1000Bot.Messengers
 {
     public static class MessengerConfigurationRegistration
     {
-        public static void AddConfiguration<T>(this IServiceCollection services, string fileName) where T : MessengerConfiguration
+        public static void AddConfiguration<T>(this IServiceCollection services, string fileName, string section) where T : MessengerConfiguration
         {
             services.AddSingleton(context =>
             {
@@ -20,11 +20,13 @@ namespace Dodo1000Bot.Messengers
 
                 var configurationBuilder = new ConfigurationBuilder()
                     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                    .AddJsonFile(fileName, true, false);
+                    .AddJsonFile(fileName, true, false)
+                    .AddEnvironmentVariables()
+                    ;
 
                 var configurationRoot = configurationBuilder.Build();
 
-                var configuration = configurationRoot.Get<T>();
+                var configuration = configurationRoot.GetSection(section).Get<T>();
 
                 return configuration;
             });

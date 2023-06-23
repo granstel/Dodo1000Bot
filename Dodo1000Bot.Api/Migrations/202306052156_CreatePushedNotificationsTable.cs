@@ -12,7 +12,7 @@ public class CreatePushedNotificationsTable: Migration
             CREATE TABLE IF NOT EXISTS pushed_notifications (
               `Id` INT NOT NULL AUTO_INCREMENT,
               `NotificationId` INT NULL,
-              `PushedAt` DATETIME NOT NULL,
+              `PushedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
               `UserId` INT NOT NULL,
               PRIMARY KEY (`Id`),
               UNIQUE INDEX `Id_UNIQUE` (`Id` ASC) VISIBLE);

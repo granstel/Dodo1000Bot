@@ -1,5 +1,7 @@
 ﻿using System;
 using Dodo1000Bot.Messengers.Telegram;
+using Dodo1000Bot.Models;
+using Dodo1000Bot.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
@@ -13,10 +15,11 @@ namespace Dodo1000Bot.Messengers.Telegram
         {
             builder.ConfigureServices(services =>
             {
-                services.AddConfiguration<TelegramConfiguration>("appsettings.Telegram.json");
+                services.AddConfiguration<TelegramConfiguration>("appsettings.Telegram.json", Source.Telegram.ToString());
 
                 services.AddTransient<ITelegramService, TelegramService>();
                 services.AddTransient<ITelegramBotClient>(RegisterTelegramClient);
+                services.AddTransient<INotifyService, TelegramNotifyService>();
             });
         }
 

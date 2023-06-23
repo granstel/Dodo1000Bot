@@ -21,12 +21,14 @@ namespace Dodo1000Bot.Api
             services.AddSingleton(configuration.Redis);
             services.AddSingleton(configuration.Dialogflow);
             services.AddSingleton(configuration.Units);
+            services.AddSingleton(configuration.PushNotifications);
 
             services.AddInternalServices();
             services.AddJobs(configuration);
 
             services.AddExternalServices(configuration);
             services.AddMigrations(configuration);
+            services.AddRepositories(configuration);
 
             var names = GetAssembliesNames();
             services.AddMapping(names);

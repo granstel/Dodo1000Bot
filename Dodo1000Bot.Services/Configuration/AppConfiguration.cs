@@ -13,5 +13,7 @@
         public string GlobalApiEndpoint { get; set; }
 
         public string MysqlConnectionString { get; set; }
+
+        public PushNotificationsConfiguration PushNotifications { get; set; }
     }
 }
