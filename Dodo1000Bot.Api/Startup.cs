@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Text.Json.Serialization;
 using Dodo1000Bot.Api.Extensions;
 using Dodo1000Bot.Api.Middleware;
@@ -29,6 +30,10 @@ namespace Dodo1000Bot.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddLogging(c =>
+                {
+                    c.AddJsonConsole();
+                })
                 .AddSingleton(s =>
                 {
                     var configureOptions = s.GetService<IConfigureOptions<JsonOptions>>();
@@ -68,8 +73,19 @@ namespace Dodo1000Bot.Api
                     a.UseHttpLogging();
                 });
             }
-
-            app.UseEndpoints(e => e.MapControllers());
+            app.UseEndpoints(e =>
+            {
+                e.MapPost("/dialogflow", async context =>
+                {
+                    var memstr = new MemoryStream();
+                    await context.Request.Body.CopyToAsync(memstr);
+                    
+                    var reader = new StreamReader(memstr);
+                    memstr.Seek(0, SeekOrigin.Begin);
+                    var rr = await reader.ReadToEndAsync();
+                });
+                e.MapControllers();
+            });
         }
     }
 }
