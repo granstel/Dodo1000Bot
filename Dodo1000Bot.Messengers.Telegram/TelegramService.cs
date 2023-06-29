@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Dodo1000Bot.Models;
@@ -36,7 +37,7 @@ namespace Dodo1000Bot.Messengers.Telegram
             return result;
         }
 
-        public override async Task<bool> SetWebhookAsync(string url)
+        public override async Task<bool> SetWebhookAsync(string url, CancellationToken ct)
         {
             try
             {
@@ -52,7 +53,7 @@ namespace Dodo1000Bot.Messengers.Telegram
             return true;
         }
 
-        public override async Task<bool> DeleteWebhookAsync()
+        public override async Task<bool> DeleteWebhookAsync(CancellationToken ct)
         {
             try
             {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
 using Dodo1000Bot.Messengers.Tests.Fixtures;
@@ -130,10 +131,10 @@ namespace Dodo1000Bot.Messengers.Tests.Controllers
 
             var expected = Fixture.Create<OutputFixture>();
 
-            _messengerService.Setup(s => s.ProcessIncomingAsync(input)).ReturnsAsync(expected);
+            _messengerService.Setup(s => s.ProcessIncomingAsync(input, It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
 
-            var result = await Target.WebHook(input, token);
+            var result = await Target.WebHook(input, token, CancellationToken.None);
 
 
             MockRepository.VerifyAll();
@@ -150,10 +151,10 @@ namespace Dodo1000Bot.Messengers.Tests.Controllers
 
             var expected = true;
 
-            _messengerService.Setup(s => s.SetWebhookAsync(url)).ReturnsAsync(expected);
+            _messengerService.Setup(s => s.SetWebhookAsync(url, It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
 
-            var result = await Target.CreateWebHook(null);
+            var result = await Target.CreateWebHook(null, CancellationToken.None);
 
 
             MockRepository.VerifyAll();
@@ -167,9 +168,9 @@ namespace Dodo1000Bot.Messengers.Tests.Controllers
         {
             var expected = true;
 
-            _messengerService.Setup(s => s.DeleteWebhookAsync()).ReturnsAsync(expected);
+            _messengerService.Setup(s => s.DeleteWebhookAsync(It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
-            var result = await Target.DeleteWebHook(null);
+            var result = await Target.DeleteWebHook(null, CancellationToken.None);
 
 
             MockRepository.VerifyAll();

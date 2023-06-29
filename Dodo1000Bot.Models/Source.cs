@@ -1,7 +1,7 @@
 namespace Dodo1000Bot.Models
 {
     /// <summary>
-    /// Источник запроса, мессенджер
+    /// Request source
     /// </summary>
     public enum Source
     {
@@ -9,6 +9,7 @@ namespace Dodo1000Bot.Models
         Telegram,
         Yandex,
         Marusia,
-        Sber
+        Sber,
+        Dialogflow
     }
 }

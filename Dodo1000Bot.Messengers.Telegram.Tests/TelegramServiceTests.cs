@@ -59,7 +59,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         [Test]
         public async Task SetWebhookAsync_Invokation_Success()
         {
-            await _target.SetWebhookAsync(It.IsAny<string>());
+            await _target.SetWebhookAsync(It.IsAny<string>(), CancellationToken.None);
 
             _telegramBotClient.Verify(c => c.SetWebhookAsync(It.IsAny<string>(), null, null, It.IsAny<int>(), null, It.IsAny<bool>(), It.IsAny<CancellationToken>()));
         }
@@ -90,7 +90,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
             _mapper.Setup(m => m.Map(It.IsAny<Request>(), It.IsAny<Response>())).Returns(() => null);
 
  
-            var result = await _target.ProcessIncomingAsync(inputModel);
+            var result = await _target.ProcessIncomingAsync(inputModel, CancellationToken.None);
 
 
             _mockRepository.VerifyAll();
