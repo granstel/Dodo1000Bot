@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
-using Dodo1000Bot.Api.Dialogflow.Models;
+﻿using Dodo1000Bot.Api.Dialogflow.Models;
 using Dodo1000Bot.Messengers;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Api.Dialogflow;
