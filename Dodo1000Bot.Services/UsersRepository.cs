@@ -29,5 +29,10 @@ namespace Dodo1000Bot.Services
 
             return users;
         }
+
+        public Task SaveUser(User user, CancellationToken ct)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
