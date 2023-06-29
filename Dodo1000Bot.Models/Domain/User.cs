@@ -5,5 +5,7 @@
         public int Id { get; set; }
 
         public string MessengerUserId { get; set; }
+
+        public Source MessengerType { get; set; }
     }
 }
