@@ -30,9 +30,15 @@ namespace Dodo1000Bot.Services
             return users;
         }
 
-        public Task SaveUser(User user, CancellationToken ct)
+        public async Task SaveUser(User user, CancellationToken ct)
         {
-            throw new System.NotImplementedException();
+            await _connection.ExecuteAsync(
+                "INSERT INTO users (MessengerUserId, MessengerType) VALUES (@messengerUserId, @messengerType)",
+                new
+                {
+                    messengerUserId = user.MessengerUserId,
+                    messengerType = user.MessengerType
+                });
         }
     }
 }
