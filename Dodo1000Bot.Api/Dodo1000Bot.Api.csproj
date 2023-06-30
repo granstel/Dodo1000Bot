@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Dodo1000Bot.Api.Dialogflow\Dodo1000Bot.Api.Dialogflow.csproj" />
     <ProjectReference Include="..\Dodo1000Bot.Models\Dodo1000Bot.Models.csproj" />
     <ProjectReference Include="..\Dodo1000Bot.Services\Dodo1000Bot.Services.csproj" />
     <ProjectReference Include="..\Dodo1000Bot.Messengers.Telegram\Dodo1000Bot.Messengers.Telegram.csproj" />

@@ -13,7 +13,7 @@ public class DialogflowStartup : IHostingStartup
     {
         builder.ConfigureServices(services =>
         {
-            services.AddConfiguration<DialogflowConfiguration>("appsettings.Dialogflow.json", Source.Telegram.ToString());
+            services.AddConfiguration<DialogflowConfiguration>("appsettings.Dialogflow.json", Source.Dialogflow.ToString());
 
             services.AddTransient<IDialogflowService, DialogflowService>();
         });

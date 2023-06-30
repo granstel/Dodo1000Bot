@@ -75,7 +75,7 @@ namespace Dodo1000Bot.Api
             }
             app.UseEndpoints(e =>
             {
-                e.MapPost("/dialogflow", async context =>
+                e.MapPost("/dialogflow1", async context =>
                 {
                     var memstr = new MemoryStream();
                     await context.Request.Body.CopyToAsync(memstr);
