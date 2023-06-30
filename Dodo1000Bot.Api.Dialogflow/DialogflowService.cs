@@ -28,7 +28,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
         var user = new User
         {
             MessengerUserId = input.OriginalDetectIntentRequest.Payload.Data.Chat.Id,
-            MessengerType = Source.Dialogflow
+            MessengerType = input.OriginalDetectIntentRequest.Source
         };
 
         await _usersRepository.SaveUser(user, ct);
