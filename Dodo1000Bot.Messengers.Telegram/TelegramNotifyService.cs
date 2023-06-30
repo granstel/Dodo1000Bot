@@ -42,28 +42,23 @@ public class TelegramNotifyService: INotifyService
         {
             foreach (var notification in notificationsArray)
             {
-                await SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text);
-
-                pushedNotifications.Add(new PushedNotification
+                try
                 {
-                    NotificationId = notification.Id,
-                    UserId = user.Id
-                });
+                    await _client.SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text, cancellationToken: cancellationToken);
+
+                    pushedNotifications.Add(new PushedNotification
+                    {
+                        NotificationId = notification.Id,
+                        UserId = user.Id
+                    });
+                }
+                catch (Exception e)
+                {
+                    _log.LogError(e, "Error while send text message");
+                }
             }
         }
 
         return pushedNotifications;
-    }
-
-    private async Task SendTextMessageAsync(string chatId, string text)
-    {
-        try
-        {
-            await _client.SendTextMessageAsync(chatId, text);
-        }
-        catch (Exception e)
-        {
-            _log.LogError(e, "Error while send text message");
-        }
     }
 }
