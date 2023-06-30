@@ -31,34 +31,52 @@ public class TelegramNotifyService: INotifyService
         var notificationsArray = notifications.ToArray();
         var usersArray = users.ToArray();
 
-        var pushedNotifications = new List<PushedNotification>();
-
         if (!notificationsArray.Any() || !usersArray.Any())
         {
-            return pushedNotifications;
+            return Enumerable.Empty<PushedNotification>();
         }
+
+        var pushedNotifications = await PushNotifications(notificationsArray, usersArray, cancellationToken);
+
+        return pushedNotifications;
+    }
+
+    private async Task<List<PushedNotification>> PushNotifications(Notification[] notificationsArray, User[] usersArray, CancellationToken cancellationToken)
+    {
+        var pushedNotifications = new List<PushedNotification>();
 
         foreach (var user in usersArray)
         {
             foreach (var notification in notificationsArray)
             {
-                try
-                {
-                    await _client.SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text, cancellationToken: cancellationToken);
+                var pushedNotification = await PushNotification(notification, user, cancellationToken);
 
-                    pushedNotifications.Add(new PushedNotification
-                    {
-                        NotificationId = notification.Id,
-                        UserId = user.Id
-                    });
-                }
-                catch (Exception e)
-                {
-                    _log.LogError(e, "Error while send text message");
-                }
+                if (pushedNotification == null)
+                    continue;
+
+                pushedNotifications.Add(pushedNotification);
             }
         }
 
         return pushedNotifications;
+    }
+
+    private async Task<PushedNotification> PushNotification(Notification notification, User user, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _client.SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text, cancellationToken: cancellationToken);
+
+            return new PushedNotification
+            {
+                NotificationId = notification.Id,
+                UserId = user.Id
+            };
+        }
+        catch (Exception e)
+        {
+            _log.LogError(e, "Error while send text message");
+            return null;
+        }
     }
 }
