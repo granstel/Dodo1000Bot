@@ -22,7 +22,7 @@ public class NotificationsRepository : INotificationsRepository
     {
         var payload = JsonSerializer.Serialize(notificationPayload);
         await _connection.ExecuteAsync(
-            "INSERT INTO notifications (payload) VALUES (@payload)",
+            "INSERT INTO notifications (Payload) VALUES (@payload)",
             new
             {
                 payload
@@ -32,9 +32,9 @@ public class NotificationsRepository : INotificationsRepository
     public async Task<IEnumerable<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
     {
         var records = await _connection.QueryAsync(
-            @"SELECT n.id, n.payload FROM notifications n 
+            @"SELECT n.Id, n.Payload FROM notifications n 
                  LEFT JOIN pushed_notifications pn 
-                    ON n.id = pn.id
+                    ON n.Id = pn.Id
                   WHERE pn.id IS NULL");
 
         var notifications = records.Select(r => new Notification
