@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace Dodo1000Bot.Models.Domain
+﻿namespace Dodo1000Bot.Models.Domain
 {
     public class Notification
     {

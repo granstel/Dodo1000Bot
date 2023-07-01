@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Dodo1000Bot.Api.Dialogflow.Models;
 using Dodo1000Bot.Messengers;
-using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Services;
 using Microsoft.Extensions.Logging;
