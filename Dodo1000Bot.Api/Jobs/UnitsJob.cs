@@ -1,24 +1,29 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Services;
 using Dodo1000Bot.Services.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Api.Jobs;
 
 public class UnitsJob : RepeatableJob
 {
-    private readonly IUnitsService _unitsService;
+    private readonly IServiceProvider _provider;
 
     public UnitsJob(ILogger<UnitsJob> log,
-        IUnitsService unitsService,
+        IServiceProvider provider,
         UnitsConfiguration unitsConfiguration) : base(log, unitsConfiguration.RefreshEveryTime)
     {
-        _unitsService = unitsService;
+        _provider = provider;
     }
 
     protected override async Task Execute(CancellationToken cancellationToken)
     {
-        await _unitsService.CheckAndNotify(cancellationToken);
+        await using var scope = _provider.CreateAsyncScope();
+        var unitsService = scope.ServiceProvider.GetRequiredService<IUnitsService>();
+
+        await unitsService.CheckAndNotify(cancellationToken);
     }
 }
