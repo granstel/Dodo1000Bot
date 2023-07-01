@@ -34,7 +34,7 @@ public class NotificationsRepository : INotificationsRepository
         var records = await _connection.QueryAsync(
             @"SELECT n.Id, n.Payload FROM notifications n 
                  LEFT JOIN pushed_notifications pn 
-                    ON n.Id = pn.Id
+                    ON n.Id = pn.notificationId
                   WHERE pn.id IS NULL");
 
         var notifications = records.Select(r => new Notification
