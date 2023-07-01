@@ -24,7 +24,7 @@ public class PushNotificationsJob: RepeatableJob
     {
         await using var scope = _provider.CreateAsyncScope();
         var notifyServices = scope.ServiceProvider.GetServices<INotifyService>();
-        var notificationsService = scope.ServiceProvider.GetService<INotificationsService>();
+        var notificationsService = scope.ServiceProvider.GetRequiredService<INotificationsService>();
 
         await notificationsService.PushNotifications(notifyServices, cancellationToken);
     }
