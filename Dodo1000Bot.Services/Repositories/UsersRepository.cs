@@ -3,6 +3,7 @@ using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace Dodo1000Bot.Services
             _connection = connection;
         }
 
-        public async Task<IEnumerable<User>> GetUsers(Source messengerType, CancellationToken cancellationToken)
+        public async Task<IList<User>> GetUsers(Source messengerType, CancellationToken cancellationToken)
         {
             var users = await _connection.QueryAsync<User>(
                 @"SELECT Id, MessengerUserId FROM users
@@ -27,7 +28,7 @@ namespace Dodo1000Bot.Services
                     messengerType
                 });
 
-            return users;
+            return users.ToImmutableArray();
         }
 
         public async Task SaveUser(User user, CancellationToken ct)

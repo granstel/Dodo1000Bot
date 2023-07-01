@@ -24,23 +24,21 @@ public class TelegramNotifyService: INotifyService
         _log = log;
     }
 
-    public async Task<IEnumerable<PushedNotification>> NotifyAbout(IEnumerable<Notification> notifications, CancellationToken cancellationToken)
+    public async Task<IEnumerable<PushedNotification>> NotifyAbout(IList<Notification> notifications,
+        CancellationToken cancellationToken)
     {
         IEnumerable<User> users = await _usersRepository.GetUsers(Source.Telegram, cancellationToken);
 
-        var notificationsArray = notifications.ToArray();
-        var usersArray = users.ToArray();
-
-        if (!notificationsArray.Any() || !usersArray.Any())
+        if (!users.Any())
         {
             return Enumerable.Empty<PushedNotification>();
         }
 
         var pushedNotifications = new List<PushedNotification>();
 
-        foreach (var user in usersArray)
+        foreach (var user in users)
         {
-            var pushedNotificationsToUsers = await PushNotificationsToUsers(notificationsArray, user, cancellationToken);
+            var pushedNotificationsToUsers = await PushNotificationsToUsers(notifications, user, cancellationToken);
 
             pushedNotifications.AddRange(pushedNotificationsToUsers);
         }
@@ -48,7 +46,7 @@ public class TelegramNotifyService: INotifyService
         return pushedNotifications;
     }
 
-    private async Task<IList<PushedNotification>> PushNotificationsToUsers(Notification[] notificationsArray, User user, CancellationToken cancellationToken)
+    private async Task<IList<PushedNotification>> PushNotificationsToUsers(IList<Notification> notificationsArray, User user, CancellationToken cancellationToken)
     {
         var pushedNotifications = new List<PushedNotification>();
 

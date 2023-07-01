@@ -22,7 +22,12 @@ public class NotificationsService : INotificationsService
 
     public async Task PushNotifications(IEnumerable<INotifyService> notifyServices, CancellationToken cancellationToken)
     {
-        IEnumerable<Notification> notifications = await _notificationsRepository.GetNotPushedNotifications(cancellationToken);
+        IList<Notification> notifications = await _notificationsRepository.GetNotPushedNotifications(cancellationToken);
+
+        if (!notifications.Any())
+        {
+            return;
+        }
 
         IEnumerable<Task<IEnumerable<PushedNotification>>> tasks = notifyServices.Select(s => s.NotifyAbout(notifications, cancellationToken));
 

@@ -9,7 +9,7 @@ public interface INotificationsRepository
 {
     Task Save(NotificationPayload notificationPayload, CancellationToken cancellationToken);
 
-    Task<IEnumerable<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken);
+    Task<IList<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken);
 
     Task Save(IEnumerable<PushedNotification> pushedNotifications, CancellationToken cancellationToken);
 }

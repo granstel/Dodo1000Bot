@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -29,7 +30,7 @@ public class NotificationsRepository : INotificationsRepository
             });
     }
 
-    public async Task<IEnumerable<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
+    public async Task<IList<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
     {
         var records = await _connection.QueryAsync(
             @"SELECT n.Id, n.Payload FROM notifications n 
@@ -41,8 +42,8 @@ public class NotificationsRepository : INotificationsRepository
         {
             Id = r.Id,
             Payload = JsonSerializer.Deserialize<NotificationPayload>(r.Payload)
-        });
-        
+        }).ToImmutableArray();
+
         return notifications;
     }
 
