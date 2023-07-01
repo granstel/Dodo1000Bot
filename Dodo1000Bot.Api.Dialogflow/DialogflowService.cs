@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Dodo1000Bot.Api.Dialogflow.Models;
@@ -30,7 +31,14 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
             MessengerType = input.OriginalDetectIntentRequest.Source
         };
 
-        await _usersRepository.SaveUser(user, ct);
+        try
+        {
+            await _usersRepository.SaveUser(user, ct);
+        }
+        catch (Exception e)
+        {
+            Log.LogError(e, "Can't save user");
+        }
 
         return string.Empty;
     }
