@@ -46,11 +46,11 @@ public class TelegramNotifyService: INotifyService
         return pushedNotifications;
     }
 
-    private async Task<IList<PushedNotification>> PushNotificationsToUsers(IList<Notification> notificationsArray, User user, CancellationToken cancellationToken)
+    private async Task<IList<PushedNotification>> PushNotificationsToUsers(IList<Notification> notifications, User user, CancellationToken cancellationToken)
     {
         var pushedNotifications = new List<PushedNotification>();
 
-        foreach (var notification in notificationsArray)
+        foreach (var notification in notifications)
         {
             try
             {
