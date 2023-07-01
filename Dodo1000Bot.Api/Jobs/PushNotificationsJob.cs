@@ -10,16 +10,13 @@ namespace Dodo1000Bot.Api.Jobs;
 
 public class PushNotificationsJob: RepeatableJob
 {
-    private readonly INotificationsService _notificationsService;
     private readonly IServiceProvider _provider;
 
     public PushNotificationsJob(
         ILogger<PushNotificationsJob> log,
-        INotificationsService notificationsService,
         PushNotificationsConfiguration configuration,
         IServiceProvider provider) : base(log, configuration.EveryTime)
     {
-        _notificationsService = notificationsService;
         _provider = provider;
     }
 
@@ -27,6 +24,8 @@ public class PushNotificationsJob: RepeatableJob
     {
         await using var scope = _provider.CreateAsyncScope();
         var notifyServices = scope.ServiceProvider.GetServices<INotifyService>();
-        await _notificationsService.PushNotifications(notifyServices, cancellationToken);
+        var notificationsService = scope.ServiceProvider.GetService<INotificationsService>();
+
+        await notificationsService.PushNotifications(notifyServices, cancellationToken);
     }
 }
