@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Data;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -49,7 +50,11 @@ public class NotificationsRepository : INotificationsRepository
 
     public async Task Save(IEnumerable<PushedNotification> pushedNotifications, CancellationToken cancellationToken)
     {
-        await _connection.OpenAsync(cancellationToken);
+        if (_connection.State != ConnectionState.Open)
+        {
+            await _connection.OpenAsync(cancellationToken);
+        }
+
         var transaction = await _connection.BeginTransactionAsync(cancellationToken);
 
         foreach(var pushedNotification in pushedNotifications)
@@ -64,5 +69,6 @@ public class NotificationsRepository : INotificationsRepository
         }
 
         await transaction.CommitAsync(cancellationToken);
+        await _connection.CloseAsync();
     }
 }
