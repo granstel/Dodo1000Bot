@@ -20,17 +20,7 @@ public class MigrationsJob : IHostedService
         _provider = provider;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {
-        await MigrateDatabase(cancellationToken);
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
-
-    private async Task MigrateDatabase(CancellationToken ct)
+    public async Task StartAsync(CancellationToken ct)
     {
         var (connectionString, databaseName) = StripDatabaseName(_mySqlConnection);
 
@@ -42,6 +32,11 @@ public class MigrationsJob : IHostedService
         var runner = scope.ServiceProvider
             .GetRequiredService<IMigrationRunner>();
         runner.MigrateUp();
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
     }
 
     static (string connectionString, string databaseName) StripDatabaseName(string connectionString)
