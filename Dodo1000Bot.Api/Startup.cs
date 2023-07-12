@@ -73,19 +73,6 @@ namespace Dodo1000Bot.Api
                     a.UseHttpLogging();
                 });
             }
-            app.UseEndpoints(e =>
-            {
-                e.MapPost("/dialogflow1", async context =>
-                {
-                    var memstr = new MemoryStream();
-                    await context.Request.Body.CopyToAsync(memstr);
-                    
-                    var reader = new StreamReader(memstr);
-                    memstr.Seek(0, SeekOrigin.Begin);
-                    var rr = await reader.ReadToEndAsync();
-                });
-                e.MapControllers();
-            });
         }
     }
 }
