@@ -15,9 +15,9 @@ public class NotificationsService : INotificationsService
         _notificationsRepository = notificationsRepository;
     }
 
-    public Task Save(NotificationPayload notificationPayload, CancellationToken cancellationToken)
+    public Task Save(Notification notification, CancellationToken cancellationToken)
     {
-        return _notificationsRepository.Save(notificationPayload, cancellationToken);
+        return _notificationsRepository.Save(notification, cancellationToken);
     }
 
     public async Task PushNotifications(IEnumerable<INotifyService> notifyServices, CancellationToken cancellationToken)

@@ -20,14 +20,15 @@ public class NotificationsRepository : INotificationsRepository
         _connection = connection;
     }
 
-    public async Task Save(NotificationPayload notificationPayload, CancellationToken cancellationToken)
+    public async Task Save(Notification notification, CancellationToken cancellationToken)
     {
-        var payload = JsonSerializer.Serialize(notificationPayload);
+        var payload = JsonSerializer.Serialize(notification?.Payload);
         await _connection.ExecuteAsync(
-            "INSERT INTO notifications (Payload) VALUES (@payload)",
+            "INSERT INTO notifications (Payload, Distinction) VALUES (@payload, @distinction)",
             new
             {
-                payload
+                payload,
+                distinction = notification?.Distinction
             });
     }
 

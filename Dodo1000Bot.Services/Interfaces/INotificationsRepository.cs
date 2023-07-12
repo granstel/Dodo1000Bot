@@ -7,7 +7,7 @@ namespace Dodo1000Bot.Services;
 
 public interface INotificationsRepository
 {
-    Task Save(NotificationPayload notificationPayload, CancellationToken cancellationToken);
+    Task Save(Notification notification, CancellationToken cancellationToken);
 
     Task<IList<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken);
 
