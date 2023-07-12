@@ -2,6 +2,11 @@
 {
     public class NotificationPayload
     {
-        public string Text { get; set; }
+        public string Text { get; init; }
+
+        public override int GetHashCode()
+        {
+            return Text.GetHashCode();
+        }
     }
 }

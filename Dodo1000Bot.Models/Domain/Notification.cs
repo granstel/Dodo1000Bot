@@ -5,5 +5,7 @@
         public int Id { get; set; }
 
         public NotificationPayload Payload { get; set; }
+
+        public int Distinction => Payload.GetHashCode();
     }
 }
