@@ -10,7 +10,7 @@ public class AddColumnt_notifications_distinction: Migration
         Execute.Sql
         (@"
             ALTER TABLE notifications 
-            ADD COLUMN `Distinction` INT NOT NULL AFTER `CreatedAt`,
+            ADD COLUMN `Distinction` VARCHAR(64) NOT NULL,
             ADD UNIQUE INDEX `Distinction_UNIQUE` (`Distinction` ASC) VISIBLE;
         ");
     }
