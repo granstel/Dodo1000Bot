@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.Json.Serialization;
 using Dodo1000Bot.Api.Extensions;
 using Dodo1000Bot.Api.Middleware;
