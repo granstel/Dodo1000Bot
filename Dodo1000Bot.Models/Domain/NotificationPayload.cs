@@ -4,9 +4,9 @@
     {
         public string Text { get; init; }
 
-        public override int GetHashCode()
+        public override string ToString()
         {
-            return Text.GetHashCode();
+            return Text;
         }
     }
 }
