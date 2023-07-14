@@ -3,21 +3,32 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.Domain;
+using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Services;
 
 public class NotificationsService : INotificationsService
 {
+    private readonly ILogger<NotificationsService> _logger;
     private readonly INotificationsRepository _notificationsRepository;
 
-    public NotificationsService(INotificationsRepository notificationsRepository)
+    public NotificationsService(ILogger<NotificationsService> logger, INotificationsRepository notificationsRepository)
     {
+        _logger = logger;
         _notificationsRepository = notificationsRepository;
     }
 
-    public Task Save(Notification notification, CancellationToken cancellationToken)
+    public async Task Save(Notification notification, CancellationToken cancellationToken)
     {
-        return _notificationsRepository.Save(notification, cancellationToken);
+        var isExists = await _notificationsRepository.IsExists(notification, cancellationToken);
+
+        if (isExists)
+        {
+            _logger.LogInformation("Notification with {fieldName}='{fieldValue}' is exists", 
+                nameof(notification.Distinction), notification.Distinction);
+        }
+
+        await _notificationsRepository.Save(notification, cancellationToken);
     }
 
     public async Task PushNotifications(IEnumerable<INotifyService> notifyServices, CancellationToken cancellationToken)
