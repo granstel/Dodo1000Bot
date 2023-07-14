@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dodo1000Bot.Messengers.Tele
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dodo1000Bot.Messengers.Telegram.Tests", "Dodo1000Bot.Messengers.Telegram.Tests\Dodo1000Bot.Messengers.Telegram.Tests.csproj", "{3E3CF82A-ACB2-42A7-A3BE-E9556ADE89F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dodo1000Bot.Api.Dialogflow", "Dodo1000Bot.Api.Dialogflow\Dodo1000Bot.Api.Dialogflow.csproj", "{0A4A4754-15D0-4BB6-8E1E-0D0F0502FC88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{3E3CF82A-ACB2-42A7-A3BE-E9556ADE89F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E3CF82A-ACB2-42A7-A3BE-E9556ADE89F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E3CF82A-ACB2-42A7-A3BE-E9556ADE89F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A4A4754-15D0-4BB6-8E1E-0D0F0502FC88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A4A4754-15D0-4BB6-8E1E-0D0F0502FC88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A4A4754-15D0-4BB6-8E1E-0D0F0502FC88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A4A4754-15D0-4BB6-8E1E-0D0F0502FC88}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,6 +77,7 @@ Global
 		{F3415D07-3FF7-45FC-AB9E-278BC2EC6157} = {ECB31418-3F4F-411C-8AD4-65C342B46B94}
 		{CA79DB27-1702-4CC3-827D-B361137A5C34} = {ECB31418-3F4F-411C-8AD4-65C342B46B94}
 		{3E3CF82A-ACB2-42A7-A3BE-E9556ADE89F2} = {7550458D-AF2F-4233-BF54-49C36113F587}
+		{0A4A4754-15D0-4BB6-8E1E-0D0F0502FC88} = {ECB31418-3F4F-411C-8AD4-65C342B46B94}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F8B87A9C-C6A0-4ACE-A76D-013674B4D97A}

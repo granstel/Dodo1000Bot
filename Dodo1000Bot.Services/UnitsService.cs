@@ -35,11 +35,14 @@ public class UnitsService : IUnitsService
             return;
         }
 
-        var notificationPayload = new NotificationPayload
+        var notification = new Notification
         {
-            Text = $"There is {totalOverall} units!"
+            Payload = new NotificationPayload
+            {
+                Text = $"There is {totalOverall} units!"
+            }
         };
-        await _notificationsService.Save(notificationPayload, cancellationToken);
+        await _notificationsService.Save(notification, cancellationToken);
     }
 
     private async Task AboutTotalAtBrands(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
@@ -53,11 +56,14 @@ public class UnitsService : IUnitsService
                 continue;
             }
 
-            var notificationPayload = new NotificationPayload
+            var notification = new Notification
             {
-                Text = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand"
+                Payload = new NotificationPayload
+                {
+                    Text = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand"
+                }
             };
-            await _notificationsService.Save(notificationPayload, cancellationToken);
+            await _notificationsService.Save(notification, cancellationToken);
         }
     }
 
@@ -74,12 +80,15 @@ public class UnitsService : IUnitsService
                     continue;
                 }
 
-                var notificationPayload = new NotificationPayload
+                var notification = new Notification
                 {
-                    Text =
-                        $"There is {totalAtCountry.Value} units of {totalAtBrandAtCountry.Key} at {totalAtCountry.Key}"
+                    Payload = new NotificationPayload
+                    {
+                        Text =
+                            $"There is {totalAtCountry.Value} units of {totalAtBrandAtCountry.Key} at {totalAtCountry.Key}"
+                    }
                 };
-                await _notificationsService.Save(notificationPayload, cancellationToken);
+                await _notificationsService.Save(notification, cancellationToken);
             }
         }
     }

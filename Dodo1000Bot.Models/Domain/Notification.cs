@@ -1,11 +1,12 @@
-﻿using System.Text.Json;
-
-namespace Dodo1000Bot.Models.Domain
+﻿namespace Dodo1000Bot.Models.Domain
 {
     public class Notification
     {
         public int Id { get; set; }
 
         public NotificationPayload Payload { get; set; }
+
+        public string Distinction => Payload.ToString().ToUpper()
+            .Replace(" ", string.Empty);
     }
 }

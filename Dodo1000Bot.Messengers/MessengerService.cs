@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Dodo1000Bot.Models;
@@ -28,7 +29,7 @@ namespace Dodo1000Bot.Messengers
             return request;
         }
 
-        public virtual async Task<TOutput> ProcessIncomingAsync(TInput input)
+        public virtual async Task<TOutput> ProcessIncomingAsync(TInput input, CancellationToken ct)
         {
             Response response;
 
@@ -75,12 +76,12 @@ namespace Dodo1000Bot.Messengers
             });
         }
 
-        public virtual Task<bool> SetWebhookAsync(string url)
+        public virtual Task<bool> SetWebhookAsync(string url, CancellationToken ct)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<bool> DeleteWebhookAsync()
+        public virtual Task<bool> DeleteWebhookAsync(CancellationToken ct)
         {
             throw new NotImplementedException();
         }

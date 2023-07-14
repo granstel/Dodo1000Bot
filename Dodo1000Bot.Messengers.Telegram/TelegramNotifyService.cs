@@ -24,46 +24,54 @@ public class TelegramNotifyService: INotifyService
         _log = log;
     }
 
-    public async Task<IEnumerable<PushedNotification>> NotifyAbout(IEnumerable<Notification> notifications, CancellationToken cancellationToken)
+    public async Task<IEnumerable<PushedNotification>> NotifyAbout(IList<Notification> notifications,
+        CancellationToken cancellationToken)
     {
         IEnumerable<User> users = await _usersRepository.GetUsers(Source.Telegram, cancellationToken);
 
-        var notificationsArray = notifications.ToArray();
-        var usersArray = users.ToArray();
+        if (!users.Any())
+        {
+            return Enumerable.Empty<PushedNotification>();
+        }
 
         var pushedNotifications = new List<PushedNotification>();
 
-        if (!notificationsArray.Any() || !usersArray.Any())
+        foreach (var user in users)
         {
-            return pushedNotifications;
-        }
+            var pushedNotificationsToUsers = await PushNotificationsToUsers(notifications, user, cancellationToken);
 
-        foreach (var user in usersArray)
-        {
-            foreach (var notification in notificationsArray)
-            {
-                await SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text);
-
-                pushedNotifications.Add(new PushedNotification
-                {
-                    NotificationId = notification.Id,
-                    UserId = user.Id
-                });
-            }
+            pushedNotifications.AddRange(pushedNotificationsToUsers);
         }
 
         return pushedNotifications;
     }
 
-    private async Task SendTextMessageAsync(string chatId, string text)
+    private async Task<IList<PushedNotification>> PushNotificationsToUsers(IList<Notification> notifications, User user, CancellationToken cancellationToken)
     {
-        try
+        var pushedNotifications = new List<PushedNotification>();
+
+        foreach (var notification in notifications)
         {
-            await _client.SendTextMessageAsync(chatId, text);
+            try
+            {
+                await _client.SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text,
+                    cancellationToken: cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e, "Error while send text message");
+                return null;
+            }
+
+            var pushedNotification = new PushedNotification
+            {
+                NotificationId = notification.Id,
+                UserId = user.Id
+            };
+
+            pushedNotifications.Add(pushedNotification);
         }
-        catch (Exception e)
-        {
-            _log.LogError(e, "Error while send text message");
-        }
+
+        return pushedNotifications;
     }
 }

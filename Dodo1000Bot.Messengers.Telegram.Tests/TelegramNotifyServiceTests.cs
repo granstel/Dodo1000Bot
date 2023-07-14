@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using AutoFixture;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
@@ -54,7 +55,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         [Test]
         public async Task NotifyAbout_NoAnyNotifications_NothingHappened()
         {
-            var notifications = Enumerable.Empty<Notification>();
+            var notifications = Enumerable.Empty<Notification>().ToImmutableArray();
 
             var ct = CancellationToken.None;
 
@@ -68,8 +69,8 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         [Test]
         public async Task NotifyAbout_NoAnyUsers_NothingHappened()
         {
-            var notifications = _fixture.CreateMany<Notification>();
-            var users = Enumerable.Empty<Domain.User>();
+            var notifications = _fixture.CreateMany<Notification>().ToImmutableArray();
+            var users = Enumerable.Empty<Domain.User>().ToImmutableArray();
 
             var ct = CancellationToken.None;
 

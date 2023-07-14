@@ -29,6 +29,10 @@ namespace Dodo1000Bot.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddLogging(c =>
+                {
+                    c.AddJsonConsole();
+                })
                 .AddSingleton(s =>
                 {
                     var configureOptions = s.GetService<IConfigureOptions<JsonOptions>>();
@@ -68,8 +72,6 @@ namespace Dodo1000Bot.Api
                     a.UseHttpLogging();
                 });
             }
-
-            app.UseEndpoints(e => e.MapControllers());
         }
     }
 }

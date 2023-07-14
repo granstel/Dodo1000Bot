@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Data;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -18,37 +20,54 @@ public class NotificationsRepository : INotificationsRepository
         _connection = connection;
     }
 
-    public async Task Save(NotificationPayload notificationPayload, CancellationToken cancellationToken)
+    public async Task Save(Notification notification, CancellationToken cancellationToken)
     {
-        var payload = JsonSerializer.Serialize(notificationPayload);
+        var payload = JsonSerializer.Serialize(notification?.Payload);
         await _connection.ExecuteAsync(
-            "INSERT INTO notifications (payload) VALUES (@payload)",
+            "INSERT INTO notifications (Payload, Distinction) VALUES (@payload, @distinction)",
             new
             {
-                payload
+                payload,
+                distinction = notification?.Distinction
             });
     }
 
-    public async Task<IEnumerable<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
+    public async Task<bool> IsExists(Notification notification, CancellationToken cancellationToken)
+    {
+        var isExists = await _connection.QuerySingleAsync<bool>(
+            "SELECT EXISTS(SELECT 1 FROM notifications WHERE Distinction = @distinction) as isExists",
+            new
+            {
+                distinction = notification?.Distinction
+            });
+
+        return isExists;
+    }
+
+    public async Task<IList<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
     {
         var records = await _connection.QueryAsync(
-            @"SELECT n.id, n.payload FROM notifications n 
+            @"SELECT n.Id, n.Payload FROM notifications n 
                  LEFT JOIN pushed_notifications pn 
-                    ON n.id = pn.id
+                    ON n.Id = pn.notificationId
                   WHERE pn.id IS NULL");
 
         var notifications = records.Select(r => new Notification
         {
             Id = r.Id,
             Payload = JsonSerializer.Deserialize<NotificationPayload>(r.Payload)
-        });
-        
+        }).ToImmutableArray();
+
         return notifications;
     }
 
     public async Task Save(IEnumerable<PushedNotification> pushedNotifications, CancellationToken cancellationToken)
     {
-        await _connection.OpenAsync(cancellationToken);
+        if (_connection.State != ConnectionState.Open)
+        {
+            await _connection.OpenAsync(cancellationToken);
+        }
+
         var transaction = await _connection.BeginTransactionAsync(cancellationToken);
 
         foreach(var pushedNotification in pushedNotifications)
@@ -63,5 +82,6 @@ public class NotificationsRepository : INotificationsRepository
         }
 
         await transaction.CommitAsync(cancellationToken);
+        await _connection.CloseAsync();
     }
 }

@@ -8,6 +8,8 @@ namespace Dodo1000Bot.Services
 {
     public interface IUsersRepository
     {
-        Task<IEnumerable<User>> GetUsers(Source messengerType, CancellationToken cancellationToken);
+        Task<IList<User>> GetUsers(Source messengerType, CancellationToken cancellationToken);
+
+        Task SaveUser(User user, CancellationToken ct);
     }
 }
