@@ -6,11 +6,8 @@ namespace Dodo1000Bot.Api.Dialogflow;
 
 public class DialogflowController : MessengerController<FulfillmentRequest, string>
 {
-    private readonly IDialogflowService _dialogflowService;
-
     public DialogflowController(ILogger<DialogflowController> log, IDialogflowService dialogflowService, DialogflowConfiguration configuration)
         : base(log, dialogflowService, configuration)
     {
-        _dialogflowService = dialogflowService;
     }
 }
