@@ -16,12 +16,12 @@
           "textToSpeech": "",
           "lang": "ru",
           "speech": [
-            "Не совсем понимаю, о чём ты.",
-            "Вот эта последняя фраза мне не ясна.",
-            "А вот это не совсем понятно.",
-            "Можешь сказать то же самое другими словами?",
-            "Вот сейчас я тебя совсем не понимаю.",
-            "Попробуй, пожалуйста, выразить свою мысль по-другому."
+            "I don\u0027t quite understand what you mean.",
+            "This last sentence is not clear to me.",
+            "But this is not entirely clear.",
+            "Can you say the same in other words?",
+            "Now I don\u0027t understand you at all.",
+            "Please try to express your thoughts in a different way."
           ],
           "condition": ""
         }

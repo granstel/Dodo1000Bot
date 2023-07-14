@@ -11,6 +11,7 @@
   "webhook": {
     "url": "",
     "username": "",
+    "headers": {},
     "available": true,
     "useForDomains": false,
     "cloudFunctionsEnabled": false,
