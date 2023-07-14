@@ -26,6 +26,8 @@ public class NotificationsService : INotificationsService
         {
             _logger.LogInformation("Notification with {fieldName}='{fieldValue}' is exists", 
                 nameof(notification.Distinction), notification.Distinction);
+
+            return;
         }
 
         await _notificationsRepository.Save(notification, cancellationToken);
