@@ -27,14 +27,19 @@ public class TelegramNotifyService: INotifyService
     public async Task<IEnumerable<PushedNotification>> NotifyAbout(IList<Notification> notifications,
         CancellationToken cancellationToken)
     {
-        IEnumerable<User> users = await _usersRepository.GetUsers(Source.Telegram, cancellationToken);
+        var pushedNotifications = new List<PushedNotification>();
 
-        if (!users.Any())
+        if (notifications?.Any() != true)
         {
-            return Enumerable.Empty<PushedNotification>();
+            return pushedNotifications;
         }
 
-        var pushedNotifications = new List<PushedNotification>();
+        IEnumerable<User> users = await _usersRepository.GetUsers(Source.Telegram, cancellationToken);
+
+        if (users?.Any() != true)
+        {
+            return pushedNotifications;
+        }
 
         foreach (var user in users)
         {

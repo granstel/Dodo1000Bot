@@ -59,8 +59,6 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
 
             var ct = CancellationToken.None;
 
-            _usersRepositoryMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(() => null);
-
             var result = await _target.NotifyAbout(notifications, ct);
 
             Assert.IsEmpty(result);
