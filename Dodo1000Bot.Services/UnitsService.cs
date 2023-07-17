@@ -35,9 +35,9 @@ public class UnitsService : IUnitsService
             return;
         }
 
-        var notification = new Notification
+        var notification = new Event
         {
-            Payload = new NotificationPayload
+            Payload = new EventPayload
             {
                 Text = $"There is {totalOverall} units!"
             }
@@ -56,9 +56,9 @@ public class UnitsService : IUnitsService
                 continue;
             }
 
-            var notification = new Notification
+            var notification = new Event
             {
-                Payload = new NotificationPayload
+                Payload = new EventPayload
                 {
                     Text = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand"
                 }
@@ -80,9 +80,9 @@ public class UnitsService : IUnitsService
                     continue;
                 }
 
-                var notification = new Notification
+                var notification = new Event
                 {
-                    Payload = new NotificationPayload
+                    Payload = new EventPayload
                     {
                         Text =
                             $"There is {totalAtCountry.Value} units of {totalAtBrandAtCountry.Key} at {totalAtCountry.Key}"
@@ -95,6 +95,6 @@ public class UnitsService : IUnitsService
 
     private bool CheckTheRule(int value)
     {
-        return value % 1000 == 0;
+        return value % 1000 != 0;
     }
 }

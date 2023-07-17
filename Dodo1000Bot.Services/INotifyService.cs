@@ -7,6 +7,6 @@ namespace Dodo1000Bot.Services;
 
 public interface INotifyService
 {
-    Task<IEnumerable<PushedNotification>> NotifyAbout(IList<Notification> notifications,
+    Task<IEnumerable<PushedNotification>> NotifyAbout(IList<Event> notifications,
         CancellationToken cancellationToken);
 }

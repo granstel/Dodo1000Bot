@@ -7,11 +7,11 @@ namespace Dodo1000Bot.Services;
 
 public interface INotificationsRepository
 {
-    Task Save(Notification notification, CancellationToken cancellationToken);
+    Task Save(Event @event, CancellationToken cancellationToken);
 
-    Task<IList<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken);
+    Task<IList<Event>> GetNotPushedNotifications(CancellationToken cancellationToken);
 
     Task Save(IEnumerable<PushedNotification> pushedNotifications, CancellationToken cancellationToken);
 
-    Task<bool> IsExists(Notification notification, CancellationToken cancellationToken);
+    Task<bool> IsExists(Event @event, CancellationToken cancellationToken);
 }

@@ -24,7 +24,7 @@ public class TelegramNotifyService: INotifyService
         _log = log;
     }
 
-    public async Task<IEnumerable<PushedNotification>> NotifyAbout(IList<Notification> notifications,
+    public async Task<IEnumerable<PushedNotification>> NotifyAbout(IList<Event> notifications,
         CancellationToken cancellationToken)
     {
         var pushedNotifications = new List<PushedNotification>();
@@ -51,7 +51,7 @@ public class TelegramNotifyService: INotifyService
         return pushedNotifications;
     }
 
-    private async Task<IList<PushedNotification>> PushNotificationsToUsers(IList<Notification> notifications, User user, CancellationToken cancellationToken)
+    private async Task<IList<PushedNotification>> PushNotificationsToUsers(IList<Event> notifications, User user, CancellationToken cancellationToken)
     {
         var pushedNotifications = new List<PushedNotification>();
 

@@ -18,24 +18,24 @@ public class NotificationsService : INotificationsService
         _notificationsRepository = notificationsRepository;
     }
 
-    public async Task Save(Notification notification, CancellationToken cancellationToken)
+    public async Task Save(Event @event, CancellationToken cancellationToken)
     {
-        var isExists = await _notificationsRepository.IsExists(notification, cancellationToken);
+        var isExists = await _notificationsRepository.IsExists(@event, cancellationToken);
 
         if (isExists)
         {
             _logger.LogInformation("Notification with {fieldName}='{fieldValue}' is exists", 
-                nameof(notification.Distinction), notification.Distinction);
+                nameof(@event.Distinction), @event.Distinction);
 
             return;
         }
 
-        await _notificationsRepository.Save(notification, cancellationToken);
+        await _notificationsRepository.Save(@event, cancellationToken);
     }
 
     public async Task PushNotifications(IEnumerable<INotifyService> notifyServices, CancellationToken cancellationToken)
     {
-        IList<Notification> notifications = await _notificationsRepository.GetNotPushedNotifications(cancellationToken);
+        IList<Event> notifications = await _notificationsRepository.GetNotPushedNotifications(cancellationToken);
 
         if (!notifications.Any())
         {

@@ -20,31 +20,31 @@ public class NotificationsRepository : INotificationsRepository
         _connection = connection;
     }
 
-    public async Task Save(Notification notification, CancellationToken cancellationToken)
+    public async Task Save(Event @event, CancellationToken cancellationToken)
     {
-        var payload = JsonSerializer.Serialize(notification?.Payload);
+        var payload = JsonSerializer.Serialize(@event?.Payload);
         await _connection.ExecuteAsync(
             "INSERT INTO notifications (Payload, Distinction) VALUES (@payload, @distinction)",
             new
             {
                 payload,
-                distinction = notification?.Distinction
+                distinction = @event?.Distinction
             });
     }
 
-    public async Task<bool> IsExists(Notification notification, CancellationToken cancellationToken)
+    public async Task<bool> IsExists(Event @event, CancellationToken cancellationToken)
     {
         var isExists = await _connection.QuerySingleAsync<bool>(
             "SELECT EXISTS(SELECT 1 FROM notifications WHERE Distinction = @distinction) as isExists",
             new
             {
-                distinction = notification?.Distinction
+                distinction = @event?.Distinction
             });
 
         return isExists;
     }
 
-    public async Task<IList<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
+    public async Task<IList<Event>> GetNotPushedNotifications(CancellationToken cancellationToken)
     {
         var records = await _connection.QueryAsync(
             @"SELECT n.Id, n.Payload FROM notifications n 
@@ -52,10 +52,10 @@ public class NotificationsRepository : INotificationsRepository
                     ON n.Id = pn.notificationId
                   WHERE pn.id IS NULL");
 
-        var notifications = records.Select(r => new Notification
+        var notifications = records.Select(r => new Event
         {
             Id = r.Id,
-            Payload = JsonSerializer.Deserialize<NotificationPayload>(r.Payload)
+            Payload = JsonSerializer.Deserialize<EventPayload>(r.Payload)
         }).ToImmutableArray();
 
         return notifications;

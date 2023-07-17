@@ -55,7 +55,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         [Test]
         public async Task NotifyAbout_NoAnyNotifications_NothingHappened()
         {
-            var notifications = Enumerable.Empty<Notification>().ToImmutableArray();
+            var notifications = Enumerable.Empty<Event>().ToImmutableArray();
 
             var ct = CancellationToken.None;
 
@@ -67,7 +67,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         [Test]
         public async Task NotifyAbout_NoAnyUsers_NothingHappened()
         {
-            var notifications = _fixture.CreateMany<Notification>().ToImmutableArray();
+            var notifications = _fixture.CreateMany<Event>().ToImmutableArray();
             var users = Enumerable.Empty<Domain.User>().ToImmutableArray();
 
             var ct = CancellationToken.None;
@@ -82,7 +82,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         [Test]
         public async Task NotifyAbout_AnyNotificationsAndUsers_SentAllNotificationsToAllUsers()
         {
-            var notification = _fixture.Create<Notification>();
+            var notification = _fixture.Create<Event>();
             var user = _fixture.Build<Domain.User>()
                 .With(u => u.Id)
                 .With(u => u.MessengerUserId, _fixture.Create<long>().ToString)

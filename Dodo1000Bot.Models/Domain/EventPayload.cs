@@ -1,6 +1,6 @@
 ﻿namespace Dodo1000Bot.Models.Domain
 {
-    public class NotificationPayload
+    public class EventPayload
     {
         public string Text { get; init; }
 
