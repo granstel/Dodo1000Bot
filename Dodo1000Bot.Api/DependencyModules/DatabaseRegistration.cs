@@ -24,7 +24,7 @@ public static class DatabaseRegistration
     internal static void AddRepositories(this IServiceCollection services, AppConfiguration configuration)
     {
         services.AddTransient(_ => new MySqlConnection(configuration.MysqlConnectionString));
-        services.AddTransient<INotificationsRepository, NotificationsRepository>();
+        services.AddTransient<IEventsRepository, EventsRepository>();
         services.AddTransient<IUsersRepository, UsersRepository>();
     }
 }

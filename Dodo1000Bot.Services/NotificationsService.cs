@@ -10,17 +10,17 @@ namespace Dodo1000Bot.Services;
 public class NotificationsService : INotificationsService
 {
     private readonly ILogger<NotificationsService> _logger;
-    private readonly INotificationsRepository _notificationsRepository;
+    private readonly IEventsRepository _eventsRepository;
 
-    public NotificationsService(ILogger<NotificationsService> logger, INotificationsRepository notificationsRepository)
+    public NotificationsService(ILogger<NotificationsService> logger, IEventsRepository eventsRepository)
     {
         _logger = logger;
-        _notificationsRepository = notificationsRepository;
+        _eventsRepository = eventsRepository;
     }
 
     public async Task Save(Event @event, CancellationToken cancellationToken)
     {
-        var isExists = await _notificationsRepository.IsExists(@event, cancellationToken);
+        var isExists = await _eventsRepository.IsExists(@event, cancellationToken);
 
         if (isExists)
         {
@@ -30,12 +30,12 @@ public class NotificationsService : INotificationsService
             return;
         }
 
-        await _notificationsRepository.Save(@event, cancellationToken);
+        await _eventsRepository.Save(@event, cancellationToken);
     }
 
     public async Task PushNotifications(IEnumerable<INotifyService> notifyServices, CancellationToken cancellationToken)
     {
-        IList<Event> notifications = await _notificationsRepository.GetNotPushedNotifications(cancellationToken);
+        IList<Event> notifications = await _eventsRepository.GetNotPushedNotifications(cancellationToken);
 
         if (!notifications.Any())
         {
@@ -48,6 +48,6 @@ public class NotificationsService : INotificationsService
 
         IEnumerable<PushedNotification> pushedNotifications = tasksResults.SelectMany(r => r);
 
-        await _notificationsRepository.Save(pushedNotifications, cancellationToken);
+        await _eventsRepository.Save(pushedNotifications, cancellationToken);
     }
 }

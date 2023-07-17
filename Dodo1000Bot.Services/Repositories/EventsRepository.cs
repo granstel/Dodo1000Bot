@@ -11,11 +11,11 @@ using MySql.Data.MySqlClient;
 
 namespace Dodo1000Bot.Services;
 
-public class NotificationsRepository : INotificationsRepository
+public class EventsRepository : IEventsRepository
 {
     private readonly MySqlConnection _connection;
 
-    public NotificationsRepository(MySqlConnection connection)
+    public EventsRepository(MySqlConnection connection)
     {
         _connection = connection;
     }
