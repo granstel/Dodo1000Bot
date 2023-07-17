@@ -95,6 +95,6 @@ public class UnitsService : IUnitsService
 
     private bool CheckTheRule(int value)
     {
-        return value % 1000 != 0;
+        return value % 1000 == 0;
     }
 }
