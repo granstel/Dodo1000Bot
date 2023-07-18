@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <OutputType>Library</OutputType>
+    <UserSecretsId>14ecb2eb-f151-49bb-a3a5-ec5619569d45</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

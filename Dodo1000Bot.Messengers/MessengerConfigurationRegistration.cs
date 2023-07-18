@@ -21,6 +21,7 @@ namespace Dodo1000Bot.Messengers
                 var configurationBuilder = new ConfigurationBuilder()
                     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                     .AddJsonFile(fileName, true, false)
+                    .AddUserSecrets<T>()
                     .AddEnvironmentVariables()
                     ;
 
