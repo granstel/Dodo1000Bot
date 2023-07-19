@@ -72,6 +72,11 @@ namespace Dodo1000Bot.Api
                     a.UseHttpLogging();
                 });
             }
+
+            app.UseEndpoints(e =>
+            {
+                e.MapControllers();
+            });
         }
     }
 }
