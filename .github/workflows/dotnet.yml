@@ -28,5 +28,6 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v3
       with:
-        push: true
+        context: .
         tags: granstel/dodo1000bot:latest
+        push: true
