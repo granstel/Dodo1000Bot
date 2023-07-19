@@ -24,7 +24,7 @@ jobs:
       run: dotnet build --no-restore --configuration Release
     - name: Test
       run: dotnet test --no-build --verbosity normal --configuration Release
-    - name: Publish web-project
+    - name: Publish
       run: dotnet publish --no-restore --no-build --configuration Release --output ./output Dodo1000Bot.Api/Dodo1000Bot.Api.csproj
 
     - name: Login to Docker Hub
