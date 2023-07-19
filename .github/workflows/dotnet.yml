@@ -23,6 +23,8 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Publish web-project
+      run: dotnet publish --no-restore --no-build --configuration Release --output ./output Dodo1000Bot.Api/Dodo1000Bot.Api.csproj
     - name: Build and push
       uses: docker/build-push-action@v3
       with:
