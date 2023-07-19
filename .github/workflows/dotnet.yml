@@ -23,3 +23,8 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Build and push
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        tags: granstel/dodo1000bot:latest
