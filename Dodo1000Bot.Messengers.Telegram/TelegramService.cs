@@ -37,7 +37,7 @@ namespace Dodo1000Bot.Messengers.Telegram
             return result;
         }
 
-        public override async Task<bool> SetWebhookAsync(string url, CancellationToken ct)
+        public override async Task<bool> SetWebhookAsync(string url, CancellationToken cancellationToken)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace Dodo1000Bot.Messengers.Telegram
             return true;
         }
 
-        public override async Task<bool> DeleteWebhookAsync(CancellationToken ct)
+        public override async Task<bool> DeleteWebhookAsync(CancellationToken cancellationToken)
         {
             try
             {

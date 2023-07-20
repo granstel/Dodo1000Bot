@@ -31,7 +31,7 @@ namespace Dodo1000Bot.Services
             return users.ToImmutableArray();
         }
 
-        public async Task SaveUser(User user, CancellationToken ct)
+        public async Task SaveUser(User user, CancellationToken cancellationToken)
         {
             await _connection.ExecuteAsync(
                 "INSERT INTO users (MessengerUserId, MessengerType) VALUES (@messengerUserId, @messengerType)",

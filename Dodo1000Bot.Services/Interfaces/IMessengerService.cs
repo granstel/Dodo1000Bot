@@ -5,10 +5,10 @@ namespace Dodo1000Bot.Services
 {
     public interface IMessengerService<in TInput, TOutput>
     {
-        Task<TOutput> ProcessIncomingAsync(TInput input, CancellationToken ct);
+        Task<TOutput> ProcessIncomingAsync(TInput input, CancellationToken cancellationToken);
 
-        Task<bool> SetWebhookAsync(string url, CancellationToken ct);
+        Task<bool> SetWebhookAsync(string url, CancellationToken cancellationToken);
 
-        Task<bool> DeleteWebhookAsync(CancellationToken ct);
+        Task<bool> DeleteWebhookAsync(CancellationToken cancellationToken);
     }
 }

@@ -29,7 +29,7 @@ namespace Dodo1000Bot.Messengers
             return request;
         }
 
-        public virtual async Task<TOutput> ProcessIncomingAsync(TInput input, CancellationToken ct)
+        public virtual async Task<TOutput> ProcessIncomingAsync(TInput input, CancellationToken cancellationToken)
         {
             Response response;
 
@@ -76,12 +76,12 @@ namespace Dodo1000Bot.Messengers
             });
         }
 
-        public virtual Task<bool> SetWebhookAsync(string url, CancellationToken ct)
+        public virtual Task<bool> SetWebhookAsync(string url, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task<bool> DeleteWebhookAsync(CancellationToken ct)
+        public virtual Task<bool> DeleteWebhookAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

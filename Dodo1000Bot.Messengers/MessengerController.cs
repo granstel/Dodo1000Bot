@@ -52,7 +52,7 @@ namespace Dodo1000Bot.Messengers
         }
 
         [HttpPost("{token?}")]
-        public virtual async Task<IActionResult> WebHook([FromBody]TInput input, string token, CancellationToken ct)
+        public virtual async Task<IActionResult> WebHook([FromBody]TInput input, string token, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -60,25 +60,25 @@ namespace Dodo1000Bot.Messengers
                 Log.LogError(errors);
             }
 
-            var response = await _messengerService.ProcessIncomingAsync(input, ct);
+            var response = await _messengerService.ProcessIncomingAsync(input, cancellationToken);
 
             return Json(response, SerializerSettings);
         }
 
         [HttpPut("{token?}")]
-        public virtual async Task<IActionResult> CreateWebHook(string token, CancellationToken ct)
+        public virtual async Task<IActionResult> CreateWebHook(string token, CancellationToken cancellationToken)
         {
             var url = GetWebHookUrl(Request);
 
-            var result = await _messengerService.SetWebhookAsync(url, ct);
+            var result = await _messengerService.SetWebhookAsync(url, cancellationToken);
 
             return Json(result);
         }
 
         [HttpDelete("{token?}")]
-        public virtual async Task<IActionResult> DeleteWebHook(string token, CancellationToken ct)
+        public virtual async Task<IActionResult> DeleteWebHook(string token, CancellationToken cancellationToken)
         {
-            var result = await _messengerService.DeleteWebhookAsync(ct);
+            var result = await _messengerService.DeleteWebhookAsync(cancellationToken);
 
             return Json(result);
         }
