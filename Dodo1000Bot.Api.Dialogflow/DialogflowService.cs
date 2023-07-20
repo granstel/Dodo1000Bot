@@ -23,7 +23,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
         _usersRepository = usersRepository;
     }
 
-    public override async Task<string> ProcessIncomingAsync(FulfillmentRequest input, CancellationToken ct)
+    public override async Task<string> ProcessIncomingAsync(FulfillmentRequest input, CancellationToken cancellationToken)
     {
         var user = new User
         {
@@ -33,7 +33,17 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
 
         try
         {
-            await _usersRepository.SaveUser(user, ct);
+            var isExists = await _usersRepository.IsExists(user, cancellationToken);
+
+            if (isExists)
+            {
+                Log.LogInformation("User with {fieldName}='{fieldValue}' is exists", 
+                    nameof(user.MessengerUserId), user.MessengerUserId);
+
+                return string.Empty;
+            }
+
+            await _usersRepository.SaveUser(user, cancellationToken);
         }
         catch (Exception e)
         {
