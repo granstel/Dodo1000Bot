@@ -41,7 +41,7 @@ namespace Dodo1000Bot.Messengers
 
                 if (response == null)
                 {
-                    response = await _conversationService.GetResponseAsync(request);
+                    response = await _conversationService.GetResponseAsync(request, cancellationToken);
                 }
 
                 _mapper.Map(request, response);
