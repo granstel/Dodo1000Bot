@@ -1,27 +1,51 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Dodo1000Bot.Models;
+using Dodo1000Bot.Models.Domain;
+using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Services
 {
     public class ConversationService : IConversationService
     {
-        private readonly IDialogflowService _dialogflowService;
+        private ILogger<ConversationService> _log;
+        private readonly IUsersRepository _usersRepository;
 
-        //TODO: uncomment when you fill in the Dialogflow settings, or remove it
-        public ConversationService(/*IDialogflowService dialogflowService*/)
+        public ConversationService(ILogger<ConversationService> log, IUsersRepository usersRepository)
         {
-            //_dialogflowService = dialogflowService;
+            _log = log;
+            _usersRepository = usersRepository;
         }
 
-        public async Task<Response> GetResponseAsync(Request request)
+        public async Task<Response> GetResponseAsync(Request request, CancellationToken cancellationToken)
         {
-            //TODO: processing commands, invoking external services, and other cool asynchronous staff to generate response
+            var response = new Response { Text = string.Empty };
 
-            //TODO: uncomment when you fill in the Dialogflow settings, or remove it
-            //var dialog = await _dialogflowService.GetResponseAsync(request);
-            //var response = new Response { Text = dialog.Response, Finished = dialog.EndConversation };
+            var user = new User
+            {
+                MessengerUserId = request.UserHash,
+                MessengerType = request.Source
+            };
 
-            var response = new Response { Text = "Success test!" };
+            try
+            {
+                var isExists = await _usersRepository.IsExists(user, cancellationToken);
+
+                if (isExists)
+                {
+                    _log.LogInformation("User with {fieldName}='{fieldValue}' is exists", 
+                        nameof(user.MessengerUserId), user.MessengerUserId);
+
+                    return response;
+                }
+
+                await _usersRepository.SaveUser(user, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e, "Can't save user");
+            }
 
             return response;
         }

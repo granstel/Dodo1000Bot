@@ -20,12 +20,12 @@ public class MigrationsJob : IHostedService
         _provider = provider;
     }
 
-    public async Task StartAsync(CancellationToken ct)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         var (connectionString, databaseName) = StripDatabaseName(_mySqlConnection);
 
         await using var connection = new MySqlConnection(connectionString);
-        await connection.OpenAsync(ct);
+        await connection.OpenAsync(cancellationToken);
         await connection.ExecuteAsync($"CREATE DATABASE IF NOT EXISTS `{databaseName}`");
 
         await using var scope = _provider.CreateAsyncScope();

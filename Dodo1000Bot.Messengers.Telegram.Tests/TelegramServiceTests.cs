@@ -85,7 +85,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
 
             _mapper.Setup(m => m.Map<Request>(It.IsAny<Update>())).Returns(request);
 
-            _conversationService.Setup(s => s.GetResponseAsync(request)).ReturnsAsync(response);
+            _conversationService.Setup(s => s.GetResponseAsync(request, It.IsAny<CancellationToken>())).ReturnsAsync(response);
 
             _mapper.Setup(m => m.Map(It.IsAny<Request>(), It.IsAny<Response>())).Returns(() => null);
 
