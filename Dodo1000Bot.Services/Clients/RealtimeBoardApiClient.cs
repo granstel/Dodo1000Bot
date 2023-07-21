@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Dodo1000Bot.Models.RealtimeBoard;
 using Dodo1000Bot.Services.Extensions;
 
 namespace Dodo1000Bot.Services.Clients
@@ -17,13 +18,13 @@ namespace Dodo1000Bot.Services.Clients
             _serializerOptions = serializerOptions;
         }
 
-        public async Task<int> OrdersPerMinute(CancellationToken cancellationToken)
+        public async Task<Statistics> Statistics(CancellationToken cancellationToken)
         {
-            const string url = "statistics/OrdersCountPerMinute";
+            const string url = "statistics";
 
-            var ordersPerMinute = await _httpClient.GetAsync<int>(url, _serializerOptions, cancellationToken);
+            var statistics = await _httpClient.GetAsync<Statistics>(url, _serializerOptions, cancellationToken);
 
-            return ordersPerMinute;
+            return statistics;
         }
     }
 }
