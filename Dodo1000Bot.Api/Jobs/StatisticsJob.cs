@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Dodo1000Bot.Services;
 using Dodo1000Bot.Services.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,5 +22,8 @@ public class StatisticsJob : RepeatableJob
     protected override async Task Execute(CancellationToken cancellationToken)
     {
         await using var scope = _provider.CreateAsyncScope();
+        var statisticsService = scope.ServiceProvider.GetRequiredService<StatisticsService>();
+
+        await statisticsService.CheckAndNotify(cancellationToken);
     }
 }
