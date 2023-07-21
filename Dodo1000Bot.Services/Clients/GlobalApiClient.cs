@@ -20,7 +20,7 @@ namespace Dodo1000Bot.Services.Clients
 
         public async Task<BrandListTotalUnitCountListModel> UnitsCount(CancellationToken cancellationToken)
         {
-            var url = "units/count";
+            const string url = "units/count";
 
             var unitsCount = await _httpClient.GetAsync<BrandListTotalUnitCountListModel>(url, _serializerOptions, cancellationToken);
 
