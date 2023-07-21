@@ -2,7 +2,7 @@
 
 public class RevenueStatistics
 {
-    public string Type { get; set; }
+    public RevenueTypes Type { get; set; }
 
     public decimal Revenue { get; set; }
 
