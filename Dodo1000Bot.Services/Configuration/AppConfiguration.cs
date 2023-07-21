@@ -10,6 +10,8 @@
 
         public UnitsConfiguration Units { get; set; }
 
+        public StatisticsJobConfiguration StatisticsJob { get; set; }
+
         public string GlobalApiEndpoint { get; set; }
 
         public string RealtimeBoardApiClientEndpoint { get; set; }
