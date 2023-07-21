@@ -22,7 +22,7 @@ public class UnitsJob : RepeatableJob
     protected override async Task Execute(CancellationToken cancellationToken)
     {
         await using var scope = _provider.CreateAsyncScope();
-        var unitsService = scope.ServiceProvider.GetRequiredService<IUnitsService>();
+        var unitsService = scope.ServiceProvider.GetRequiredService<UnitsService>();
 
         await unitsService.CheckAndNotify(cancellationToken);
     }
