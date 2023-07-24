@@ -1,9 +1,6 @@
-using System;
-
 namespace Dodo1000Bot.Services.Configuration
 {
-    public class UnitsConfiguration
+    public class UnitsConfiguration : CheckAndNotifyJobConfiguration
     {
-        public TimeSpan RefreshEveryTime { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using Dodo1000Bot.Api.Jobs;
+using Dodo1000Bot.Services;
 using Dodo1000Bot.Services.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,7 +11,7 @@ public static class JobsRegistration
     {
         services.AddHostedService(serviceProvider => new MigrationsJob(appConfiguration.MysqlConnectionString, serviceProvider));
         services.AddHostedService<PushNotificationsJob>();
-        services.AddHostedService<UnitsJob>();
-        services.AddHostedService<StatisticsJob>();
+        services.AddHostedService<CheckAndNotifyJob<UnitsService, UnitsConfiguration>>();
+        services.AddHostedService<CheckAndNotifyJob<StatisticsService, StatisticsJobConfiguration>>();
     }
 }
