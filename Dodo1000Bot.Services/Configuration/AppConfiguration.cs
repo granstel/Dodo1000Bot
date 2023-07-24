@@ -8,7 +8,7 @@
 
         public RedisConfiguration Redis { get; set; }
 
-        public UnitsConfiguration Units { get; set; }
+        public UnitsJobConfiguration UnitsJob { get; set; }
 
         public StatisticsJobConfiguration StatisticsJob { get; set; }
 

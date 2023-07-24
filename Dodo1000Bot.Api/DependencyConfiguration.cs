@@ -21,7 +21,7 @@ namespace Dodo1000Bot.Api
             services.AddSingleton(configuration.Redis);
             services.AddSingleton(configuration.Dialogflow);
             services.AddSingleton(configuration.PushNotifications);
-            services.AddSingleton(configuration.Units);
+            services.AddSingleton(configuration.UnitsJob);
             services.AddSingleton(configuration.StatisticsJob);
 
             services.AddInternalServices();
