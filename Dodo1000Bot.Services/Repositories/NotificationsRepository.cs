@@ -24,12 +24,19 @@ public class NotificationsRepository : INotificationsRepository
     public async Task Save(Notification notification, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(notification?.Payload);
+
+        var distinction = notification?.Distinction;
+        if (distinction is { Length: > DistinctionMaxLength })
+        {
+            distinction = distinction[..DistinctionMaxLength];
+        }
+
         await _connection.ExecuteAsync(
             "INSERT INTO notifications (Payload, Distinction) VALUES (@payload, @distinction)",
             new
             {
                 payload,
-                distinction = notification?.Distinction[..DistinctionMaxLength]
+                distinction
             });
     }
 
