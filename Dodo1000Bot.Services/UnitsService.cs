@@ -92,9 +92,4 @@ public class UnitsService : CheckAndNotifyService
             }
         }
     }
-
-    private bool CheckTheRule(int value)
-    {
-        return value % 1000 == 0;
-    }
 }

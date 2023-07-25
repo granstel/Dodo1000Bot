@@ -64,14 +64,4 @@ public class StatisticsService : CheckAndNotifyService
         };
         await _notificationsService.Save(notification, cancellationToken);
     }
-
-    private bool CheckTheRule(int value)
-    {
-        return value % 1000 == 0;
-    }
-
-    private bool CheckTheRule(decimal value)
-    {
-        return value % 1000 == 0;
-    }
 }
