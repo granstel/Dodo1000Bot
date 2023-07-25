@@ -72,7 +72,7 @@ public class StatisticsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = $"There is {yearRevenue} dollars in revenue this year!"
+                Text = $"There is {yearRevenue} dollars revenue this year!"
             }
         };
         await _notificationsService.Save(notification, cancellationToken);
