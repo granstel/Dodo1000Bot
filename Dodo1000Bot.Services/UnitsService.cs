@@ -1,29 +1,40 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
+using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Services;
 
 public class UnitsService : CheckAndNotifyService
 {
+    private readonly ILogger<UnitsService> _log;
     private readonly IGlobalApiClient _globalApiClient;
     private readonly INotificationsService _notificationsService;
 
-    public UnitsService(IGlobalApiClient globalApiClient, INotificationsService notificationsService)
+    public UnitsService(ILogger<UnitsService> log, IGlobalApiClient globalApiClient, INotificationsService notificationsService)
     {
+        _log = log;
         _globalApiClient = globalApiClient;
         _notificationsService = notificationsService;
     }
 
     public override async Task CheckAndNotify(CancellationToken cancellationToken)
     {
-        var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
+        try
+        {
+            var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
 
-        await AboutTotalOverall(unitsCount, cancellationToken);
-        await AboutTotalAtBrands(unitsCount, cancellationToken);
-        await AboutTotalAtCountries(unitsCount, cancellationToken);
+            await AboutTotalOverall(unitsCount, cancellationToken);
+            await AboutTotalAtBrands(unitsCount, cancellationToken);
+            await AboutTotalAtCountries(unitsCount, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _log.LogError(e, "Can't check and notify units count");
+        }
     }
 
     private async Task AboutTotalOverall(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
