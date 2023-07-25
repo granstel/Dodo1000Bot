@@ -7,14 +7,14 @@ namespace Dodo1000Bot.Services
     {
         public abstract Task CheckAndNotify(CancellationToken cancellationToken);
 
-        protected bool CheckTheRule(int value)
+        protected bool CheckThe1000Rule(int value)
         {
-            return value % 1000 == 0;
+            return value > 0 && value % 1000 == 0;
         }
 
-        protected bool CheckTheRule(decimal value)
+        protected bool CheckThe1000Rule(decimal value)
         {
-            return value % 1000 == 0;
+            return value > 0 && value % 1000 == 0;
         }
     }
 }

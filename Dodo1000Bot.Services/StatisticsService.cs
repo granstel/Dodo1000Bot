@@ -30,7 +30,7 @@ public class StatisticsService : CheckAndNotifyService
     {
         var ordersPerMinute = unitsCount.OrdersPerMinute;
 
-        if (!CheckTheRule(ordersPerMinute))
+        if (!CheckThe1000Rule(ordersPerMinute))
         {
             return;
         }
@@ -50,7 +50,7 @@ public class StatisticsService : CheckAndNotifyService
     {
         var yearRevenue = unitsCount.Revenues.Where(r => r.Type == RevenueTypes.Year).Select(r => r.Revenue).FirstOrDefault();
 
-        if (!CheckTheRule(yearRevenue))
+        if (!CheckThe1000Rule(yearRevenue))
         {
             return;
         }

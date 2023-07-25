@@ -30,7 +30,7 @@ public class UnitsService : CheckAndNotifyService
     {
         var totalOverall = unitsCount.Brands.Sum(b => b.Total);
 
-        if (!CheckTheRule(totalOverall))
+        if (!CheckThe1000Rule(totalOverall))
         {
             return;
         }
@@ -51,7 +51,7 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var totalAtBrand in totalAtBrands)
         {
-            if (!CheckTheRule(totalAtBrand.Value))
+            if (!CheckThe1000Rule(totalAtBrand.Value))
             {
                 continue;
             }
@@ -75,7 +75,7 @@ public class UnitsService : CheckAndNotifyService
         {
             foreach (var totalAtCountry in totalAtBrandAtCountry.Value)
             {
-                if (!CheckTheRule(totalAtCountry.Value))
+                if (!CheckThe1000Rule(totalAtCountry.Value))
                 {
                     continue;
                 }
