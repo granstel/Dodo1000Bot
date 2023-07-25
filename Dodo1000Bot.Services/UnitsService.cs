@@ -6,7 +6,7 @@ using Dodo1000Bot.Models.GlobalApi;
 
 namespace Dodo1000Bot.Services;
 
-public class UnitsService : ICheckAndNotifyService
+public class UnitsService : CheckAndNotifyService
 {
     private readonly IGlobalApiClient _globalApiClient;
     private readonly INotificationsService _notificationsService;
@@ -17,7 +17,7 @@ public class UnitsService : ICheckAndNotifyService
         _notificationsService = notificationsService;
     }
 
-    public async Task CheckAndNotify(CancellationToken cancellationToken)
+    public override async Task CheckAndNotify(CancellationToken cancellationToken)
     {
         var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
 

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace Dodo1000Bot.Api.Jobs;
 
 public class CheckAndNotifyJob<TService, TConfiguration> : RepeatableJob 
-    where TService : ICheckAndNotifyService 
+    where TService : CheckAndNotifyService 
     where TConfiguration : CheckAndNotifyJobConfiguration
 {
     private readonly IServiceProvider _provider;

@@ -7,7 +7,7 @@ using Dodo1000Bot.Models.RealtimeBoard;
 
 namespace Dodo1000Bot.Services;
 
-public class StatisticsService : ICheckAndNotifyService
+public class StatisticsService : CheckAndNotifyService
 {
     private readonly IRealtimeBoardApiClient _realtimeBoardApiClient;
     private readonly INotificationsService _notificationsService;
@@ -18,7 +18,7 @@ public class StatisticsService : ICheckAndNotifyService
         _notificationsService = notificationsService;
     }
 
-    public async Task CheckAndNotify(CancellationToken cancellationToken)
+    public override async Task CheckAndNotify(CancellationToken cancellationToken)
     {
         var statistics = await _realtimeBoardApiClient.Statistics(cancellationToken);
 
