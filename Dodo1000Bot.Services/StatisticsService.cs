@@ -4,26 +4,37 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.RealtimeBoard;
+using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Services;
 
 public class StatisticsService : CheckAndNotifyService
 {
+    private readonly ILogger<StatisticsService> _log;
     private readonly IRealtimeBoardApiClient _realtimeBoardApiClient;
     private readonly INotificationsService _notificationsService;
 
-    public StatisticsService(IRealtimeBoardApiClient realtimeBoardApiClient, INotificationsService notificationsService)
+    public StatisticsService(ILogger<StatisticsService> log, IRealtimeBoardApiClient realtimeBoardApiClient, 
+        INotificationsService notificationsService)
     {
+        _log = log;
         _realtimeBoardApiClient = realtimeBoardApiClient;
         _notificationsService = notificationsService;
     }
 
     public override async Task CheckAndNotify(CancellationToken cancellationToken)
     {
-        var statistics = await _realtimeBoardApiClient.Statistics(cancellationToken);
+        try
+        {
+            var statistics = await _realtimeBoardApiClient.Statistics(cancellationToken);
 
-        await AboutOrdersPerMinute(statistics, cancellationToken);
-        await AboutYearRevenue(statistics, cancellationToken);
+            await AboutOrdersPerMinute(statistics, cancellationToken);
+            await AboutYearRevenue(statistics, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _log.LogError(e, "Can't check and notify statistics");
+        }
     }
 
     private async Task AboutOrdersPerMinute(Statistics statistics, CancellationToken cancellationToken)
