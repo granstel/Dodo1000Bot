@@ -10,11 +10,14 @@ namespace Dodo1000Bot.Services;
 public class NotificationsService : INotificationsService
 {
     private readonly ILogger<NotificationsService> _logger;
+    private readonly IEnumerable<INotifyService> _notifyServices;
     private readonly INotificationsRepository _notificationsRepository;
 
-    public NotificationsService(ILogger<NotificationsService> logger, INotificationsRepository notificationsRepository)
+    public NotificationsService(ILogger<NotificationsService> logger, IEnumerable<INotifyService> notifyServices, 
+        INotificationsRepository notificationsRepository)
     {
         _logger = logger;
+        _notifyServices = notifyServices;
         _notificationsRepository = notificationsRepository;
     }
 
@@ -33,7 +36,7 @@ public class NotificationsService : INotificationsService
         await _notificationsRepository.Save(notification, cancellationToken);
     }
 
-    public async Task PushNotifications(IEnumerable<INotifyService> notifyServices, CancellationToken cancellationToken)
+    public async Task PushNotifications(CancellationToken cancellationToken)
     {
         IList<Notification> notifications = await _notificationsRepository.GetNotPushedNotifications(cancellationToken);
 
@@ -42,7 +45,7 @@ public class NotificationsService : INotificationsService
             return;
         }
 
-        IEnumerable<Task<IEnumerable<PushedNotification>>> tasks = notifyServices.Select(s => s.NotifyAbout(notifications, cancellationToken));
+        IEnumerable<Task<IEnumerable<PushedNotification>>> tasks = _notifyServices.Select(s => s.NotifyAbout(notifications, cancellationToken));
 
         IEnumerable<PushedNotification>[] tasksResults = await Task.WhenAll(tasks);
 
