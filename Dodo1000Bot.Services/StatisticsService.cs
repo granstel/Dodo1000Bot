@@ -26,9 +26,9 @@ public class StatisticsService : CheckAndNotifyService
         await AboutYearRevenue(statistics, cancellationToken);
     }
 
-    private async Task AboutOrdersPerMinute(Statistics unitsCount, CancellationToken cancellationToken)
+    private async Task AboutOrdersPerMinute(Statistics statistics, CancellationToken cancellationToken)
     {
-        var ordersPerMinute = unitsCount.OrdersPerMinute;
+        var ordersPerMinute = statistics.OrdersPerMinute;
 
         if (!CheckThe1000Rule(ordersPerMinute))
         {
@@ -46,9 +46,11 @@ public class StatisticsService : CheckAndNotifyService
         await _notificationsService.Save(notification, cancellationToken);
     }
 
-    private async Task AboutYearRevenue(Statistics unitsCount, CancellationToken cancellationToken)
+    private async Task AboutYearRevenue(Statistics statistics, CancellationToken cancellationToken)
     {
-        var yearRevenue = unitsCount.Revenues.Where(r => r.Type == RevenueTypes.Year).Select(r => r.Revenue).FirstOrDefault();
+        var yearRevenue = statistics.Revenues
+            .Where(r => r.Type == RevenueTypes.Year)
+            .Select(r => r.Revenue).FirstOrDefault();
 
         if (!CheckThe1000Rule(yearRevenue))
         {
