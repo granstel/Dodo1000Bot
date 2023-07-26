@@ -13,7 +13,6 @@ namespace Dodo1000Bot.Services;
 
 public class NotificationsRepository : INotificationsRepository
 {
-    private const int DistinctionMaxLength = 65;
     private readonly MySqlConnection _connection;
 
     public NotificationsRepository(MySqlConnection connection)
