@@ -10,7 +10,6 @@ using NUnit.Framework;
 
 namespace Dodo1000Bot.Services.Tests.Repositories;
 
-[Ignore("Integration")]
 public class NotificationsRepositoryIntegrationTests
 {
     private MySqlConnection _connection;
@@ -36,6 +35,7 @@ public class NotificationsRepositoryIntegrationTests
     }
 
     [Test]
+    [Ignore("Integration")]
     public async Task Save_LongDistinction_TrimmedDistinction()
     {
         var chars = _fixture.CreateMany<char>(80).ToArray();
