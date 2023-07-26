@@ -22,7 +22,10 @@ namespace Dodo1000Bot.Api.DependencyModules
 
             services.AddSingleton<IRedisCacheService>(RegisterCacheService);
 
-            services.AddHttpClient<IGlobalApiClient, GlobalApiClient>(configuration.GlobalApiEndpoint, nameof(configuration.GlobalApiEndpoint));
+            services.AddHttpClient<IGlobalApiClient, GlobalApiClient>(configuration.GlobalApiEndpoint, 
+                nameof(configuration.GlobalApiEndpoint));
+            services.AddHttpClient<IRealtimeBoardApiClient, RealtimeBoardApiClient>(configuration.RealtimeBoardApiClientEndpoint, 
+                nameof(configuration.RealtimeBoardApiClientEndpoint));
         }
 
         private static SessionsClient RegisterDialogflowSessionsClient(IServiceProvider provider)

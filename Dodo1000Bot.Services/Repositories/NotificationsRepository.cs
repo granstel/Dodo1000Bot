@@ -23,12 +23,13 @@ public class NotificationsRepository : INotificationsRepository
     public async Task Save(Notification notification, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(notification?.Payload);
+
         await _connection.ExecuteAsync(
-            "INSERT INTO notifications (Payload, Distinction) VALUES (@payload, @distinction)",
+            "INSERT IGNORE INTO notifications (Payload, Distinction) VALUES (@payload, @distinction)",
             new
             {
                 payload,
-                distinction = notification?.Distinction
+                notification?.Distinction
             });
     }
 

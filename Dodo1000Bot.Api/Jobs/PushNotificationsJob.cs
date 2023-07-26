@@ -23,9 +23,8 @@ public class PushNotificationsJob: RepeatableJob
     protected override async Task Execute(CancellationToken cancellationToken)
     {
         await using var scope = _provider.CreateAsyncScope();
-        var notifyServices = scope.ServiceProvider.GetServices<INotifyService>();
         var notificationsService = scope.ServiceProvider.GetRequiredService<INotificationsService>();
 
-        await notificationsService.PushNotifications(notifyServices, cancellationToken);
+        await notificationsService.PushNotifications(cancellationToken);
     }
 }

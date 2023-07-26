@@ -1,36 +1,50 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
+using Microsoft.Extensions.Logging;
+
+[assembly: InternalsVisibleTo("Dodo1000Bot.Services.Tests")]
 
 namespace Dodo1000Bot.Services;
 
-public class UnitsService : IUnitsService
+public class UnitsService : CheckAndNotifyService
 {
+    private readonly ILogger<UnitsService> _log;
     private readonly IGlobalApiClient _globalApiClient;
     private readonly INotificationsService _notificationsService;
 
-    public UnitsService(IGlobalApiClient globalApiClient, INotificationsService notificationsService)
+    public UnitsService(ILogger<UnitsService> log, IGlobalApiClient globalApiClient, INotificationsService notificationsService)
     {
+        _log = log;
         _globalApiClient = globalApiClient;
         _notificationsService = notificationsService;
     }
 
-    public async Task CheckAndNotify(CancellationToken cancellationToken)
+    public override async Task CheckAndNotify(CancellationToken cancellationToken)
     {
-        var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
+        try
+        {
+            var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
 
-        await AboutTotalOverall(unitsCount, cancellationToken);
-        await AboutTotalAtBrands(unitsCount, cancellationToken);
-        await AboutTotalAtCountries(unitsCount, cancellationToken);
+            await AboutTotalOverall(unitsCount, cancellationToken);
+            await AboutTotalAtBrands(unitsCount, cancellationToken);
+            await AboutTotalAtCountries(unitsCount, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _log.LogError(e, "Can't check and notify units count");
+        }
     }
 
     private async Task AboutTotalOverall(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
     {
         var totalOverall = unitsCount.Brands.Sum(b => b.Total);
 
-        if (!CheckTheRule(totalOverall))
+        if (!CheckThe1000Rule(totalOverall))
         {
             return;
         }
@@ -51,7 +65,7 @@ public class UnitsService : IUnitsService
 
         foreach (var totalAtBrand in totalAtBrands)
         {
-            if (!CheckTheRule(totalAtBrand.Value))
+            if (!CheckThe1000Rule(totalAtBrand.Value))
             {
                 continue;
             }
@@ -67,7 +81,7 @@ public class UnitsService : IUnitsService
         }
     }
 
-    private async Task AboutTotalAtCountries(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
+    internal async Task AboutTotalAtCountries(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
     {
         var totalAtBrandAtCountries = unitsCount.Brands.ToDictionary(b => b.Brand, b => b.Countries.ToDictionary(c => c.CountryName, c => c.PizzeriaCount));
 
@@ -75,7 +89,7 @@ public class UnitsService : IUnitsService
         {
             foreach (var totalAtCountry in totalAtBrandAtCountry.Value)
             {
-                if (!CheckTheRule(totalAtCountry.Value))
+                if (!CheckThe1000Rule(totalAtCountry.Value))
                 {
                     continue;
                 }
@@ -91,10 +105,5 @@ public class UnitsService : IUnitsService
                 await _notificationsService.Save(notification, cancellationToken);
             }
         }
-    }
-
-    private bool CheckTheRule(int value)
-    {
-        return value % 1000 == 0;
     }
 }

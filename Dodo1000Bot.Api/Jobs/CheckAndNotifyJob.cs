@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Services;
@@ -8,13 +8,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Api.Jobs;
 
-public class UnitsJob : RepeatableJob
+public class CheckAndNotifyJob<TService, TConfiguration> : RepeatableJob 
+    where TService : CheckAndNotifyService 
+    where TConfiguration : CheckAndNotifyJobConfiguration
 {
     private readonly IServiceProvider _provider;
 
-    public UnitsJob(ILogger<UnitsJob> log,
+    public CheckAndNotifyJob(ILogger<CheckAndNotifyJob<TService, TConfiguration>> log,
         IServiceProvider provider,
-        UnitsConfiguration unitsConfiguration) : base(log, unitsConfiguration.RefreshEveryTime)
+        TConfiguration configuration) : base(log, configuration.RefreshEveryTime)
     {
         _provider = provider;
     }
@@ -22,8 +24,8 @@ public class UnitsJob : RepeatableJob
     protected override async Task Execute(CancellationToken cancellationToken)
     {
         await using var scope = _provider.CreateAsyncScope();
-        var unitsService = scope.ServiceProvider.GetRequiredService<IUnitsService>();
+        var checkAndNotifyService = scope.ServiceProvider.GetRequiredService<TService>();
 
-        await unitsService.CheckAndNotify(cancellationToken);
+        await checkAndNotifyService.CheckAndNotify(cancellationToken);
     }
 }
