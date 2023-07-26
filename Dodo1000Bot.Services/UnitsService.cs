@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
 using Microsoft.Extensions.Logging;
+
+[assembly: InternalsVisibleTo("Dodo1000Bot.Services.Tests")]
 
 namespace Dodo1000Bot.Services;
 
@@ -78,7 +81,7 @@ public class UnitsService : CheckAndNotifyService
         }
     }
 
-    private async Task AboutTotalAtCountries(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
+    internal async Task AboutTotalAtCountries(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
     {
         var totalAtBrandAtCountries = unitsCount.Brands.ToDictionary(b => b.Brand, b => b.Countries.ToDictionary(c => c.CountryName, c => c.PizzeriaCount));
 

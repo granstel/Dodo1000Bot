@@ -1,0 +1,68 @@
+﻿using AutoFixture;
+using Dodo1000Bot.Models.Domain;
+using Dodo1000Bot.Models.GlobalApi;
+using Microsoft.Extensions.Logging;
+using Moq;
+using NUnit.Framework;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Dodo1000Bot.Services.Tests
+{
+    [TestFixture]
+    public class UnitsServiceTests
+    {
+        private MockRepository _mockRepository;
+
+        private ILogger<UnitsService> _logMock;
+        private Mock<IGlobalApiClient> _globalApiClientMock;
+        private Mock<INotificationsService> _notificationsServiceMock;
+
+        private UnitsService _target;
+
+        private Fixture _fixture;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _mockRepository = new MockRepository(MockBehavior.Strict);
+
+            _logMock = Mock.Of<ILogger<UnitsService>>();
+            _globalApiClientMock = _mockRepository.Create<IGlobalApiClient>();
+            _notificationsServiceMock = _mockRepository.Create<INotificationsService>();
+
+            _target = new UnitsService(_logMock, _globalApiClientMock.Object, _notificationsServiceMock.Object);
+
+            _fixture = new Fixture { OmitAutoProperties = true };
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _mockRepository.VerifyAll();
+            _mockRepository.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async Task AboutTotalAtCountries_ZeroUnit_NoAnyNotifications()
+        {
+
+            var countries = _fixture.Build<UnitCountModel>()
+                .With(c => c.PizzeriaCount, 0)
+                .With(c => c.CountryName)
+                .CreateMany(1);
+
+            var brandUnitCount = _fixture.Build<BrandTotalUnitCountListModel>()
+                .With(b => b.Countries, countries)
+                .CreateMany(1);
+
+            var unitsCount = _fixture.Build<BrandListTotalUnitCountListModel>()
+                .With(c => c.Brands, brandUnitCount)
+                .Create();
+
+            await _target.AboutTotalAtCountries(unitsCount, CancellationToken.None);
+
+            _notificationsServiceMock.Verify(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+    }
+}
