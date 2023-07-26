@@ -13,7 +13,7 @@ namespace Dodo1000Bot.Services;
 
 public class NotificationsRepository : INotificationsRepository
 {
-    private const int DistinctionMaxLength = 64;
+    private const int DistinctionMaxLength = 65;
     private readonly MySqlConnection _connection;
 
     public NotificationsRepository(MySqlConnection connection)
@@ -25,18 +25,12 @@ public class NotificationsRepository : INotificationsRepository
     {
         var payload = JsonSerializer.Serialize(notification?.Payload);
 
-        var distinction = notification?.Distinction;
-        if (distinction is { Length: > DistinctionMaxLength })
-        {
-            distinction = distinction[..DistinctionMaxLength];
-        }
-
         await _connection.ExecuteAsync(
-            "INSERT INTO notifications (Payload, Distinction) VALUES (@payload, @distinction)",
+            "INSERT IGNORE INTO notifications (Payload, Distinction) VALUES (@payload, @distinction)",
             new
             {
                 payload,
-                distinction
+                notification?.Distinction
             });
     }
 
