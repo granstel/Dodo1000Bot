@@ -57,6 +57,7 @@ public class StatisticsService : CheckAndNotifyService
                 HappenedAt = DateTime.Now
             }
         };
+
         await _notificationsService.Save(notification, cancellationToken);
     }
 
@@ -81,6 +82,7 @@ public class StatisticsService : CheckAndNotifyService
                        $"See that on https://realtime.dodobrands.io"
             }
         };
+
         await _notificationsService.Save(notification, cancellationToken);
     }
 }
