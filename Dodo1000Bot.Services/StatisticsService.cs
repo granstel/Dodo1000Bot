@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.RealtimeBoard;
 using Microsoft.Extensions.Logging;
+
+[assembly: InternalsVisibleTo("Dodo1000Bot.Services.Tests")]
 
 namespace Dodo1000Bot.Services;
 
@@ -37,7 +40,7 @@ public class StatisticsService : CheckAndNotifyService
         }
     }
 
-    private async Task AboutOrdersPerMinute(Statistics statistics, CancellationToken cancellationToken)
+    internal async Task AboutOrdersPerMinute(Statistics statistics, CancellationToken cancellationToken)
     {
         var ordersPerMinute = statistics.OrdersPerMinute;
 
