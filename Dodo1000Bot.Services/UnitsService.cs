@@ -77,7 +77,7 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand"
+                    Text = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand!"
                 }
             };
 
