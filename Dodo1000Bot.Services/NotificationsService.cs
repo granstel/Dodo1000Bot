@@ -23,16 +23,6 @@ public class NotificationsService : INotificationsService
 
     public async Task Save(Notification notification, CancellationToken cancellationToken)
     {
-        var isExists = await _notificationsRepository.IsExists(notification, cancellationToken);
-
-        if (isExists)
-        {
-            _logger.LogInformation("Notification with {fieldName}='{fieldValue}' is exists", 
-                nameof(notification.Distinction), notification.Distinction);
-
-            return;
-        }
-
         await _notificationsRepository.Save(notification, cancellationToken);
     }
 

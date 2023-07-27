@@ -33,18 +33,6 @@ public class NotificationsRepository : INotificationsRepository
             });
     }
 
-    public async Task<bool> IsExists(Notification notification, CancellationToken cancellationToken)
-    {
-        var isExists = await _connection.QuerySingleAsync<bool>(
-            "SELECT EXISTS(SELECT 1 FROM notifications WHERE Distinction = @distinction) as isExists",
-            new
-            {
-                distinction = notification?.Distinction
-            });
-
-        return isExists;
-    }
-
     public async Task<IList<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
     {
         var records = await _connection.QueryAsync(

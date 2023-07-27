@@ -34,25 +34,12 @@ namespace Dodo1000Bot.Services
         public async Task SaveUser(User user, CancellationToken cancellationToken)
         {
             await _connection.ExecuteAsync(
-                "INSERT INTO users (MessengerUserId, MessengerType) VALUES (@messengerUserId, @messengerType)",
+                "INSERT IGNORE INTO users (MessengerUserId, MessengerType) VALUES (@messengerUserId, @messengerType)",
                 new
                 {
                     messengerUserId = user.MessengerUserId,
                     messengerType = user.MessengerType
                 });
-        }
-
-        public async Task<bool> IsExists(User user, CancellationToken cancellationToken)
-        {
-            var isExists = await _connection.QuerySingleAsync<bool>(
-                "SELECT EXISTS(SELECT 1 FROM users WHERE MessengerUserId = @messengerUserId AND MessengerType = @messengerType) as isExists",
-                new
-                {
-                    messengerUserId = user.MessengerUserId,
-                    messengerType = user.MessengerType
-                });
-
-            return isExists;
         }
     }
 }
