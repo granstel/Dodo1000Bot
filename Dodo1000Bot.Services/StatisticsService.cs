@@ -74,7 +74,8 @@ public class StatisticsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = $"There is {yearRevenue} dollars revenue this year!"
+                Text = $"There is over 1 000 000 000 dollars revenue in {DateTime.Now.Year} year! " +
+                       $"See that on https://realtime.dodobrands.io"
             }
         };
         await _notificationsService.Save(notification, cancellationToken);
