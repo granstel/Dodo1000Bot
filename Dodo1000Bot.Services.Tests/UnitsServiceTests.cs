@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
 using Microsoft.Extensions.Logging;
@@ -44,25 +45,33 @@ namespace Dodo1000Bot.Services.Tests
         }
 
         [Test]
-        public async Task AboutTotalAtCountries_ZeroUnit_NoAnyNotifications()
+        public async Task AboutTotalAtCountries_ZeroUnit_NewCountryNotification()
         {
 
-            var countries = _fixture.Build<UnitCountModel>()
+            var country = _fixture.Build<UnitCountModel>()
                 .With(c => c.PizzeriaCount, 0)
                 .With(c => c.CountryName)
-                .CreateMany(1);
-
-            var brandUnitCount = _fixture.Build<BrandTotalUnitCountListModel>()
-                .With(b => b.Countries, countries)
-                .CreateMany(1);
-
-            var unitsCount = _fixture.Build<BrandListTotalUnitCountListModel>()
-                .With(c => c.Brands, brandUnitCount)
                 .Create();
 
-            await _target.AboutTotalAtCountries(unitsCount, CancellationToken.None);
+            var brandUnitCount = _fixture.Build<BrandTotalUnitCountListModel>()
+                .With(b => b.Countries, new[] { country })
+                .With(b => b.Brand)
+                .Create();
 
-            _notificationsServiceMock.Verify(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
+            var unitsCount = _fixture.Build<BrandListTotalUnitCountListModel>()
+                .With(c => c.Brands, new[] { brandUnitCount })
+            .Create();
+
+            var expectedText = $"There is new country of {brandUnitCount.Brand} - {country.CountryName}!";
+
+            _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
+                .Callback((Notification notification, CancellationToken ct) =>
+                {
+                    Assert.AreEqual(notification.Payload.Text, expectedText);
+                })
+                .Returns(Task.CompletedTask);
+
+            await _target.AboutTotalAtCountries(unitsCount, CancellationToken.None);
         }
     }
 }
