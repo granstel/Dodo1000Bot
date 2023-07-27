@@ -41,7 +41,7 @@ public class StatisticsService : CheckAndNotifyService
     {
         var ordersPerMinute = statistics.OrdersPerMinute;
 
-        if (!CheckThe1000Rule(ordersPerMinute))
+        if (!CheckRemainder1000(ordersPerMinute))
         {
             return;
         }
@@ -63,7 +63,7 @@ public class StatisticsService : CheckAndNotifyService
             .Where(r => r.Type == RevenueTypes.Year)
             .Select(r => r.Revenue).FirstOrDefault();
 
-        if (!CheckThe1000Rule(yearRevenue))
+        if (!CheckRemainder1000(yearRevenue))
         {
             return;
         }

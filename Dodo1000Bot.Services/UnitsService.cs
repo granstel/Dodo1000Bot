@@ -46,7 +46,7 @@ public class UnitsService : CheckAndNotifyService
     {
         var totalOverall = unitsCount.Brands.Sum(b => b.Total);
 
-        if (!CheckThe1000Rule(totalOverall))
+        if (!CheckRemainder1000(totalOverall))
         {
             return;
         }
@@ -68,7 +68,7 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var totalAtBrand in totalAtBrands)
         {
-            if (!CheckThe1000Rule(totalAtBrand.Value))
+            if (!CheckRemainder1000(totalAtBrand.Value))
             {
                 continue;
             }
@@ -102,7 +102,7 @@ public class UnitsService : CheckAndNotifyService
 
     private async Task CheckAndNotify0(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
     {
-        if (!CheckThe0Rule(totalAtCountry.Value))
+        if (!CheckEquals0(totalAtCountry.Value))
         {
             return;
         }
@@ -121,7 +121,7 @@ public class UnitsService : CheckAndNotifyService
 
     private async Task CheckAndNotify1000(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
     {
-        if (!CheckThe1000Rule(totalAtCountry.Value))
+        if (!CheckRemainder1000(totalAtCountry.Value))
         {
             return;
         }
