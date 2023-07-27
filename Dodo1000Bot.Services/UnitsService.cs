@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
 using Microsoft.Extensions.Logging;
@@ -56,6 +58,7 @@ public class UnitsService : CheckAndNotifyService
                 Text = $"There is {totalOverall} units!"
             }
         };
+
         await _notificationsService.Save(notification, cancellationToken);
     }
 
@@ -77,6 +80,7 @@ public class UnitsService : CheckAndNotifyService
                     Text = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand"
                 }
             };
+
             await _notificationsService.Save(notification, cancellationToken);
         }
     }
@@ -97,22 +101,23 @@ public class UnitsService : CheckAndNotifyService
     }
 
     private async Task CheckAndNotify0(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
-                {
+    {
         if (!CheckThe0Rule(totalAtCountry.Value))
         {
             return;
-                }
+        }
 
-                var notification = new Notification
-                {
-                    Payload = new NotificationPayload
-                    {
-                        Text =
+        var notification = new Notification
+        {
+            Payload = new NotificationPayload
+            {
+                Text =
                     $"There is new country of {brand} - {totalAtCountry.Key}!"
-                    }
-                };
-                await _notificationsService.Save(notification, cancellationToken);
             }
+        };
+
+        await _notificationsService.Save(notification, cancellationToken);
+    }
 
     private async Task CheckAndNotify1000(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
     {
@@ -127,7 +132,7 @@ public class UnitsService : CheckAndNotifyService
             {
                 Text =
                     $"There is {totalAtCountry.Value} units of {brand} at {totalAtCountry.Key}!"
-        }
+            }
         };
 
         await _notificationsService.Save(notification, cancellationToken);
