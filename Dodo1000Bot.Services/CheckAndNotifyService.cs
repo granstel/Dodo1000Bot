@@ -34,7 +34,7 @@ namespace Dodo1000Bot.Services
         /// <returns><see langword="true"/> when the <paramref name="value"/> is greater than or equal to 1000</returns>
         protected bool CheckGreaterOrEqual1000(int value)
         {
-            return value >= 1000;
+            return CheckGreaterOrEqualGivenValue(value, 1000);
         }
 
         /// <summary>
