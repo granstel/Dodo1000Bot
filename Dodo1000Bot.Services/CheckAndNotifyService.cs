@@ -42,7 +42,7 @@ namespace Dodo1000Bot.Services
         /// </summary>
         /// <param name="value">Any value</param>
         /// <param name="given">Given value</param>
-        /// <returns><see langword="true"/> when the <paramref name="value"/> is greater than or equal to <paramref name="given"/></returns>
+        /// <returns><see langword="true"/> when the <paramref name="value"/> is greater than or equal to <paramref name="given"/> value</returns>
         protected bool CheckGreaterOrEqualGivenValue(decimal value, int given)
         {
             return value >= given;
