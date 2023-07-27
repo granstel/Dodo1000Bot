@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.RealtimeBoard;
 using Microsoft.Extensions.Logging;
+
+[assembly: InternalsVisibleTo("Dodo1000Bot.Services.Tests")]
 
 namespace Dodo1000Bot.Services;
 
@@ -37,11 +40,11 @@ public class StatisticsService : CheckAndNotifyService
         }
     }
 
-    private async Task AboutOrdersPerMinute(Statistics statistics, CancellationToken cancellationToken)
+    internal async Task AboutOrdersPerMinute(Statistics statistics, CancellationToken cancellationToken)
     {
         var ordersPerMinute = statistics.OrdersPerMinute;
 
-        if (!CheckThe1000Rule(ordersPerMinute))
+        if (!CheckGreaterOrEqual1000(ordersPerMinute))
         {
             return;
         }
@@ -54,16 +57,19 @@ public class StatisticsService : CheckAndNotifyService
                 HappenedAt = DateTime.Now
             }
         };
+
         await _notificationsService.Save(notification, cancellationToken);
     }
 
-    private async Task AboutYearRevenue(Statistics statistics, CancellationToken cancellationToken)
+    internal async Task AboutYearRevenue(Statistics statistics, CancellationToken cancellationToken)
     {
         var yearRevenue = statistics.Revenues
             .Where(r => r.Type == RevenueTypes.Year)
             .Select(r => r.Revenue).FirstOrDefault();
 
-        if (!CheckThe1000Rule(yearRevenue))
+        const int givenRevenue = 1_000_000_000;
+
+        if (!CheckGreaterOrEqualGivenValue(yearRevenue, givenRevenue))
         {
             return;
         }
@@ -72,9 +78,11 @@ public class StatisticsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = $"There is {yearRevenue} dollars revenue this year!"
+                Text = $"There is over 1 000 000 000 dollars revenue in {DateTime.Now.Year} year! " +
+                       $"See that on https://realtime.dodobrands.io"
             }
         };
+
         await _notificationsService.Save(notification, cancellationToken);
     }
 }

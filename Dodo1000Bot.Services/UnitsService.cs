@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
 using Microsoft.Extensions.Logging;
@@ -44,7 +46,7 @@ public class UnitsService : CheckAndNotifyService
     {
         var totalOverall = unitsCount.Brands.Sum(b => b.Total);
 
-        if (!CheckThe1000Rule(totalOverall))
+        if (!CheckRemainder1000(totalOverall))
         {
             return;
         }
@@ -56,6 +58,7 @@ public class UnitsService : CheckAndNotifyService
                 Text = $"There is {totalOverall} units!"
             }
         };
+
         await _notificationsService.Save(notification, cancellationToken);
     }
 
@@ -65,7 +68,7 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var totalAtBrand in totalAtBrands)
         {
-            if (!CheckThe1000Rule(totalAtBrand.Value))
+            if (!CheckRemainder1000(totalAtBrand.Value))
             {
                 continue;
             }
@@ -74,9 +77,10 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand"
+                    Text = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand!"
                 }
             };
+
             await _notificationsService.Save(notification, cancellationToken);
         }
     }
@@ -87,23 +91,50 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var totalAtBrandAtCountry in totalAtBrandAtCountries)
         {
+            var brand = totalAtBrandAtCountry.Key;
             foreach (var totalAtCountry in totalAtBrandAtCountry.Value)
             {
-                if (!CheckThe1000Rule(totalAtCountry.Value))
-                {
-                    continue;
-                }
-
-                var notification = new Notification
-                {
-                    Payload = new NotificationPayload
-                    {
-                        Text =
-                            $"There is {totalAtCountry.Value} units of {totalAtBrandAtCountry.Key} at {totalAtCountry.Key}"
-                    }
-                };
-                await _notificationsService.Save(notification, cancellationToken);
+                await CheckAndNotify0(totalAtCountry, brand, cancellationToken);
+                await CheckAndNotify1000(totalAtCountry, brand, cancellationToken);
             }
         }
+    }
+
+    private async Task CheckAndNotify0(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
+    {
+        if (!CheckEquals0(totalAtCountry.Value))
+        {
+            return;
+        }
+
+        var notification = new Notification
+        {
+            Payload = new NotificationPayload
+            {
+                Text =
+                    $"There is new country of {brand} - {totalAtCountry.Key}!"
+            }
+        };
+
+        await _notificationsService.Save(notification, cancellationToken);
+    }
+
+    private async Task CheckAndNotify1000(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
+    {
+        if (!CheckRemainder1000(totalAtCountry.Value))
+        {
+            return;
+        }
+
+        var notification = new Notification
+        {
+            Payload = new NotificationPayload
+            {
+                Text =
+                    $"There is {totalAtCountry.Value} units of {brand} at {totalAtCountry.Key}!"
+            }
+        };
+
+        await _notificationsService.Save(notification, cancellationToken);
     }
 }
