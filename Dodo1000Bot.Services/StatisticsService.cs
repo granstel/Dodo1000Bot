@@ -60,7 +60,7 @@ public class StatisticsService : CheckAndNotifyService
         await _notificationsService.Save(notification, cancellationToken);
     }
 
-    private async Task AboutYearRevenue(Statistics statistics, CancellationToken cancellationToken)
+    internal async Task AboutYearRevenue(Statistics statistics, CancellationToken cancellationToken)
     {
         var yearRevenue = statistics.Revenues
             .Where(r => r.Type == RevenueTypes.Year)
