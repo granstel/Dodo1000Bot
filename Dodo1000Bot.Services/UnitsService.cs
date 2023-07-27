@@ -87,11 +87,20 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var totalAtBrandAtCountry in totalAtBrandAtCountries)
         {
+            var brand = totalAtBrandAtCountry.Key;
             foreach (var totalAtCountry in totalAtBrandAtCountry.Value)
             {
-                if (!CheckThe1000Rule(totalAtCountry.Value))
+                await CheckAndNotify0(totalAtCountry, brand, cancellationToken);
+                await CheckAndNotify1000(totalAtCountry, brand, cancellationToken);
+            }
+        }
+    }
+
+    private async Task CheckAndNotify0(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
                 {
-                    continue;
+        if (!CheckThe0Rule(totalAtCountry.Value))
+        {
+            return;
                 }
 
                 var notification = new Notification
@@ -99,11 +108,28 @@ public class UnitsService : CheckAndNotifyService
                     Payload = new NotificationPayload
                     {
                         Text =
-                            $"There is {totalAtCountry.Value} units of {totalAtBrandAtCountry.Key} at {totalAtCountry.Key}"
+                    $"There is new country of {brand} - {totalAtCountry.Key}!"
                     }
                 };
                 await _notificationsService.Save(notification, cancellationToken);
             }
+
+    private async Task CheckAndNotify1000(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
+    {
+        if (!CheckThe1000Rule(totalAtCountry.Value))
+        {
+            return;
         }
+
+        var notification = new Notification
+        {
+            Payload = new NotificationPayload
+            {
+                Text =
+                    $"There is {totalAtCountry.Value} units of {brand} at {totalAtCountry.Key}!"
+        }
+        };
+
+        await _notificationsService.Save(notification, cancellationToken);
     }
 }

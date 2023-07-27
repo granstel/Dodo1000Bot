@@ -12,6 +12,11 @@ namespace Dodo1000Bot.Services
             return value > 0 && value % 1000 == 0;
         }
 
+        protected bool CheckThe0Rule(int value)
+        {
+            return value == 0;
+        }
+
         protected bool CheckThe1000Rule(decimal value)
         {
             return value > 0 && value % 1000 == 0;
