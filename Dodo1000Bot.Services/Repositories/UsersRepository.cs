@@ -41,18 +41,5 @@ namespace Dodo1000Bot.Services
                     messengerType = user.MessengerType
                 });
         }
-
-        public async Task<bool> IsExists(User user, CancellationToken cancellationToken)
-        {
-            var isExists = await _connection.QuerySingleAsync<bool>(
-                "SELECT EXISTS(SELECT 1 FROM users WHERE MessengerUserId = @messengerUserId AND MessengerType = @messengerType) as isExists",
-                new
-                {
-                    messengerUserId = user.MessengerUserId,
-                    messengerType = user.MessengerType
-                });
-
-            return isExists;
-        }
     }
 }

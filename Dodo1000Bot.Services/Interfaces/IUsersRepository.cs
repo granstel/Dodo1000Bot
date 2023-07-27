@@ -11,7 +11,5 @@ namespace Dodo1000Bot.Services
         Task<IList<User>> GetUsers(Source messengerType, CancellationToken cancellationToken);
 
         Task SaveUser(User user, CancellationToken cancellationToken);
-
-        Task<bool> IsExists(User user, CancellationToken cancellationToken);
     }
 }
