@@ -28,13 +28,23 @@ namespace Dodo1000Bot.Services
         }
 
         /// <summary>
-        /// Check is <paramref name="value"/> equals 0
+        /// Check is the <paramref name="value"/> is 0
         /// </summary>
         /// <param name="value">Any value</param>
         /// <returns><see langword="true"/> when the <paramref name="value"/> is 0</returns>
         protected bool CheckEquals0(int value)
         {
             return value == 0;
+        }
+
+        /// <summary>
+        /// Check is the <paramref name="value"/> is greater than or equal to 1000
+        /// </summary>
+        /// <param name="value">Any value</param>
+        /// <returns><see langword="true"/> when the <paramref name="value"/> is greater than or equal to 1000</returns>
+        protected bool CheckGreaterOrEqual1000(int value)
+        {
+            return value >= 1000;
         }
     }
 }
