@@ -30,16 +30,6 @@ namespace Dodo1000Bot.Services
 
             try
             {
-                var isExists = await _usersRepository.IsExists(user, cancellationToken);
-
-                if (isExists)
-                {
-                    _log.LogInformation("User with {fieldName}='{fieldValue}' is exists", 
-                        nameof(user.MessengerUserId), user.MessengerUserId);
-
-                    return response;
-                }
-
                 await _usersRepository.SaveUser(user, cancellationToken);
             }
             catch (Exception e)

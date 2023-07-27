@@ -34,7 +34,7 @@ namespace Dodo1000Bot.Services
         public async Task SaveUser(User user, CancellationToken cancellationToken)
         {
             await _connection.ExecuteAsync(
-                "INSERT INTO users (MessengerUserId, MessengerType) VALUES (@messengerUserId, @messengerType)",
+                "INSERT IGNORE INTO users (MessengerUserId, MessengerType) VALUES (@messengerUserId, @messengerType)",
                 new
                 {
                     messengerUserId = user.MessengerUserId,
