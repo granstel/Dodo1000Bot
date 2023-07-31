@@ -7,5 +7,7 @@ namespace Dodo1000Bot.Services
     public interface IGlobalApiClient
     {
         Task<BrandListTotalUnitCountListModel> UnitsCount(CancellationToken cancellationToken);
+
+        Task<BrandListData<Country>> Countries(CancellationToken cancellationToken);
     }
 }

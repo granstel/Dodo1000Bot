@@ -26,5 +26,14 @@ namespace Dodo1000Bot.Services.Clients
 
             return unitsCount;
         }
+
+        public async Task<BrandListData<Country>> Countries(CancellationToken cancellationToken)
+        {
+            const string url = "countries";
+
+            var countries = await _httpClient.GetAsync<BrandListData<Country>>(url, _serializerOptions, cancellationToken);
+
+            return countries;
+        }
     }
 }
