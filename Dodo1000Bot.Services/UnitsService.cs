@@ -120,6 +120,51 @@ public class UnitsService : CheckAndNotifyService
         }
     }
 
+    internal async Task AboutNewCountries(
+        BrandListTotalUnitCountListModel unitsCount, 
+        Snapshot<BrandListTotalUnitCountListModel> unitsCountSnapshot, 
+        CancellationToken cancellationToken)
+    {
+        var bransCountriesCount = unitsCount.Brands.Sum(b => b.Countries.Count());
+        var bransCountriesCountSnapshot = unitsCountSnapshot.Data.Brands.Sum(b => b.Countries.Count());
+
+        if (bransCountriesCount == bransCountriesCountSnapshot)
+        {
+            return;
+        }
+
+        var countriesAtBrand = unitsCount.Brands
+            .ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName));
+
+        var countriesAtBrandSnashot = unitsCountSnapshot.Data.Brands
+            .ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName));
+
+        foreach (var brand in countriesAtBrand.Keys)
+        {
+            var countries = countriesAtBrand[brand];
+            var countriesAtSnapshot = countriesAtBrandSnashot[brand];
+
+            var difference = countries.Except(countriesAtSnapshot);
+
+            foreach(var countryName in difference)
+            {
+                if (countries.Contains(countryName) && !countriesAtSnapshot.Contains(countryName))
+                {
+                    var notification = new Notification
+                    {
+                        Payload = new NotificationPayload
+                        {
+                            Text =
+                                $"There is new country of {brand} - countryName!"
+                        }
+                    };
+
+                    await _notificationsService.Save(notification, cancellationToken);
+                }
+            }
+        }
+    }
+
     private async Task CheckAndNotify0(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
     {
         if (!CheckEquals0(totalAtCountry.Value))
