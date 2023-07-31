@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
 using Microsoft.Extensions.Logging;
