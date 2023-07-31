@@ -22,12 +22,13 @@ namespace Dodo1000Bot.Services.Repositories
             var data = JsonSerializer.Serialize(snapshot.Data);
 
             await _connection.ExecuteAsync(
-                "INSERT INTO snapshots (name, data) VALUES (@name, @data)" +
-                "ON DUPLICATE KEY UPDATE name = @name, data = @data",
+                "INSERT INTO snapshots (name, data, modifiedAt) VALUES (@name, @data, @modifiedAt)" +
+                "ON DUPLICATE KEY UPDATE name = @name, data = @data, modifiedAt = @modifiedAt",
                 new
                 {
                     name = snapshot.Name,
                     data,
+                    modifiedAt = snapshot.ModifiedAt
                 });
         }
     }

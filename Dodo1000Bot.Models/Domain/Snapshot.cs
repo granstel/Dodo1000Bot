@@ -1,11 +1,20 @@
-﻿namespace Dodo1000Bot.Models.Domain
+﻿using System;
+
+namespace Dodo1000Bot.Models.Domain
 {
     public class Snapshot<TData>
     {
-        public int Id { get; set; }
+        public Snapshot(TData data)
+        {
+            Data = data;
+        }
 
-        public string Name { get; set; }
+        public int Id { get; init; }
 
-        public TData Data { get; set; }
+        public string Name { get; init; }
+
+        public TData Data { get; init; }
+
+        public DateTime ModifiedAt => DateTime.UtcNow;
     }
 }
