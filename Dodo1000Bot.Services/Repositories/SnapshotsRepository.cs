@@ -2,6 +2,7 @@
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Services.Interfaces;
 using MySql.Data.MySqlClient;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,26 @@ namespace Dodo1000Bot.Services.Repositories
         public SnapshotsRepository(MySqlConnection connection)
         {
             _connection = connection;
+        }
+
+        public async Task<Snapshot<TData>> Get<TData>(string snapshotName, CancellationToken cancellationToken)
+        {
+            var record = await _connection.QueryFirstOrDefaultAsync(
+            @"SELECT * FROM snapshots 
+              WHERE name = @name",
+            new
+            {
+                name = snapshotName,
+            });
+
+            var snapshot = new Snapshot<TData>
+            {
+                Id = record.Id,
+                Name = record.Name,
+                Data = JsonSerializer.Deserialize<NotificationPayload>(record.Payload)
+            };
+
+            return snapshot;
         }
 
         public async Task Save<TData>(Snapshot<TData> snapshot, CancellationToken cancellationToken)
