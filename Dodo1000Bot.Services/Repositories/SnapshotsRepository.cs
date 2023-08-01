@@ -31,7 +31,7 @@ namespace Dodo1000Bot.Services
             {
                 Id = record.Id,
                 Name = record.Name,
-                Data = JsonSerializer.Deserialize<NotificationPayload>(record.Payload)
+                Data = JsonSerializer.Deserialize<TData>(record.Data)
             };
 
             return snapshot;
