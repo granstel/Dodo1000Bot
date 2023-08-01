@@ -43,7 +43,7 @@ namespace Dodo1000Bot.Services
 
             await _connection.ExecuteAsync(
                 "INSERT INTO snapshots (name, data, modifiedAt) VALUES (@name, @data, @modifiedAt)" +
-                "ON DUPLICATE KEY UPDATE name = @name, data = @data, modifiedAt = @modifiedAt",
+                "ON DUPLICATE KEY UPDATE data = @data, modifiedAt = @modifiedAt",
                 new
                 {
                     name = snapshot.Name,
