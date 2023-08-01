@@ -120,14 +120,14 @@ public class UnitsService : CheckAndNotifyService
         }
     }
 
-    private async Task CheckAndNotify0(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)	
+    private async Task CheckAndNotify0(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
     {
         if (!CheckEquals0(totalAtCountry.Value))
         {
             return;
         }
 
-        var notification = new Notification	
+        var notification = new Notification
         {
             Payload = new NotificationPayload
             {
