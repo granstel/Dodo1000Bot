@@ -125,10 +125,10 @@ public class UnitsService : CheckAndNotifyService
         Snapshot<BrandListTotalUnitCountListModel> unitsCountSnapshot, 
         CancellationToken cancellationToken)
     {
-        var bransCountriesCount = unitsCount.Brands.Sum(b => b.Countries.Count());
-        var bransCountriesCountSnapshot = unitsCountSnapshot.Data.Brands.Sum(b => b.Countries.Count());
+        var brandsCountriesCount = unitsCount.Brands.Sum(b => b.Countries.Count());
+        var brandsCountriesCountSnapshot = unitsCountSnapshot.Data.Brands.Sum(b => b.Countries.Count());
 
-        if (bransCountriesCount == bransCountriesCountSnapshot)
+        if (brandsCountriesCount == brandsCountriesCountSnapshot)
         {
             return;
         }
