@@ -2,7 +2,6 @@
 using Dodo1000Bot.Services;
 using Dodo1000Bot.Services.Configuration;
 using Dodo1000Bot.Services.Interfaces;
-using Dodo1000Bot.Services.Repositories;
 using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;

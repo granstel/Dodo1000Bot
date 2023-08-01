@@ -1,13 +1,12 @@
-﻿using Dapper;
+﻿using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Dapper;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Services.Interfaces;
 using MySql.Data.MySqlClient;
-using System.Linq;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Dodo1000Bot.Services.Repositories
+namespace Dodo1000Bot.Services
 {
     public class SnapshotsRepository : ISnapshotsRepository
     {
