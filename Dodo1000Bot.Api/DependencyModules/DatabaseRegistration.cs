@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Dodo1000Bot.Services;
 using Dodo1000Bot.Services.Configuration;
+using Dodo1000Bot.Services.Interfaces;
 using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
@@ -26,5 +27,6 @@ public static class DatabaseRegistration
         services.AddTransient(_ => new MySqlConnection(configuration.MysqlConnectionString));
         services.AddTransient<INotificationsRepository, NotificationsRepository>();
         services.AddTransient<IUsersRepository, UsersRepository>();
+        services.AddTransient<ISnapshotsRepository, SnapshotsRepository>();
     }
 }

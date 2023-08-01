@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
 using Microsoft.Extensions.Logging;
@@ -7,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
+using Dodo1000Bot.Services.Interfaces;
 
 namespace Dodo1000Bot.Services.Tests
 {
@@ -18,6 +18,7 @@ namespace Dodo1000Bot.Services.Tests
         private ILogger<UnitsService> _logMock;
         private Mock<IGlobalApiClient> _globalApiClientMock;
         private Mock<INotificationsService> _notificationsServiceMock;
+        private Mock<ISnapshotsRepository> _snapshotsRepositoryMock;
 
         private UnitsService _target;
 
@@ -31,8 +32,13 @@ namespace Dodo1000Bot.Services.Tests
             _logMock = Mock.Of<ILogger<UnitsService>>();
             _globalApiClientMock = _mockRepository.Create<IGlobalApiClient>();
             _notificationsServiceMock = _mockRepository.Create<INotificationsService>();
+            _snapshotsRepositoryMock = _mockRepository.Create<ISnapshotsRepository>();
 
-            _target = new UnitsService(_logMock, _globalApiClientMock.Object, _notificationsServiceMock.Object);
+            _target = new UnitsService(
+                _logMock, 
+                _globalApiClientMock.Object, 
+                _notificationsServiceMock.Object, 
+                _snapshotsRepositoryMock.Object);
 
             _fixture = new Fixture { OmitAutoProperties = true };
         }
@@ -47,7 +53,6 @@ namespace Dodo1000Bot.Services.Tests
         [Test]
         public async Task AboutTotalAtCountries_ZeroUnit_NewCountryNotification()
         {
-
             var country = _fixture.Build<UnitCountModel>()
                 .With(c => c.PizzeriaCount, 0)
                 .With(c => c.CountryName)
@@ -65,7 +70,7 @@ namespace Dodo1000Bot.Services.Tests
             var expectedText = $"There is new country of {brandUnitCount.Brand} - {country.CountryName}!";
 
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
-                .Callback((Notification notification, CancellationToken ct) =>
+                .Callback((Notification notification, CancellationToken _) =>
                 {
                     Assert.AreEqual(notification.Payload.Text, expectedText);
                 })

@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace Dodo1000Bot.Services.Tests.Repositories;
 
-public class NotificationsRepositoryIntegrationTests
+public class NotificationsRepositoryTests
 {
     private MySqlConnection _connection;
 
@@ -23,7 +23,7 @@ public class NotificationsRepositoryIntegrationTests
     {
         var connectionString = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddUserSecrets<NotificationsRepositoryIntegrationTests>()
+            .AddUserSecrets<NotificationsRepositoryTests>()
             .Build()
             .GetSection("MysqlConnectionString").Get<string>();
 
