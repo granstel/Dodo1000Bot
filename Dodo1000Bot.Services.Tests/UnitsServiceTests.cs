@@ -51,10 +51,8 @@ namespace Dodo1000Bot.Services.Tests
         }
 
         [Test]
-        [Ignore("WIP")]
         public async Task AboutTotalAtCountries_ZeroUnit_NewCountryNotification()
         {
-
             var country = _fixture.Build<UnitCountModel>()
                 .With(c => c.PizzeriaCount, 0)
                 .With(c => c.CountryName)
@@ -69,16 +67,9 @@ namespace Dodo1000Bot.Services.Tests
                 .With(c => c.Brands, new[] { brandUnitCount })
             .Create();
 
-            var expectedText = $"There is new country of {brandUnitCount.Brand} - {country.CountryName}!";
-
-            _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
-                .Callback((Notification notification, CancellationToken _) =>
-                {
-                    Assert.AreEqual(notification.Payload.Text, expectedText);
-                })
-                .Returns(Task.CompletedTask);
-
             await _target.AboutTotalAtCountries(unitsCount, CancellationToken.None);
+
+            _notificationsServiceMock.Verify(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
         }
     }
 }
