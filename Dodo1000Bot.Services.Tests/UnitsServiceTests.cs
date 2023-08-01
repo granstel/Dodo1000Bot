@@ -51,10 +51,8 @@ namespace Dodo1000Bot.Services.Tests
         }
 
         [Test]
-        [Ignore("WIP")]
         public async Task AboutTotalAtCountries_ZeroUnit_NewCountryNotification()
         {
-
             var country = _fixture.Build<UnitCountModel>()
                 .With(c => c.PizzeriaCount, 0)
                 .With(c => c.CountryName)
