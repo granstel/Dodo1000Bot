@@ -52,7 +52,7 @@ public class SnapshotsRepositoryTests
         await _target.Save(newSnapshot, CancellationToken.None);
 
         var dbSnapshot = await _target.Get<string>(snapshot.Name, CancellationToken.None);
-        
+
         Assert.AreEqual(newSnapshot.Name, dbSnapshot.Name);
         Assert.AreEqual(newSnapshot.Data, dbSnapshot.Data);
     }
