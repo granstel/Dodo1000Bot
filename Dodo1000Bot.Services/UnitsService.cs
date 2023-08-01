@@ -141,8 +141,13 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var brand in countriesAtBrand.Keys)
         {
-            var countries = countriesAtBrand[brand];
-            var countriesAtSnapshot = countriesAtBrandSnashot[brand];
+            countriesAtBrand.TryGetValue(brand, out var countries);
+            var hasValueAtSnapshot = countriesAtBrandSnashot.TryGetValue(brand, out var countriesAtSnapshot);
+            if (!hasValueAtSnapshot)
+            {
+                // What to do here? Actually, it means, that there is new brand at new country
+                continue;
+            }
 
             var difference = countries.Except(countriesAtSnapshot);
 
@@ -155,7 +160,7 @@ public class UnitsService : CheckAndNotifyService
                         Payload = new NotificationPayload
                         {
                             Text =
-                                $"There is new country of {brand} - countryName!"
+                                $"There is new country of {brand} - {countryName}!"
                         }
                     };
 
