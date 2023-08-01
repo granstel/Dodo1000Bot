@@ -7,14 +7,15 @@ public class CreateSnapshotsTable: Migration
 {
     public override void Up()
     {
-        Create.Table("payloads")
-            .WithColumn("Id").AsInt32().NotNullable().PrimaryKey()
-            .WithColumn("Name").AsString().NotNullable().Unique()
-            .WithColumn("data").AsCustom("json").NotNullable();
+        Create.Table("snapshots")
+            .WithColumn("Id").AsInt32().NotNullable().PrimaryKey().Identity()
+            .WithColumn("Name").AsString(64).NotNullable().Unique()
+            .WithColumn("Data").AsCustom("json").NotNullable()
+            .WithColumn("ModifiedAt").AsDateTime2();
     }
 
     public override void Down()
     {
-        Delete.Table("payloads");
+        Delete.Table("snapshots");
     }
 }
