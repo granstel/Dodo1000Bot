@@ -71,5 +71,50 @@ namespace Dodo1000Bot.Services.Tests
 
             _notificationsServiceMock.Verify(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
         }
+
+        [Test]
+        public async Task AboutNewCountries_NewCountry_Notification()
+        {
+            var country = _fixture.Build<UnitCountModel>()
+                .With(c => c.PizzeriaCount, 0)
+                .With(c => c.CountryName)
+                .Create();
+            var newCountry = _fixture.Build<UnitCountModel>()
+                .With(c => c.PizzeriaCount, 0)
+                .With(c => c.CountryName)
+                .Create();
+
+            var brandUnitCount = _fixture.Build<BrandTotalUnitCountListModel>()
+                .With(b => b.Countries, new []{ country })
+                .With(b => b.Brand)
+                .Create();
+            var unitsCount = _fixture.Build<BrandListTotalUnitCountListModel>()
+                .With(c => c.Brands, new[] { brandUnitCount })
+                .Create();
+
+            var brandUnitCountAtSnapshot = _fixture.Build<BrandTotalUnitCountListModel>()
+                .With(b => b.Countries, new []{ country, newCountry })
+                .With(b => b.Brand)
+                .Create();
+            var unitsCountAtSnapshot = _fixture.Build<BrandListTotalUnitCountListModel>()
+                .With(c => c.Brands, new[] { brandUnitCountAtSnapshot })
+                .Create();
+
+            var unitsCountSnapshot = new Snapshot<BrandListTotalUnitCountListModel>
+            {
+                Data = unitsCountAtSnapshot
+            };
+
+            var expectedText = $"There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
+
+            _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
+                .Callback((Notification notification, CancellationToken _) =>
+                {
+                    Assert.AreEqual(notification.Payload.Text, expectedText);
+                })
+                .Returns(Task.CompletedTask);
+
+            await _target.AboutNewCountries(unitsCount, unitsCountSnapshot, CancellationToken.None);
+        }
     }
 }
