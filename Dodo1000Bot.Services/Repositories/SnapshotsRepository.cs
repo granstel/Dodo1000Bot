@@ -29,6 +29,16 @@ namespace Dodo1000Bot.Services
 
             var snapshot = new Snapshot<TData>
             {
+                Name = snapshotName
+            };
+
+            if (record is null)
+            {
+                return snapshot;
+            }
+
+            snapshot = new Snapshot<TData>
+            {
                 Id = record.Id,
                 Name = record.Name,
                 Data = JsonSerializer.Deserialize<TData>(record.Data)
