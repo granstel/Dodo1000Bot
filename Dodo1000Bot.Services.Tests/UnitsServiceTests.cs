@@ -200,5 +200,30 @@ namespace Dodo1000Bot.Services.Tests
 
             _notificationsServiceMock.Verify(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
         }
+
+        [Test]
+        public async Task AboutNewCountries_NullSnapshotData_NothingHappened()
+        {
+            var country = _fixture.Build<UnitCountModel>()
+                .With(c => c.PizzeriaCount, 0)
+                .With(c => c.CountryName)
+                .Create();
+            var brandUnitCount = _fixture.Build<BrandTotalUnitCountListModel>()
+                .With(b => b.Countries, new []{ country })
+                .With(b => b.Brand, Brands.Doner42)
+                .Create();
+            var unitsCount = _fixture.Build<BrandListTotalUnitCountListModel>()
+                .With(c => c.Brands, new[] { brandUnitCount })
+                .Create();
+
+            var unitsCountSnapshot = new Snapshot<BrandListTotalUnitCountListModel>
+            {
+                Data = null
+            };
+
+            await _target.AboutNewCountries(unitsCount, unitsCountSnapshot, CancellationToken.None);
+
+            _notificationsServiceMock.Verify(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
     }
 }
