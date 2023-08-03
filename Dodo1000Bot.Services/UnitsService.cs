@@ -144,32 +144,19 @@ public class UnitsService : CheckAndNotifyService
 
             var difference = countries.Except(countriesAtSnapshot);
 
-            foreach(var countryName in difference)
-            {
-                var notification = new Notification
-                {
-                    Payload = new NotificationPayload
-                    {
-                        Text =
-                            $"There is new country of {brand} - {countryName}!"
-                    }
-                };
-
-                await _notificationsService.Save(notification, cancellationToken);
-            }
+            await CheckDifferenceAndNotify(brand, difference, cancellationToken);
         }
     }
 
-    private async Task NotifyAboutNewCountries(Brands brand, IEnumerable<string> countries, CancellationToken cancellationToken)
+    private async Task CheckDifferenceAndNotify(Brands brand, IEnumerable<string> difference, CancellationToken cancellationToken)
     {
-        foreach(var country in countries)
+        foreach(var countryName in difference)
         {
             var notification = new Notification
             {
                 Payload = new NotificationPayload
                 {
-                    Text =
-                        $"There is new country of {brand} - {country}!"
+                    Text = $"There is new country of {brand} - {countryName}!"
                 }
             };
 
