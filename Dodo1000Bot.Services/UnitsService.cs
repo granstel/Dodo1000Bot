@@ -146,11 +146,6 @@ public class UnitsService : CheckAndNotifyService
 
             foreach(var countryName in difference)
             {
-                if (!countries.Contains(countryName) && countriesAtSnapshot.Contains(countryName))
-                {
-                    continue;
-                }
-
                 var notification = new Notification
                 {
                     Payload = new NotificationPayload
