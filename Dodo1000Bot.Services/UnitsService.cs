@@ -125,6 +125,11 @@ public class UnitsService : CheckAndNotifyService
         Snapshot<BrandListTotalUnitCountListModel> unitsCountSnapshot, 
         CancellationToken cancellationToken)
     {
+        if (unitsCountSnapshot?.Data is null)
+        {
+            return;
+        }
+
         Dictionary<Brands, List<string>> countriesAtBrand = unitsCount.Brands
             .ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName).ToList());
 
