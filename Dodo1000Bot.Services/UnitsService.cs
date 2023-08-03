@@ -145,28 +145,48 @@ public class UnitsService : CheckAndNotifyService
             var hasValueAtSnapshot = countriesAtBrandSnashot.TryGetValue(brand, out var countriesAtSnapshot);
             if (!hasValueAtSnapshot)
             {
-                // What to do here? Actually, it means, that there is new brand at new country
-                continue;
+                // await NotifyAboutNewCountries(brand, countries, cancellationToken);
+                // continue;
+                countriesAtSnapshot = Enumerable.Empty<string>();
             }
 
             var difference = countries.Except(countriesAtSnapshot);
 
             foreach(var countryName in difference)
             {
-                if (countries.Contains(countryName) && !countriesAtSnapshot.Contains(countryName))
+                if (!countries.Contains(countryName) && countriesAtSnapshot.Contains(countryName))
                 {
-                    var notification = new Notification
-                    {
-                        Payload = new NotificationPayload
-                        {
-                            Text =
-                                $"There is new country of {brand} - {countryName}!"
-                        }
-                    };
-
-                    await _notificationsService.Save(notification, cancellationToken);
+                    continue;
                 }
+
+                var notification = new Notification
+                {
+                    Payload = new NotificationPayload
+                    {
+                        Text =
+                            $"There is new country of {brand} - {countryName}!"
+                    }
+                };
+
+                await _notificationsService.Save(notification, cancellationToken);
             }
+        }
+    }
+
+    private async Task NotifyAboutNewCountries(Brands brand, IEnumerable<string> countries, CancellationToken cancellationToken)
+    {
+        foreach(var country in countries)
+        {
+            var notification = new Notification
+            {
+                Payload = new NotificationPayload
+                {
+                    Text =
+                        $"There is new country of {brand} - {country}!"
+                }
+            };
+
+            await _notificationsService.Save(notification, cancellationToken);
         }
     }
 
