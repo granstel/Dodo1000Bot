@@ -46,6 +46,7 @@ public class UnitsService : CheckAndNotifyService
             await AboutTotalOverall(unitsCount, cancellationToken);
             await AboutTotalAtBrands(unitsCount, cancellationToken);
             await AboutTotalAtCountries(unitsCount, cancellationToken);
+            await AboutNewCountries(unitsCount, unitsCountSnapshot, cancellationToken);
 
             await UpdateSnapshot(unitsCountSnapshot, unitsCount, cancellationToken);
         }
@@ -114,29 +115,58 @@ public class UnitsService : CheckAndNotifyService
             var brand = totalAtBrandAtCountry.Key;
             foreach (var totalAtCountry in totalAtBrandAtCountry.Value)
             {
-                await CheckAndNotify0(totalAtCountry, brand, cancellationToken);
                 await CheckAndNotify1000(totalAtCountry, brand, cancellationToken);
             }
         }
     }
 
-    private async Task CheckAndNotify0(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
+    internal async Task AboutNewCountries(
+        BrandListTotalUnitCountListModel unitsCount, 
+        Snapshot<BrandListTotalUnitCountListModel> unitsCountSnapshot, 
+        CancellationToken cancellationToken)
     {
-        if (!CheckEquals0(totalAtCountry.Value))
+        if (unitsCountSnapshot?.Data is null)
         {
             return;
         }
 
-        var notification = new Notification
-        {
-            Payload = new NotificationPayload
-            {
-                Text =
-                    $"There is new country of {brand} - {totalAtCountry.Key}!"
-            }
-        };
+        Dictionary<Brands, List<string>> countriesAtBrand = unitsCount.Brands
+            .ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName).ToList());
 
-        await _notificationsService.Save(notification, cancellationToken);
+        Dictionary<Brands, List<string>> countriesAtBrandSnapshot = unitsCountSnapshot.Data.Brands
+            .ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName).ToList());
+
+        foreach (var brand in countriesAtBrand.Keys)
+        {
+            List<string> countries = countriesAtBrand.GetValueOrDefault(brand);
+
+            List<string> countriesAtSnapshot = countriesAtBrandSnapshot.GetValueOrDefault(brand) ?? new List<string>();
+
+            if (countries.Count == countriesAtSnapshot.Count)
+            {
+                return;
+            }
+
+            var difference = countries.Except(countriesAtSnapshot);
+
+            await CheckDifferenceAndNotify(brand, difference, cancellationToken);
+        }
+    }
+
+    private async Task CheckDifferenceAndNotify(Brands brand, IEnumerable<string> difference, CancellationToken cancellationToken)
+    {
+        foreach(var countryName in difference)
+        {
+            var notification = new Notification
+            {
+                Payload = new NotificationPayload
+                {
+                    Text = $"There is new country of {brand} - {countryName}!"
+                }
+            };
+
+            await _notificationsService.Save(notification, cancellationToken);
+        }
     }
 
     private async Task CheckAndNotify1000(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
