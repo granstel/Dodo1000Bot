@@ -125,29 +125,21 @@ public class UnitsService : CheckAndNotifyService
         Snapshot<BrandListTotalUnitCountListModel> unitsCountSnapshot, 
         CancellationToken cancellationToken)
     {
-        var brandsCountriesCount = unitsCount.Brands.Sum(b => b.Countries.Count());
-        var brandsCountriesCountSnapshot = unitsCountSnapshot.Data.Brands.Sum(b => b.Countries.Count());
+        Dictionary<Brands, List<string>> countriesAtBrand = unitsCount.Brands
+            .ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName).ToList());
 
-        if (brandsCountriesCount == brandsCountriesCountSnapshot)
-        {
-            return;
-        }
-
-        var countriesAtBrand = unitsCount.Brands
-            .ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName));
-
-        var countriesAtBrandSnashot = unitsCountSnapshot.Data.Brands
-            .ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName));
+        Dictionary<Brands, List<string>> countriesAtBrandSnapshot = unitsCountSnapshot.Data.Brands
+            .ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName).ToList());
 
         foreach (var brand in countriesAtBrand.Keys)
         {
-            countriesAtBrand.TryGetValue(brand, out var countries);
-            var hasValueAtSnapshot = countriesAtBrandSnashot.TryGetValue(brand, out var countriesAtSnapshot);
-            if (!hasValueAtSnapshot)
+            List<string> countries = countriesAtBrand.GetValueOrDefault(brand);
+
+            List<string> countriesAtSnapshot = countriesAtBrandSnapshot.GetValueOrDefault(brand) ?? new List<string>();
+
+            if (countries.Count == countriesAtSnapshot.Count)
             {
-                // await NotifyAboutNewCountries(brand, countries, cancellationToken);
-                // continue;
-                countriesAtSnapshot = Enumerable.Empty<string>();
+                return;
             }
 
             var difference = countries.Except(countriesAtSnapshot);
