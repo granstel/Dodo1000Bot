@@ -170,15 +170,6 @@ public class UnitsService : CheckAndNotifyService
                 .Brands.First(b => b.Brand == brand);
             var totalUnitCountListModelAtSnapshot = unitsCountSnapshot.Data
                 .Brands.FirstOrDefault(b => b.Brand == brand);
-            
-            var totalUnits = totalUnitCountListModel.Total;
-
-            var totalUnitsAtSnapshot = totalUnitCountListModelAtSnapshot?.Total ?? 0;
-            
-            if (totalUnits == totalUnitsAtSnapshot)
-            {
-                return;
-            }
 
             foreach (var country in totalUnitCountListModel.Countries)
             {
@@ -188,7 +179,7 @@ public class UnitsService : CheckAndNotifyService
 
                 if (country.PizzeriaCount == pizzeriaCountAtSnapshot)
                 {
-                    continue;
+                    await UpdateUnitsOfBrandAtCountrySnapshot(brand, country.CountryId, cancellationToken);
                 }
 
                 await CheckUnitsOfBrandAtCountryAndNotify(brand, country, cancellationToken);
@@ -200,7 +191,7 @@ public class UnitsService : CheckAndNotifyService
     {
         BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, country.CountryId, cancellationToken);
 
-        var snapshotName = nameof(_globalApiClient.UnitsOfBrandAtCountry);
+        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(country.CountryId);
         var unitsSnapshot = 
             await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
 
@@ -225,6 +216,8 @@ public class UnitsService : CheckAndNotifyService
 
             await _notificationsService.Save(notification, cancellationToken);
         }
+
+        await UpdateSnapshot(unitsSnapshot, unitsAtCountry, cancellationToken);
     }
 
     private async Task CheckAndNotify1000(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
@@ -260,5 +253,21 @@ public class UnitsService : CheckAndNotifyService
 
             await _notificationsService.Save(notification, cancellationToken);
         }
+    }
+
+    private async Task UpdateUnitsOfBrandAtCountrySnapshot(Brands brand, int countryId, CancellationToken cancellationToken)
+    {
+        BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
+
+        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(countryId);
+        var unitsSnapshot = 
+            await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
+
+        await UpdateSnapshot(unitsSnapshot, unitsAtCountry, cancellationToken);
+    }
+
+    private string GetUnitsOfBrandAtCountrySnapshotName(int countryId)
+    {
+        return $"{nameof(_globalApiClient.UnitsOfBrandAtCountry)}{countryId}";
     }
 }
