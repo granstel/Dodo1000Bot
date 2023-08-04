@@ -198,7 +198,33 @@ public class UnitsService : CheckAndNotifyService
 
     private async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, UnitCountModel country, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, country.CountryId, cancellationToken);
+
+        var snapshotName = nameof(_globalApiClient.UnitsOfBrandAtCountry);
+        var unitsSnapshot = 
+            await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
+
+        List<UnitModel> unitsList = unitsAtCountry.Countries.SelectMany(c => c.Pizzerias).ToList();
+        IEnumerable<UnitModel> unitsListAtSnapshot = unitsSnapshot?.Data?.Countries.SelectMany(c => c.Pizzerias) 
+                                                     ?? Enumerable.Empty<UnitModel>();
+
+        var difference = unitsList.ExceptBy(unitsListAtSnapshot.Select(u => u.Name), u => u.Name);
+
+        foreach(var unit in difference)
+        {
+            var notification = new Notification
+            {
+                Payload = new NotificationPayload
+                {
+                    Text = $"There is new unit of {brand} - {unit.Name}! You can find it here👇",
+                    Address = unit.Address?.Text,
+                    Coordinates = unit.Coords,
+                    Name = unit.Name
+                }
+            };
+
+            await _notificationsService.Save(notification, cancellationToken);
+        }
     }
 
     private async Task CheckAndNotify1000(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
