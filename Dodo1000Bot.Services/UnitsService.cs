@@ -47,6 +47,7 @@ public class UnitsService : CheckAndNotifyService
             await AboutTotalAtBrands(unitsCount, cancellationToken);
             await AboutTotalAtCountries(unitsCount, cancellationToken);
             await AboutNewCountries(unitsCount, unitsCountSnapshot, cancellationToken);
+            await AboutNewUnits(unitsCount, unitsCountSnapshot, cancellationToken);
 
             await UpdateSnapshot(unitsCountSnapshot, unitsCount, cancellationToken);
         }
@@ -108,7 +109,8 @@ public class UnitsService : CheckAndNotifyService
 
     internal async Task AboutTotalAtCountries(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
     {
-        var totalAtBrandAtCountries = unitsCount.Brands.ToDictionary(b => b.Brand, b => b.Countries.ToDictionary(c => c.CountryName, c => c.PizzeriaCount));
+        var totalAtBrandAtCountries = unitsCount.Brands
+            .ToDictionary(b => b.Brand, b => b.Countries.ToDictionary(c => c.CountryName, c => c.PizzeriaCount));
 
         foreach (var totalAtBrandAtCountry in totalAtBrandAtCountries)
         {
@@ -153,19 +155,29 @@ public class UnitsService : CheckAndNotifyService
         }
     }
 
-    private async Task CheckDifferenceAndNotify(Brands brand, IEnumerable<string> difference, CancellationToken cancellationToken)
+    internal async Task AboutNewUnits(BrandListTotalUnitCountListModel unitsCount, Snapshot<BrandListTotalUnitCountListModel> unitsCountSnapshot, CancellationToken cancellationToken)
     {
-        foreach(var countryName in difference)
+        if (unitsCountSnapshot?.Data is null)
         {
-            var notification = new Notification
-            {
-                Payload = new NotificationPayload
-                {
-                    Text = $"There is new country of {brand} - {countryName}!"
-                }
-            };
+            return;
+        }
 
-            await _notificationsService.Save(notification, cancellationToken);
+        Dictionary<Brands, int> totalUnitsAtBrand = unitsCount.Brands
+            .ToDictionary(b => b.Brand, b => b.Total);
+
+        Dictionary<Brands, int> totalUnitsAtBrandSnapshot = unitsCountSnapshot.Data.Brands
+            .ToDictionary(b => b.Brand, b => b.Total);
+
+        foreach (var brand in totalUnitsAtBrand.Keys)
+        {
+            var totalUnits = totalUnitsAtBrand.GetValueOrDefault(brand);
+
+            var totalUnitsAtSnapshot = totalUnitsAtBrandSnapshot.GetValueOrDefault(brand);
+            
+            if (totalUnits == totalUnitsAtSnapshot)
+            {
+                return;
+            }
         }
     }
 
@@ -186,5 +198,21 @@ public class UnitsService : CheckAndNotifyService
         };
 
         await _notificationsService.Save(notification, cancellationToken);
+    }
+
+    private async Task CheckDifferenceAndNotify(Brands brand, IEnumerable<string> difference, CancellationToken cancellationToken)
+    {
+        foreach(var countryName in difference)
+        {
+            var notification = new Notification
+            {
+                Payload = new NotificationPayload
+                {
+                    Text = $"There is new country of {brand} - {countryName}!"
+                }
+            };
+
+            await _notificationsService.Save(notification, cancellationToken);
+        }
     }
 }
