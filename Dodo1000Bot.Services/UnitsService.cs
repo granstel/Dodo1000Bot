@@ -200,9 +200,8 @@ public class UnitsService : CheckAndNotifyService
         var unitsSnapshot = 
             await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
 
-        List<UnitModel> unitsList = unitsAtCountry.Countries.SelectMany(c => c.Pizzerias).ToList();
-        IEnumerable<UnitModel> unitsListSnapshot = unitsSnapshot?.Data?.Countries.SelectMany(c => c.Pizzerias) 
-                                                     ?? Enumerable.Empty<UnitModel>();
+        IEnumerable<UnitModel> unitsList = GetUnitsList(unitsAtCountry);
+        IEnumerable<UnitModel> unitsListSnapshot = GetUnitsList(unitsSnapshot?.Data);
 
         var difference = unitsList.ExceptBy(unitsListSnapshot.Select(u => u.Name), u => u.Name);
 
@@ -223,6 +222,11 @@ public class UnitsService : CheckAndNotifyService
         }
 
         await UpdateSnapshot(unitsSnapshot, unitsAtCountry, cancellationToken);
+    }
+
+    private IEnumerable<UnitModel> GetUnitsList(BrandData<UnitListModel> unitListModel)
+    {
+        return unitListModel?.Countries.SelectMany(c => c.Pizzerias).ToList() ?? new List<UnitModel>();
     }
 
     private async Task CheckAndNotify1000(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
