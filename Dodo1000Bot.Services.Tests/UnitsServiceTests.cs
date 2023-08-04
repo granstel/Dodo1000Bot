@@ -97,14 +97,9 @@ namespace Dodo1000Bot.Services.Tests
                 .With(b => b.Countries, new []{ country })
                 .With(b => b.Brand, Brands.Dodopizza)
                 .Create();
-            var unitsCountAtSnapshot = _fixture.Build<BrandListTotalUnitCountListModel>()
+            var unitsCountSnapshot = _fixture.Build<BrandListTotalUnitCountListModel>()
                 .With(c => c.Brands, new[] { brandUnitCountAtSnapshot })
                 .Create();
-
-            var unitsCountSnapshot = new Snapshot<BrandListTotalUnitCountListModel>
-            {
-                Data = unitsCountAtSnapshot
-            };
 
             var expectedText = $"There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
 
@@ -142,14 +137,9 @@ namespace Dodo1000Bot.Services.Tests
                 .With(b => b.Countries, new []{ country})
                 .With(b => b.Brand, Brands.Doner42)
                 .Create();
-            var unitsCountAtSnapshot = _fixture.Build<BrandListTotalUnitCountListModel>()
+            var unitsCountSnapshot = _fixture.Build<BrandListTotalUnitCountListModel>()
                 .With(c => c.Brands, new[] { brandUnitCountAtSnapshot })
                 .Create();
-
-            var unitsCountSnapshot = new Snapshot<BrandListTotalUnitCountListModel>
-            {
-                Data = unitsCountAtSnapshot
-            };
 
             var expectedText = $"There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
 
@@ -187,14 +177,9 @@ namespace Dodo1000Bot.Services.Tests
                 .With(b => b.Countries, new []{ country, oldCountry })
                 .With(b => b.Brand, Brands.Doner42)
                 .Create();
-            var unitsCountAtSnapshot = _fixture.Build<BrandListTotalUnitCountListModel>()
+            var unitsCountSnapshot = _fixture.Build<BrandListTotalUnitCountListModel>()
                 .With(c => c.Brands, new[] { brandUnitCountAtSnapshot })
                 .Create();
-
-            var unitsCountSnapshot = new Snapshot<BrandListTotalUnitCountListModel>
-            {
-                Data = unitsCountAtSnapshot
-            };
 
             await _target.AboutNewCountries(unitsCount, unitsCountSnapshot, CancellationToken.None);
 
@@ -216,11 +201,9 @@ namespace Dodo1000Bot.Services.Tests
                 .With(c => c.Brands, new[] { brandUnitCount })
                 .Create();
 
-            var unitsCountSnapshot = new Snapshot<BrandListTotalUnitCountListModel>
-            {
-                Data = null
-            };
+            BrandListTotalUnitCountListModel unitsCountSnapshot = null;
 
+            // ReSharper disable once ExpressionIsAlwaysNull
             await _target.AboutNewCountries(unitsCount, unitsCountSnapshot, CancellationToken.None);
 
             _notificationsServiceMock.Verify(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
