@@ -2,8 +2,10 @@
 {
     public class CoordinatesModel
     {
-        public decimal? Lat { get; set; }
+        public float? Lat { get; set; }
+        public float Latitude => Lat.GetValueOrDefault();
 
-        public decimal? Long { get; set; }
+        public float? Long { get; set; }
+        public float Longitude => Long.GetValueOrDefault();
     }
 }
