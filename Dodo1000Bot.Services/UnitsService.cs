@@ -47,7 +47,7 @@ public class UnitsService : CheckAndNotifyService
             await AboutTotalAtBrands(unitsCount, cancellationToken);
             await AboutTotalAtCountries(unitsCount, cancellationToken);
             await AboutNewCountries(unitsCount, unitsCountSnapshot, cancellationToken);
-            await AboutNewUnits(unitsCount, unitsCountSnapshot, cancellationToken);
+            await AboutNewUnits(unitsCount, unitsCountSnapshot.Data, cancellationToken);
 
             await UpdateSnapshot(unitsCountSnapshot, unitsCount, cancellationToken);
         }
@@ -155,36 +155,41 @@ public class UnitsService : CheckAndNotifyService
         }
     }
 
-    internal async Task AboutNewUnits(BrandListTotalUnitCountListModel unitsCount, Snapshot<BrandListTotalUnitCountListModel> unitsCountSnapshot, CancellationToken cancellationToken)
+    internal async Task AboutNewUnits(BrandListTotalUnitCountListModel unitsCount, BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
     {
-        if (unitsCountSnapshot?.Data is null)
-        {
-            return;
-        }
-
         List<Brands> brands = unitsCount.Brands.Select(b => b.Brand).ToList();
 
         foreach (var brand in brands)
         {
             var totalUnitCountListModel = unitsCount
                 .Brands.First(b => b.Brand == brand);
-            var totalUnitCountListModelAtSnapshot = unitsCountSnapshot.Data
-                .Brands.FirstOrDefault(b => b.Brand == brand);
 
             foreach (var country in totalUnitCountListModel.Countries)
             {
-                var unitsCountAtSnapshot = 
-                    totalUnitCountListModelAtSnapshot?.Countries.Where(c => c.CountryName == country.CountryName)
-                        .Select(c => c.PizzeriaCount).FirstOrDefault();
-
-                if (country.PizzeriaCount == unitsCountAtSnapshot)
-                {
-                    await UpdateUnitsOfBrandAtCountrySnapshot(brand, country.CountryId, cancellationToken);
-                }
-
-                await CheckUnitsOfBrandAtCountryAndNotify(brand, country, cancellationToken);
+                await CheckUnitsCountAtCountryAndNotify(brand, country, unitsCountSnapshot, cancellationToken);
             }
         }
+    }
+
+    private async Task CheckUnitsCountAtCountryAndNotify(Brands brand, UnitCountModel country, 
+        BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
+    {
+        if (unitsCountSnapshot is null)
+        {
+            return;
+        }
+
+        var unitsCountAtCountrySnapshot = unitsCountSnapshot
+            .Brands.FirstOrDefault(b => b.Brand == brand)?
+            .Countries.Where(c => c.CountryName == country.CountryName)
+            .Select(c => c.PizzeriaCount).FirstOrDefault();
+
+        if (country.PizzeriaCount == unitsCountAtCountrySnapshot)
+        {
+            await UpdateUnitsOfBrandAtCountrySnapshot(brand, country.CountryId, cancellationToken);
+        }
+
+        await CheckUnitsOfBrandAtCountryAndNotify(brand, country, cancellationToken);
     }
 
     private async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, UnitCountModel country, CancellationToken cancellationToken)
