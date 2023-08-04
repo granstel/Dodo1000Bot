@@ -142,14 +142,14 @@ public class UnitsService : CheckAndNotifyService
         {
             List<string> countries = countriesAtBrand.GetValueOrDefault(brand);
 
-            List<string> countriesAtSnapshot = countriesAtBrandSnapshot.GetValueOrDefault(brand) ?? new List<string>();
+            List<string> countriesSnapshot = countriesAtBrandSnapshot.GetValueOrDefault(brand) ?? new List<string>();
 
-            if (countries.Count == countriesAtSnapshot.Count)
+            if (countries.Count == countriesSnapshot.Count)
             {
                 return;
             }
 
-            var difference = countries.Except(countriesAtSnapshot);
+            var difference = countries.Except(countriesSnapshot);
 
             await CheckDifferenceAndNotify(brand, difference, cancellationToken);
         }
@@ -201,10 +201,10 @@ public class UnitsService : CheckAndNotifyService
             await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
 
         List<UnitModel> unitsList = unitsAtCountry.Countries.SelectMany(c => c.Pizzerias).ToList();
-        IEnumerable<UnitModel> unitsListAtSnapshot = unitsSnapshot?.Data?.Countries.SelectMany(c => c.Pizzerias) 
+        IEnumerable<UnitModel> unitsListSnapshot = unitsSnapshot?.Data?.Countries.SelectMany(c => c.Pizzerias) 
                                                      ?? Enumerable.Empty<UnitModel>();
 
-        var difference = unitsList.ExceptBy(unitsListAtSnapshot.Select(u => u.Name), u => u.Name);
+        var difference = unitsList.ExceptBy(unitsListSnapshot.Select(u => u.Name), u => u.Name);
 
         foreach(var unit in difference)
         {
