@@ -162,21 +162,34 @@ public class UnitsService : CheckAndNotifyService
             return;
         }
 
-        Dictionary<Brands, int> totalUnitsAtBrand = unitsCount.Brands
-            .ToDictionary(b => b.Brand, b => b.Total);
+        List<Brands> brands = unitsCount.Brands.Select(b => b.Brand).ToList();
 
-        Dictionary<Brands, int> totalUnitsAtBrandSnapshot = unitsCountSnapshot.Data.Brands
-            .ToDictionary(b => b.Brand, b => b.Total);
-
-        foreach (var brand in totalUnitsAtBrand.Keys)
+        foreach (var brand in brands)
         {
-            var totalUnits = totalUnitsAtBrand.GetValueOrDefault(brand);
+            var totalUnitCountListModel = unitsCount
+                .Brands.First(b => b.Brand == brand);
+            var totalUnitCountListModelAtSnapshot = unitsCountSnapshot.Data
+                .Brands.FirstOrDefault(b => b.Brand == brand);
+            
+            var totalUnits = totalUnitCountListModel.Total;
 
-            var totalUnitsAtSnapshot = totalUnitsAtBrandSnapshot.GetValueOrDefault(brand);
+            var totalUnitsAtSnapshot = totalUnitCountListModelAtSnapshot?.Total ?? 0;
             
             if (totalUnits == totalUnitsAtSnapshot)
             {
                 return;
+            }
+
+            foreach (var country in totalUnitCountListModel.Countries)
+            {
+                var pizzeriaCountAtSnapshot = 
+                    totalUnitCountListModelAtSnapshot?.Countries.Where(c => c.CountryName == country.CountryName)
+                        .Select(c => c.PizzeriaCount).FirstOrDefault();
+
+                if (country.PizzeriaCount == pizzeriaCountAtSnapshot)
+                {
+                    continue;
+                }
             }
         }
     }
