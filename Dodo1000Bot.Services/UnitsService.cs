@@ -190,8 +190,15 @@ public class UnitsService : CheckAndNotifyService
                 {
                     continue;
                 }
+
+                await CheckUnitsOfBrandAtCountryAndNotify(brand, country, cancellationToken);
             }
         }
+    }
+
+    private async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, UnitCountModel country, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 
     private async Task CheckAndNotify1000(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
