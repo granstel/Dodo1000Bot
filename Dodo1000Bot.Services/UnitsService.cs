@@ -173,11 +173,11 @@ public class UnitsService : CheckAndNotifyService
 
             foreach (var country in totalUnitCountListModel.Countries)
             {
-                var pizzeriaCountAtSnapshot = 
+                var unitsCountAtSnapshot = 
                     totalUnitCountListModelAtSnapshot?.Countries.Where(c => c.CountryName == country.CountryName)
                         .Select(c => c.PizzeriaCount).FirstOrDefault();
 
-                if (country.PizzeriaCount == pizzeriaCountAtSnapshot)
+                if (country.PizzeriaCount == unitsCountAtSnapshot)
                 {
                     await UpdateUnitsOfBrandAtCountrySnapshot(brand, country.CountryId, cancellationToken);
                 }
