@@ -46,7 +46,7 @@ public class UnitsService : CheckAndNotifyService
             await AboutTotalOverall(unitsCount, cancellationToken);
             await AboutTotalAtBrands(unitsCount, cancellationToken);
             await AboutTotalAtCountries(unitsCount, cancellationToken);
-            await AboutNewCountries(unitsCount, unitsCountSnapshot, cancellationToken);
+            await AboutNewCountries(unitsCount, unitsCountSnapshot.Data, cancellationToken);
             await AboutNewUnits(unitsCount, unitsCountSnapshot.Data, cancellationToken);
 
             await UpdateSnapshot(unitsCountSnapshot, unitsCount, cancellationToken);
@@ -124,24 +124,20 @@ public class UnitsService : CheckAndNotifyService
 
     internal async Task AboutNewCountries(
         BrandListTotalUnitCountListModel unitsCount, 
-        Snapshot<BrandListTotalUnitCountListModel> unitsCountSnapshot, 
+        BrandListTotalUnitCountListModel unitsCountSnapshot, 
         CancellationToken cancellationToken)
     {
-        if (unitsCountSnapshot?.Data is null)
+        if (unitsCountSnapshot is null)
         {
             return;
         }
 
-        Dictionary<Brands, List<string>> countriesAtBrand = unitsCount.Brands
-            .ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName).ToList());
-
-        Dictionary<Brands, List<string>> countriesAtBrandSnapshot = unitsCountSnapshot.Data.Brands
-            .ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName).ToList());
+        Dictionary<Brands, List<string>> countriesAtBrand = GetCountriesAtBrands(unitsCount.Brands);
+        Dictionary<Brands, List<string>> countriesAtBrandSnapshot = GetCountriesAtBrands(unitsCountSnapshot.Brands);
 
         foreach (var brand in countriesAtBrand.Keys)
         {
             List<string> countries = countriesAtBrand.GetValueOrDefault(brand);
-
             List<string> countriesSnapshot = countriesAtBrandSnapshot.GetValueOrDefault(brand) ?? new List<string>();
 
             if (countries.Count == countriesSnapshot.Count)
@@ -153,6 +149,11 @@ public class UnitsService : CheckAndNotifyService
 
             await CheckDifferenceAndNotify(brand, difference, cancellationToken);
         }
+    }
+
+    private Dictionary<Brands,List<string>> GetCountriesAtBrands(IEnumerable<BrandTotalUnitCountListModel> unitsCountBrands)
+    {
+        return unitsCountBrands.ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName).ToList());
     }
 
     internal async Task AboutNewUnits(BrandListTotalUnitCountListModel unitsCount, BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
