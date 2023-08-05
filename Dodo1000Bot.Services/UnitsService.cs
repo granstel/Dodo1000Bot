@@ -203,6 +203,7 @@ public class UnitsService : CheckAndNotifyService
         if (country.PizzeriaCount == unitsCountAtCountrySnapshot)
         {
             await UpdateUnitsOfBrandAtCountrySnapshot(brand, country.CountryId, cancellationToken);
+            return;
         }
 
         await CheckUnitsOfBrandAtCountryAndNotify(brand, country, cancellationToken);
@@ -212,7 +213,7 @@ public class UnitsService : CheckAndNotifyService
     {
         BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, country.CountryId, cancellationToken);
 
-        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(country.CountryId);
+        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, country.CountryId);
         var unitsSnapshot = 
             await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
 
@@ -284,15 +285,15 @@ public class UnitsService : CheckAndNotifyService
     {
         BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
 
-        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(countryId);
+        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
         var unitsSnapshot = 
             await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
 
         await UpdateSnapshot(unitsSnapshot, unitsAtCountry, cancellationToken);
     }
 
-    private string GetUnitsOfBrandAtCountrySnapshotName(int countryId)
+    private string GetUnitsOfBrandAtCountrySnapshotName(Brands brands, int countryId)
     {
-        return $"{nameof(_globalApiClient.UnitsOfBrandAtCountry)}{countryId}";
+        return $"{nameof(_globalApiClient.UnitsOfBrandAtCountry)}{brands}{countryId}";
     }
 }
