@@ -39,13 +39,14 @@ public class UnitsService : CheckAndNotifyService
         {
             var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
 
+            await AboutTotalOverall(unitsCount, cancellationToken);
+            await AboutTotalAtBrands(unitsCount, cancellationToken);
+            await AboutTotalAtCountries(unitsCount, cancellationToken);
+
             var snapshotName = nameof(_globalApiClient.UnitsCount);
             var unitsCountSnapshot = 
                 await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
 
-            await AboutTotalOverall(unitsCount, cancellationToken);
-            await AboutTotalAtBrands(unitsCount, cancellationToken);
-            await AboutTotalAtCountries(unitsCount, cancellationToken);
             await AboutNewCountries(unitsCount, unitsCountSnapshot.Data, cancellationToken);
             await AboutNewUnits(unitsCount, unitsCountSnapshot.Data, cancellationToken);
 
@@ -200,20 +201,22 @@ public class UnitsService : CheckAndNotifyService
             .Countries.Where(c => c.CountryName == country.CountryName)
             .Select(c => c.PizzeriaCount).FirstOrDefault();
 
+        var countryId = country.CountryId;
+
         if (country.PizzeriaCount == unitsCountAtCountrySnapshot)
         {
-            await UpdateUnitsOfBrandAtCountrySnapshot(brand, country.CountryId, cancellationToken);
+            await UpdateUnitsOfBrandAtCountrySnapshot(brand, countryId, cancellationToken);
             return;
         }
 
-        await CheckUnitsOfBrandAtCountryAndNotify(brand, country, cancellationToken);
+        await CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, cancellationToken);
     }
 
-    private async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, UnitCountModel country, CancellationToken cancellationToken)
+    internal async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, int countryId, CancellationToken cancellationToken)
     {
-        BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, country.CountryId, cancellationToken);
+        BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
 
-        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, country.CountryId);
+        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
         var unitsSnapshot = 
             await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
 
