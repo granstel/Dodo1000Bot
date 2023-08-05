@@ -176,12 +176,13 @@ public class UnitsService : CheckAndNotifyService
 
             foreach (var country in totalUnitCountListModel.Countries)
             {
-                await CheckUnitsCountAtCountryAndNotify(brand, country, unitsCountSnapshot, cancellationToken);
+                await CheckUnitsCountAtCountryAndNotify(brand, country.CountryId, country.PizzeriaCount, 
+                    unitsCountSnapshot, cancellationToken);
             }
         }
     }
 
-    private async Task CheckUnitsCountAtCountryAndNotify(Brands brand, UnitCountModel country, 
+    private async Task CheckUnitsCountAtCountryAndNotify(Brands brand, int countryId, int unitsCount,
         BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
     {
         if (unitsCountSnapshot is null)
@@ -191,12 +192,10 @@ public class UnitsService : CheckAndNotifyService
 
         var unitsCountAtCountrySnapshot = unitsCountSnapshot
             .Brands.FirstOrDefault(b => b.Brand == brand)?
-            .Countries.Where(c => c.CountryName == country.CountryName)
+            .Countries.Where(c => c.CountryId == countryId)
             .Select(c => c.PizzeriaCount).FirstOrDefault();
 
-        var countryId = country.CountryId;
-
-        if (country.PizzeriaCount == unitsCountAtCountrySnapshot)
+        if (unitsCount == unitsCountAtCountrySnapshot)
         {
             await UpdateUnitsOfBrandAtCountrySnapshot(brand, countryId, cancellationToken);
             return;
