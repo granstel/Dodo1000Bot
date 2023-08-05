@@ -138,7 +138,7 @@ public class UnitsService : CheckAndNotifyService
         foreach (var brand in countriesAtBrand.Keys)
         {
             List<string> countries = countriesAtBrand.GetValueOrDefault(brand);
-            List<string> countriesSnapshot = countriesAtBrandSnapshot.GetValueOrDefault(brand) ?? new List<string>();
+            List<string> countriesSnapshot = GetValueOrDefault(countriesAtBrandSnapshot, brand, new List<string>());
 
             if (countries.Count == countriesSnapshot.Count)
             {
@@ -149,6 +149,21 @@ public class UnitsService : CheckAndNotifyService
 
             await CheckDifferenceAndNotify(brand, difference, cancellationToken);
         }
+    }
+
+    /// <summary>
+    /// F**k you, cyclomatic complexity!
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="key"></param>
+    /// <param name="defaultValue"></param>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <returns></returns>
+    private TValue GetValueOrDefault<TKey, TValue>(Dictionary<TKey, TValue> source, TKey key,
+        TValue defaultValue)
+    {
+        return source.GetValueOrDefault(key) ?? defaultValue;
     }
 
     private Dictionary<Brands,List<string>> GetCountriesAtBrands(IEnumerable<BrandTotalUnitCountListModel> unitsCountBrands)
