@@ -298,5 +298,67 @@ namespace Dodo1000Bot.Services.Tests
 
             await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, CancellationToken.None);
         }
+
+        [Test]
+        public async Task CheckUnitsOfBrandAtCountryAndNotify_NewUnit_Notification()
+        {
+            var brand = _fixture.Create<Brands>();
+            var countryId = _fixture.Create<int>();
+
+            var unitName = _fixture.Create<string>();
+            var unitModel = _fixture.Build<UnitModel>()
+                .With(m => m.Name, unitName)
+                .Create();
+            var newUnitName = _fixture.Create<string>();
+            var expectedCoordinates = _fixture.Build<CoordinatesModel>()
+                .With(c => c.Lat)
+                .With(c => c.Long)
+                .Create();
+            var newUnitModel = _fixture.Build<UnitModel>()
+                .With(m => m.Name, newUnitName)
+                .With(m => m.Coords, expectedCoordinates)
+                .Create();
+
+            var unitListModel = _fixture.Build<UnitListModel>()
+                    .With(m => m.Pizzerias, new []{unitModel, newUnitModel})
+                    .Create();
+            var unitsAtCountry = _fixture.Build<BrandData<UnitListModel>>()
+                    .With(m => m.Countries, new []{unitListModel})
+                    .Create();
+
+            var unitModelSnapshot = _fixture.Build<UnitModel>()
+                .With(m => m.Name, unitName)
+                .Create();
+            var unitListModelSnapshot = _fixture.Build<UnitListModel>()
+                    .With(m => m.Pizzerias, new []{unitModelSnapshot})
+                    .Create();
+            var unitsAtCountrySnapshot = _fixture.Build<BrandData<UnitListModel>>()
+                    .With(m => m.Countries, new []{unitListModelSnapshot})
+                    .Create();
+
+            _globalApiClientMock.Setup(c => c.UnitsOfBrandAtCountry(brand, countryId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(unitsAtCountry);
+
+            var snapshotName = $"UnitsOfBrandAtCountry{brand}{countryId}";
+            var snapshot = Snapshot<BrandData<UnitListModel>>.Create(snapshotName, unitsAtCountrySnapshot);
+
+            _snapshotsRepositoryMock.Setup(r => r.Get<BrandData<UnitListModel>>(snapshotName, CancellationToken.None))
+                .ReturnsAsync(snapshot);
+
+            _snapshotsRepositoryMock.Setup(r => 
+                r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            var expectedText = $"There is new unit of {brand} - {newUnitName}! You can find it here👇";
+            _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
+                .Callback((Notification notification, CancellationToken _) =>
+                {
+                    Assert.AreEqual(notification.Payload.Text, expectedText);
+                    Assert.AreEqual(notification.Payload.Coordinates, expectedCoordinates);
+                })
+                .Returns(Task.CompletedTask);
+
+            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, CancellationToken.None);
+        }
     }
 }
