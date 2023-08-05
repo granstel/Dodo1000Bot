@@ -154,7 +154,7 @@ namespace Dodo1000Bot.Services.Tests
         }
 
         [Test]
-        public async Task AboutNewCountries_LessCountriesThanAtSnapshot_Notification()
+        public async Task AboutNewCountries_LessCountriesThanAtSnapshot_NoAnyNotification()
         {
             var country = _fixture.Build<UnitCountModel>()
                 .With(c => c.PizzeriaCount, 0)
