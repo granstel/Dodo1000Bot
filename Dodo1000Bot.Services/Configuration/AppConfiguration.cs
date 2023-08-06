@@ -16,6 +16,8 @@
 
         public string RealtimeBoardApiClientEndpoint { get; set; }
 
+        public string RestcountriesApiClientEndpoint { get; set; }
+
         public string MysqlConnectionString { get; set; }
 
         public PushNotificationsConfiguration PushNotifications { get; set; }
