@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -37,21 +38,16 @@ public class CountriesRepositoryTests
     [Ignore("Integration")]
     public async Task Save_DuplicateCountryId_UpdatedCountry()
     {
-        var country = _fixture.Build<UnitCountModel>()
-            .With(s => s.CountryId)
-            .With(s => s.CountryName)
-            .Create();
-
-        await _target.Save(country, CancellationToken.None);
+        var code = new string(_fixture.CreateMany<char>(3).ToArray());
+        var name = _fixture.Create<string>();
+        await _target.Save(code, name, CancellationToken.None);
 
         var newName = _fixture.Create<string>();
 
-        country.CountryName = newName;
+        await _target.Save(code, newName, CancellationToken.None);
 
-        await _target.Save(country, CancellationToken.None);
+        var savedName = await _target.GetName(code, CancellationToken.None);
 
-        var name = await _target.GetName(country.CountryId, CancellationToken.None);
-
-        Assert.AreEqual(newName, name);
+        Assert.AreEqual(newName, savedName);
     }
 }
