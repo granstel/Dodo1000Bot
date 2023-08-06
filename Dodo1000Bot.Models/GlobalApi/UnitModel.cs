@@ -2,7 +2,7 @@
 {
     public class UnitModel
     {
-        public string UuId { get; set; }
+        public string Name { get; set; }
 
         public CoordinatesModel Coords { get; set; }
 

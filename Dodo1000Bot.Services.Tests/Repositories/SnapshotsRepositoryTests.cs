@@ -47,7 +47,7 @@ public class SnapshotsRepositoryTests
 
         var data = _fixture.Create<string>();
 
-        var newSnapshot = Snapshot<string>.Create(snapshot, data);
+        var newSnapshot = Snapshot<string>.Create(snapshot.Name, data);
 
         await _target.Save(newSnapshot, CancellationToken.None);
 

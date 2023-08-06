@@ -12,12 +12,11 @@ namespace Dodo1000Bot.Models.Domain
 
         public DateTime ModifiedAt => DateTime.UtcNow;
 
-        public static Snapshot<TData> Create(Snapshot<TData> oldSnapshot, TData data)
+        public static Snapshot<TData> Create(string name, TData data)
         {
             return new()
             {
-                Id = oldSnapshot.Id,
-                Name = oldSnapshot.Name,
+                Name = name,
                 Data = data,
             };
         }

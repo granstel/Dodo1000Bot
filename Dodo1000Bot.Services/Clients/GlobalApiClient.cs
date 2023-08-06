@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.GlobalApi;
 using Dodo1000Bot.Services.Extensions;
 
@@ -23,6 +24,15 @@ namespace Dodo1000Bot.Services.Clients
             const string url = "units/count";
 
             var unitsCount = await _httpClient.GetAsync<BrandListTotalUnitCountListModel>(url, _serializerOptions, cancellationToken);
+
+            return unitsCount;
+        }
+
+        public async Task<BrandData<UnitListModel>> UnitsOfBrandAtCountry(Brands brand, int countryId, CancellationToken cancellationToken)
+        {
+            var url = $"{brand}/units/all/{countryId}";
+
+            var unitsCount = await _httpClient.GetAsync<BrandData<UnitListModel>>(url, _serializerOptions, cancellationToken);
 
             return unitsCount;
         }

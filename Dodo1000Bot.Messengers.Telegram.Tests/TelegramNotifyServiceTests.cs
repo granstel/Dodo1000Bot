@@ -42,7 +42,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
 
             _target = new TelegramNotifyService(_usersRepositoryMock.Object, _clientMock.Object, _logMock);
 
-            _fixture = new Fixture();
+            _fixture = new Fixture { OmitAutoProperties = true };
         }
 
         [TearDown]
@@ -82,7 +82,12 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         [Test]
         public async Task NotifyAbout_AnyNotificationsAndUsers_SentAllNotificationsToAllUsers()
         {
-            var notification = _fixture.Create<Notification>();
+            var payload = _fixture.Build<NotificationPayload>()
+                .With(n => n.Text)
+                .Create();
+            var notification = _fixture.Build<Notification>()
+                .With(n => n.Payload, payload)
+                .Create();
             var user = _fixture.Build<Domain.User>()
                 .With(u => u.Id)
                 .With(u => u.MessengerUserId, _fixture.Create<long>().ToString)

@@ -1,4 +1,5 @@
 ﻿using System;
+using Dodo1000Bot.Models.GlobalApi;
 
 namespace Dodo1000Bot.Models.Domain
 {
@@ -7,6 +8,12 @@ namespace Dodo1000Bot.Models.Domain
         public string Text { get; init; }
 
         public DateTime? HappenedAt { get; init; }
+
+        public CoordinatesModel Coordinates { get; init; }
+
+        public string Address { get; init; }
+
+        public string Name { get; init; }
 
         public override string ToString()
         {
