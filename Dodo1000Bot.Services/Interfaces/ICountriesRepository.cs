@@ -1,14 +1,11 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Dodo1000Bot.Models.GlobalApi;
 
 namespace Dodo1000Bot.Services;
 
 public interface ICountriesRepository
 {
-    Task<string> GetName(int id, CancellationToken cancellationToken);
+    Task<string> GetName(string code, CancellationToken cancellationToken);
 
-    Task Save(UnitCountModel country, CancellationToken cancellationToken);
-
-    Task Save(string country, string cancellationToken, CancellationToken cancellationToken1);
+    Task Save(string code, string name, CancellationToken cancellationToken1);
 }

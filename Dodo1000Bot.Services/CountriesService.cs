@@ -19,9 +19,9 @@ public class CountriesService : ICountriesService
         _client = client;
     }
 
-    public async Task<string> GetName(int id, string code, CancellationToken cancellationToken)
+    public async Task<string> GetName(string code, CancellationToken cancellationToken)
     {
-        var name = await _repository.GetName(id, cancellationToken);
+        var name = await _repository.GetName(code, cancellationToken);
 
         if (!string.IsNullOrWhiteSpace(name))
         {

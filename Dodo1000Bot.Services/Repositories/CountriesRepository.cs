@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
-using Dodo1000Bot.Models.GlobalApi;
 using MySql.Data.MySqlClient;
 
 namespace Dodo1000Bot.Services
@@ -15,34 +14,29 @@ namespace Dodo1000Bot.Services
             _connection = connection;
         }
 
-        public async Task<string> GetName(int id, CancellationToken cancellationToken)
+        public async Task<string> GetName(string code, CancellationToken cancellationToken)
         {
             var name = await _connection.QueryFirstOrDefaultAsync<string>(
             @"SELECT Name FROM countries 
-              WHERE id = @id",
+              WHERE Code = @code",
             new
             {
-                id
+                code
             });
 
             return name;
         }
 
-        public async Task Save(UnitCountModel country, CancellationToken cancellationToken)
+        public async Task Save(string code, string name, CancellationToken cancellationToken1)
         {
             await _connection.ExecuteAsync(
-                "INSERT INTO countries (Id, Name) VALUES (@id, @name)" +
-                "ON DUPLICATE KEY UPDATE Id = @id, Name = @name",
+                "INSERT INTO countries (Code, Name) VALUES (@code, @name)" +
+                "ON DUPLICATE KEY UPDATE Code = @code, Name = @name",
                 new
                 {
-                    id = country.CountryId,
-                    name = country.CountryName,
+                    code,
+                    name
                 });
-        }
-
-        public Task Save(string country, string cancellationToken, CancellationToken cancellationToken1)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

@@ -5,5 +5,5 @@ namespace Dodo1000Bot.Services;
 
 public interface ICountriesService
 {
-    Task<string> GetName(int id, string code, CancellationToken cancellationToken);
+    Task<string> GetName(string code, CancellationToken cancellationToken);
 }
