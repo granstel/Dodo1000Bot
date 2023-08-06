@@ -8,8 +8,9 @@ public class CreateCountriesTable: Migration
     public override void Up()
     {
         Create.Table("countries")
-            .WithColumn("Id").AsInt32().NotNullable().PrimaryKey().Identity()
-            .WithColumn("Name").AsString(64).NotNullable();
+            .WithColumn("Id").AsInt32().NotNullable().Indexed()
+            .WithColumn("Name").AsString(64).NotNullable()
+            .WithColumn("Code").AsString(3).NotNullable();
     }
 
     public override void Down()
