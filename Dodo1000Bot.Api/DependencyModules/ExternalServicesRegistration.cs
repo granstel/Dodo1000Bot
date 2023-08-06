@@ -26,6 +26,8 @@ namespace Dodo1000Bot.Api.DependencyModules
                 nameof(configuration.GlobalApiEndpoint));
             services.AddHttpClient<IRealtimeBoardApiClient, RealtimeBoardApiClient>(configuration.RealtimeBoardApiClientEndpoint, 
                 nameof(configuration.RealtimeBoardApiClientEndpoint));
+            services.AddHttpClient<IRestcountriesApiClient, RestcountriesApiClient>(configuration.RestcountriesApiClientEndpoint, 
+                nameof(configuration.RestcountriesApiClientEndpoint));
         }
 
         private static SessionsClient RegisterDialogflowSessionsClient(IServiceProvider provider)
