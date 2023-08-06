@@ -39,5 +39,10 @@ namespace Dodo1000Bot.Services
                     name = country.CountryName,
                 });
         }
+
+        public Task Save(string country, string cancellationToken, CancellationToken cancellationToken1)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

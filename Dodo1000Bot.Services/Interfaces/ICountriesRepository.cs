@@ -9,4 +9,6 @@ public interface ICountriesRepository
     Task<string> GetName(int id, CancellationToken cancellationToken);
 
     Task Save(UnitCountModel country, CancellationToken cancellationToken);
+
+    Task Save(string country, string cancellationToken, CancellationToken cancellationToken1);
 }
