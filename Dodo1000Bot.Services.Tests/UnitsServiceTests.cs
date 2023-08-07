@@ -20,6 +20,7 @@ namespace Dodo1000Bot.Services.Tests
         private Mock<IGlobalApiClient> _globalApiClientMock;
         private Mock<INotificationsService> _notificationsServiceMock;
         private Mock<ISnapshotsRepository> _snapshotsRepositoryMock;
+        private Mock<ICountriesService> _countriesService;
 
         private UnitsService _target;
 
@@ -34,12 +35,14 @@ namespace Dodo1000Bot.Services.Tests
             _globalApiClientMock = _mockRepository.Create<IGlobalApiClient>();
             _notificationsServiceMock = _mockRepository.Create<INotificationsService>();
             _snapshotsRepositoryMock = _mockRepository.Create<ISnapshotsRepository>();
+            _countriesService = _mockRepository.Create<ICountriesService>();
 
             _target = new UnitsService(
                 _logMock, 
                 _globalApiClientMock.Object, 
                 _notificationsServiceMock.Object, 
-                _snapshotsRepositoryMock.Object);
+                _snapshotsRepositoryMock.Object,
+                _countriesService.Object);
 
             _fixture = new Fixture { OmitAutoProperties = true };
         }
