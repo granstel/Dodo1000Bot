@@ -20,17 +20,20 @@ public class UnitsService : CheckAndNotifyService
     private readonly IGlobalApiClient _globalApiClient;
     private readonly INotificationsService _notificationsService;
     private readonly ISnapshotsRepository _snapshotsRepository;
+    private readonly ICountriesService _countriesService;
 
     public UnitsService(
         ILogger<UnitsService> log, 
         IGlobalApiClient globalApiClient, 
         INotificationsService notificationsService, 
-        ISnapshotsRepository snapshotsRepository)
+        ISnapshotsRepository snapshotsRepository, 
+        ICountriesService countriesService)
     {
         _log = log;
         _globalApiClient = globalApiClient;
         _notificationsService = notificationsService;
         _snapshotsRepository = snapshotsRepository;
+        _countriesService = countriesService;
     }
 
     public override async Task CheckAndNotify(CancellationToken cancellationToken)
@@ -104,7 +107,7 @@ public class UnitsService : CheckAndNotifyService
     internal async Task AboutTotalAtCountries(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
     {
         var totalAtBrandAtCountries = unitsCount.Brands
-            .ToDictionary(b => b.Brand, b => b.Countries.ToDictionary(c => c.CountryName, c => c.PizzeriaCount));
+            .ToDictionary(b => b.Brand, b => b.Countries);
 
         foreach (var totalAtBrandAtCountry in totalAtBrandAtCountries)
         {
@@ -248,11 +251,23 @@ public class UnitsService : CheckAndNotifyService
         return unitListModel?.Countries.SelectMany(c => c.Pizzerias).ToList() ?? new List<UnitModel>();
     }
 
-    private async Task CheckAndNotify1000(KeyValuePair<string, int> totalAtCountry, Brands brand, CancellationToken cancellationToken)
+    private async Task CheckAndNotify1000(UnitCountModel totalAtCountry, Brands brand, CancellationToken cancellationToken)
     {
-        if (!CheckRemainder1000(totalAtCountry.Value))
+        if (!CheckRemainder1000(totalAtCountry.PizzeriaCount))
         {
             return;
+        }
+
+        var countryName = totalAtCountry.CountryName;
+
+        try
+        {
+            countryName = await _countriesService.GetName(totalAtCountry.CountryCode, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _log.LogError(e, "Can't get country name with code {code} from {source}", 
+                totalAtCountry.CountryCode, nameof(totalAtCountry.CountryCode));
         }
 
         var notification = new Notification
@@ -260,7 +275,7 @@ public class UnitsService : CheckAndNotifyService
             Payload = new NotificationPayload
             {
                 Text =
-                    $"There is {totalAtCountry.Value} units of {brand} at {totalAtCountry.Key}!"
+                    $"There is {totalAtCountry.PizzeriaCount} units of {brand} at {countryName}!"
             }
         };
 
