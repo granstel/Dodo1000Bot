@@ -36,7 +36,8 @@ public class CountriesService : ICountriesService
         }
         catch (Exception e)
         {
-            _log.LogError(e, "Can't get name for country with code {code}", code);
+            _log.LogError(e, "Can't get country name with code {code} from {source}", 
+                code, nameof(IRestcountriesApiClient));
         }
 
         if (!string.IsNullOrWhiteSpace(name))
