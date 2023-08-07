@@ -1,4 +1,5 @@
-﻿using AutoFixture;
+﻿using System;
+using AutoFixture;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,7 @@ namespace Dodo1000Bot.Services.Tests
         private Mock<IGlobalApiClient> _globalApiClientMock;
         private Mock<INotificationsService> _notificationsServiceMock;
         private Mock<ISnapshotsRepository> _snapshotsRepositoryMock;
+        private Mock<ICountriesService> _countriesServiceMock;
 
         private UnitsService _target;
 
@@ -34,12 +36,14 @@ namespace Dodo1000Bot.Services.Tests
             _globalApiClientMock = _mockRepository.Create<IGlobalApiClient>();
             _notificationsServiceMock = _mockRepository.Create<INotificationsService>();
             _snapshotsRepositoryMock = _mockRepository.Create<ISnapshotsRepository>();
+            _countriesServiceMock = _mockRepository.Create<ICountriesService>();
 
             _target = new UnitsService(
                 _logMock, 
                 _globalApiClientMock.Object, 
                 _notificationsServiceMock.Object, 
-                _snapshotsRepositoryMock.Object);
+                _snapshotsRepositoryMock.Object,
+                _countriesServiceMock.Object);
 
             _fixture = new Fixture { OmitAutoProperties = true };
         }
@@ -101,6 +105,8 @@ namespace Dodo1000Bot.Services.Tests
                 .With(c => c.Brands, new[] { brandUnitCountAtSnapshot })
                 .Create();
 
+            _countriesServiceMock.Setup(s => s.GetName(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws<Exception>();
+
             var expectedText = $"There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
 
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
@@ -140,6 +146,8 @@ namespace Dodo1000Bot.Services.Tests
             var unitsCountSnapshot = _fixture.Build<BrandListTotalUnitCountListModel>()
                 .With(c => c.Brands, new[] { brandUnitCountAtSnapshot })
                 .Create();
+
+            _countriesServiceMock.Setup(s => s.GetName(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
             var expectedText = $"There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
 
