@@ -129,20 +129,20 @@ public class UnitsService : CheckAndNotifyService
             return;
         }
 
-        Dictionary<Brands, List<string>> countriesAtBrand = GetCountriesAtBrands(unitsCount.Brands);
-        Dictionary<Brands, List<string>> countriesAtBrandSnapshot = GetCountriesAtBrands(unitsCountSnapshot.Brands);
+        Dictionary<Brands, List<UnitCountModel>> countriesAtBrand = GetCountriesAtBrands(unitsCount.Brands);
+        Dictionary<Brands, List<UnitCountModel>> countriesAtBrandSnapshot = GetCountriesAtBrands(unitsCountSnapshot.Brands);
 
         foreach (var brand in countriesAtBrand.Keys)
         {
-            List<string> countries = countriesAtBrand.GetValueOrDefault(brand);
-            List<string> countriesSnapshot = GetValueOrDefault(countriesAtBrandSnapshot, brand, new List<string>());
+            List<UnitCountModel> countries = countriesAtBrand.GetValueOrDefault(brand);
+            List<UnitCountModel> countriesSnapshot = GetValueOrDefault(countriesAtBrandSnapshot, brand, new List<UnitCountModel>());
 
             if (countries.Count == countriesSnapshot.Count)
             {
                 return;
             }
 
-            var difference = countries.Except(countriesSnapshot);
+            var difference = countries.ExceptBy(countriesSnapshot.Select(s => s.CountryName), c => c.CountryName);
 
             await CheckDifferenceAndNotify(brand, difference, cancellationToken);
         }
@@ -163,9 +163,9 @@ public class UnitsService : CheckAndNotifyService
         return source.GetValueOrDefault(key) ?? defaultValue;
     }
 
-    private Dictionary<Brands,List<string>> GetCountriesAtBrands(IEnumerable<BrandTotalUnitCountListModel> unitsCountBrands)
+    private Dictionary<Brands, List<UnitCountModel>> GetCountriesAtBrands(IEnumerable<BrandTotalUnitCountListModel> unitsCountBrands)
     {
-        return unitsCountBrands.ToDictionary(b => b.Brand, b => b.Countries.Select(c => c.CountryName).ToList());
+        return unitsCountBrands.ToDictionary(b => b.Brand, b => b.Countries.ToList());
     }
 
     internal async Task AboutNewUnits(BrandListTotalUnitCountListModel unitsCount, BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
@@ -267,7 +267,7 @@ public class UnitsService : CheckAndNotifyService
         catch (Exception e)
         {
             _log.LogError(e, "Can't get country name with code {code} from {source}", 
-                totalAtCountry.CountryCode, nameof(totalAtCountry.CountryCode));
+                totalAtCountry.CountryCode, nameof(ICountriesService));
         }
 
         var notification = new Notification
@@ -282,10 +282,22 @@ public class UnitsService : CheckAndNotifyService
         await _notificationsService.Save(notification, cancellationToken);
     }
 
-    private async Task CheckDifferenceAndNotify(Brands brand, IEnumerable<string> difference, CancellationToken cancellationToken)
+    private async Task CheckDifferenceAndNotify(Brands brand, IEnumerable<UnitCountModel> difference, CancellationToken cancellationToken)
     {
-        foreach(var countryName in difference)
+        foreach(var countModel in difference)
         {
+            var countryName = countModel.CountryName;
+
+            try
+            {
+                countryName = await _countriesService.GetName(countModel.CountryCode, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e, "Can't get country name with code {code} from {source}", 
+                    countModel.CountryCode, nameof(ICountriesService));
+            }
+
             var notification = new Notification
             {
                 Payload = new NotificationPayload
