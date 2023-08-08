@@ -23,6 +23,11 @@ public class NotificationsService : INotificationsService
 
     public async Task Save(Notification notification, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrEmpty(notification?.Payload?.Text))
+        {
+            _logger.LogWarning("Text of notification payload is null or empty");
+        }
+
         await _notificationsRepository.Save(notification, cancellationToken);
     }
 
