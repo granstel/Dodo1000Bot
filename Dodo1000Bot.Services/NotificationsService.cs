@@ -26,6 +26,7 @@ public class NotificationsService : INotificationsService
         if (string.IsNullOrEmpty(notification?.Payload?.Text))
         {
             _logger.LogWarning("Text of notification payload is null or empty");
+            return;
         }
 
         await _notificationsRepository.Save(notification, cancellationToken);
