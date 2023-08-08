@@ -9,4 +9,6 @@ public interface INotificationsService
     Task Save(Notification notification, CancellationToken cancellationToken);
 
     Task PushNotifications(CancellationToken cancellationToken);
+
+    Task Delete(int notificationId, CancellationToken cancellationToken);
 }

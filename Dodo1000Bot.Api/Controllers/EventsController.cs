@@ -36,7 +36,7 @@ public class EventsController: Controller
     }
 
     [HttpGet]
-    public string GetInfo()
+    public string Get()
     {
         return $"{DateTime.Now:F}";
     }
@@ -45,6 +45,14 @@ public class EventsController: Controller
     public async Task<IActionResult> Put([FromBody]Notification notification, string token, CancellationToken cancellationToken)
     {
         await _notificationsService.Save(notification, cancellationToken);
+
+        return Ok();
+    }
+
+    [HttpDelete("{notificationId:int}/{token?}")]
+    public async Task<IActionResult> Delete(int notificationId, string token, CancellationToken cancellationToken)
+    {
+        await _notificationsService.Delete(notificationId, cancellationToken);
 
         return Ok();
     }

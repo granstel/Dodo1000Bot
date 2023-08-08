@@ -48,4 +48,9 @@ public class NotificationsService : INotificationsService
 
         await _notificationsRepository.Save(pushedNotifications, cancellationToken);
     }
+
+    public async Task Delete(int notificationId, CancellationToken cancellationToken)
+    {
+        await _notificationsRepository.Delete(notificationId, cancellationToken);
+    }
 }
