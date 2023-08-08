@@ -8,6 +8,7 @@ using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Services;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 
 namespace Dodo1000Bot.Messengers.Telegram;
 
@@ -59,7 +60,7 @@ public class TelegramNotifyService: INotifyService
         {
             try
             {
-                await _client.SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text,
+                await _client.SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text, parseMode: ParseMode.Html,
                     cancellationToken: cancellationToken);
 
                 var coordinates = notification.Payload.Coordinates;
