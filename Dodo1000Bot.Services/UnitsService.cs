@@ -194,7 +194,7 @@ public class UnitsService : CheckAndNotifyService
     private async Task CheckUnitsCountAtCountryAndNotify(Brands brand, int countryId, int unitsCount,
         BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
     {
-        _log.LogInformation("Start CheckUnitsCountAtCountryAndNotify for countryId {countryId}", countryId);
+        _log.LogInformation("Start CheckUnitsCountAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
 
         if (unitsCountSnapshot is null)
         {
@@ -217,7 +217,7 @@ public class UnitsService : CheckAndNotifyService
         }
 
         await CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, cancellationToken);
-        _log.LogInformation("Finish CheckUnitsCountAtCountryAndNotify for countryId {countryId}", countryId);
+        _log.LogInformation("Finish CheckUnitsCountAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
     }
 
     internal async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, int countryId, CancellationToken cancellationToken)
