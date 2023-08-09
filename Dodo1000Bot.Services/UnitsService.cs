@@ -43,7 +43,7 @@ public class UnitsService : CheckAndNotifyService
         try
         {
             var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
-
+            _log.LogInformation("unitsCount: {unitsCount}", unitsCount.Serialize());
             await AboutTotalOverall(unitsCount, cancellationToken);
             await AboutTotalAtBrands(unitsCount, cancellationToken);
             await AboutTotalAtCountries(unitsCount, cancellationToken);
@@ -51,11 +51,12 @@ public class UnitsService : CheckAndNotifyService
             var snapshotName = nameof(_globalApiClient.UnitsCount);
             var unitsCountSnapshot = 
                 await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
-
+            _log.LogInformation("unitsCountSnapshot: {unitsCountSnapshot}", unitsCountSnapshot.Serialize());
             await AboutNewCountries(unitsCount, unitsCountSnapshot.Data, cancellationToken);
             await AboutNewUnits(unitsCount, unitsCountSnapshot.Data, cancellationToken);
-
+            _log.LogInformation("Before UpdateSnapshot at CheckAndNotify");
             await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
+            _log.LogInformation("After UpdateSnapshot at CheckAndNotify");
         }
         catch (Exception e)
         {
