@@ -251,8 +251,9 @@ public class UnitsService : CheckAndNotifyService
 
             await _notificationsService.Save(notification, cancellationToken);
         }
-
+        _log.LogInformation("Before UpdateSnapshot at CheckUnitsOfBrandAtCountryAndNotify");
         await UpdateSnapshot(snapshotName, unitsAtCountry, cancellationToken);
+        _log.LogInformation("After UpdateSnapshot at CheckUnitsOfBrandAtCountryAndNotify");
         _log.LogInformation("Finish CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
     }
 
