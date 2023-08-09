@@ -209,13 +209,6 @@ public class UnitsService : CheckAndNotifyService
 
         _log.LogInformation("unitsCount = {unitsCount}, unitsCountAtCountrySnapshot = {unitsCountAtCountrySnapshot}", unitsCount, unitsCountAtCountrySnapshot);
 
-        if (unitsCount == unitsCountAtCountrySnapshot)
-        {
-            _log.LogInformation("unitsCount equals to unitsCountAtCountrySnapshot");
-            await UpdateUnitsOfBrandAtCountrySnapshot(brand, countryId, cancellationToken);
-            return;
-        }
-
         await CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, cancellationToken);
         _log.LogInformation("Finish CheckUnitsCountAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
     }
@@ -334,17 +327,6 @@ public class UnitsService : CheckAndNotifyService
 
             await _notificationsService.Save(notification, cancellationToken);
         }
-    }
-
-    private async Task UpdateUnitsOfBrandAtCountrySnapshot(Brands brand, int countryId, CancellationToken cancellationToken)
-    {
-        _log.LogInformation("Start UpdateUnitsOfBrandAtCountrySnapshot for brand {brand} at countryId {countryId}", brand, countryId);
-        BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
-
-        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
-
-        await UpdateSnapshot(snapshotName, unitsAtCountry, cancellationToken);
-        _log.LogInformation("Finish UpdateUnitsOfBrandAtCountrySnapshot for brand {brand} at countryId {countryId}", brand, countryId);
     }
 
     private string GetUnitsOfBrandAtCountrySnapshotName(Brands brand, int countryId)
