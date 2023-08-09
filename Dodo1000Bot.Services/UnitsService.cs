@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
+using Dodo1000Bot.Models.Restcountries;
+using Dodo1000Bot.Services.Extensions;
 using Dodo1000Bot.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -170,6 +172,7 @@ public class UnitsService : CheckAndNotifyService
 
     internal async Task AboutNewUnits(BrandListTotalUnitCountListModel unitsCount, BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
     {
+        _log.LogInformation("Start AboutNewUnits");
         List<Brands> brands = unitsCount.Brands.Select(b => b.Brand).ToList();
 
         foreach (var brand in brands)
@@ -177,19 +180,25 @@ public class UnitsService : CheckAndNotifyService
             var totalUnitCountListModel = unitsCount
                 .Brands.First(b => b.Brand == brand);
 
+            _log.LogInformation("Brand {brand}", brand);
+
             foreach (var country in totalUnitCountListModel.Countries)
             {
                 await CheckUnitsCountAtCountryAndNotify(brand, country.CountryId, country.PizzeriaCount, 
                     unitsCountSnapshot, cancellationToken);
             }
         }
+        _log.LogInformation("Finish AboutNewUnits");
     }
 
     private async Task CheckUnitsCountAtCountryAndNotify(Brands brand, int countryId, int unitsCount,
         BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
     {
+        _log.LogInformation("Start CheckUnitsCountAtCountryAndNotify for countryId {countryId}", countryId);
+
         if (unitsCountSnapshot is null)
         {
+            _log.LogInformation("unitsCountSnapshot is null");
             return;
         }
 
@@ -198,29 +207,43 @@ public class UnitsService : CheckAndNotifyService
             .Countries.Where(c => c.CountryId == countryId)
             .Select(c => c.PizzeriaCount).FirstOrDefault();
 
+        _log.LogInformation("unitsCount = {unitsCount}, unitsCountAtCountrySnapshot = {unitsCountAtCountrySnapshot}", unitsCount, unitsCountAtCountrySnapshot);
+
         if (unitsCount == unitsCountAtCountrySnapshot)
         {
+            _log.LogInformation("unitsCount equals to unitsCountAtCountrySnapshot");
             await UpdateUnitsOfBrandAtCountrySnapshot(brand, countryId, cancellationToken);
             return;
         }
 
         await CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, cancellationToken);
+        _log.LogInformation("Finish CheckUnitsCountAtCountryAndNotify for countryId {countryId}", countryId);
     }
 
     internal async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, int countryId, CancellationToken cancellationToken)
     {
+        _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
         BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
+
+        _log.LogInformation("unitsAtCountry: {unitsAtCountry}", unitsAtCountry.Serialize());
 
         var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
         var unitsSnapshot = 
             await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
 
+        _log.LogInformation("unitsSnapshot: {unitsSnapshot}", unitsSnapshot.Serialize());
+
         IEnumerable<UnitModel> unitsList = GetUnitsList(unitsAtCountry);
         IEnumerable<UnitModel> unitsListSnapshot = GetUnitsList(unitsSnapshot?.Data);
 
-        var difference = unitsList.ExceptBy(unitsListSnapshot.Select(u => u.Name), u => u.Name);
+        _log.LogInformation("unitsList: {unitsList}", unitsList.Serialize());
+        _log.LogInformation("unitsListSnapshot: {unitsListSnapshot}", unitsListSnapshot.Serialize());
 
-        foreach(var unit in difference)
+        var difference = unitsList.ExceptBy(unitsListSnapshot.Select(u => u.Name), u => u.Name).ToList();
+
+        _log.LogInformation("difference: {difference}", difference.Serialize());
+
+        foreach (var unit in difference)
         {
             var notification = new Notification
             {
@@ -237,13 +260,16 @@ public class UnitsService : CheckAndNotifyService
         }
 
         await UpdateSnapshot(snapshotName, unitsAtCountry, cancellationToken);
+        _log.LogInformation("Finish CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
     }
 
     private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
     {
+        _log.LogInformation("Start UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
         var newSnapshot = Snapshot<TData>.Create(snapshotName, data);
 
         await _snapshotsRepository.Save(newSnapshot, cancellationToken);
+        _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
     }
 
     private IEnumerable<UnitModel> GetUnitsList(BrandData<UnitListModel> unitListModel)
@@ -312,11 +338,13 @@ public class UnitsService : CheckAndNotifyService
 
     private async Task UpdateUnitsOfBrandAtCountrySnapshot(Brands brand, int countryId, CancellationToken cancellationToken)
     {
+        _log.LogInformation("Start UpdateUnitsOfBrandAtCountrySnapshot for brand {brand} at countryId {countryId}", brand, countryId);
         BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
 
         var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
 
         await UpdateSnapshot(snapshotName, unitsAtCountry, cancellationToken);
+        _log.LogInformation("Finish UpdateUnitsOfBrandAtCountrySnapshot for brand {brand} at countryId {countryId}", brand, countryId);
     }
 
     private string GetUnitsOfBrandAtCountrySnapshotName(Brands brand, int countryId)
