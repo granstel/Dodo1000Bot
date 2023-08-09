@@ -23,6 +23,12 @@ public class NotificationsService : INotificationsService
 
     public async Task Save(Notification notification, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrEmpty(notification?.Payload?.Text))
+        {
+            _logger.LogWarning("Text of notification payload is null or empty");
+            return;
+        }
+
         await _notificationsRepository.Save(notification, cancellationToken);
     }
 
@@ -42,5 +48,10 @@ public class NotificationsService : INotificationsService
         IEnumerable<PushedNotification> pushedNotifications = tasksResults.SelectMany(r => r);
 
         await _notificationsRepository.Save(pushedNotifications, cancellationToken);
+    }
+
+    public async Task Delete(int notificationId, CancellationToken cancellationToken)
+    {
+        await _notificationsRepository.Delete(notificationId, cancellationToken);
     }
 }

@@ -12,4 +12,6 @@ public interface INotificationsRepository
     Task<IList<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken);
 
     Task Save(IEnumerable<PushedNotification> pushedNotifications, CancellationToken cancellationToken);
+
+    Task Delete(int notificationId, CancellationToken cancellationToken);
 }

@@ -73,4 +73,14 @@ public class NotificationsRepository : INotificationsRepository
         await transaction.CommitAsync(cancellationToken);
         await _connection.CloseAsync();
     }
+
+    public async Task Delete(int notificationId, CancellationToken cancellationToken)
+    {
+        await _connection.ExecuteAsync(
+            "DELETE FROM notifications WHERE Id = @notificationId",
+            new
+            {
+                notificationId
+            });
+    }
 }
