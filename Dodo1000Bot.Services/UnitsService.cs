@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
-using Dodo1000Bot.Models.Restcountries;
 using Dodo1000Bot.Services.Extensions;
 using Dodo1000Bot.Services.Interfaces;
 using Microsoft.Extensions.Logging;
