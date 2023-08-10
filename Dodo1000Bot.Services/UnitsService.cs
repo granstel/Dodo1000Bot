@@ -139,11 +139,6 @@ public class UnitsService : CheckAndNotifyService
             List<UnitCountModel> countries = countriesAtBrand.GetValueOrDefault(brand);
             List<UnitCountModel> countriesSnapshot = GetValueOrDefault(countriesAtBrandSnapshot, brand, new List<UnitCountModel>());
 
-            if (countries.Count == countriesSnapshot.Count)
-            {
-                return;
-            }
-
             var difference = countries.ExceptBy(countriesSnapshot.Select(s => s.CountryName), c => c.CountryName);
 
             await CheckDifferenceAndNotify(brand, difference, cancellationToken);
@@ -173,6 +168,12 @@ public class UnitsService : CheckAndNotifyService
     internal async Task AboutNewUnits(BrandListTotalUnitCountListModel unitsCount, BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start AboutNewUnits");
+        if (unitsCountSnapshot is null)
+        {
+            _log.LogInformation("unitsCountSnapshot is null");
+            return;
+        }
+
         List<Brands> brands = unitsCount.Brands.Select(b => b.Brand).ToList();
 
         foreach (var brand in brands)
@@ -195,12 +196,6 @@ public class UnitsService : CheckAndNotifyService
         BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start CheckUnitsCountAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
-
-        if (unitsCountSnapshot is null)
-        {
-            _log.LogInformation("unitsCountSnapshot is null");
-            return;
-        }
 
         var unitsCountAtCountrySnapshot = unitsCountSnapshot
             .Brands.FirstOrDefault(b => b.Brand == brand)?
