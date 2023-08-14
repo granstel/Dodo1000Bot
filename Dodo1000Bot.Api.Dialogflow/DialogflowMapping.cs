@@ -18,5 +18,7 @@ public class DialogflowMapping : Profile
             .ForMember(d => d.HasScreen, m => m.MapFrom(s => true))
             .ForMember(d => d.Language, m => m.Ignore())
             .ForMember(d => d.NewSession, m => m.Ignore());
+
+        CreateMap<Response, string>().ConvertUsing((response, result) => response.Text);
     }
 }
