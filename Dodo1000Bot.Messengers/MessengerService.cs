@@ -37,7 +37,7 @@ namespace Dodo1000Bot.Messengers
             {
                 var request = Before(input);
 
-                response = ProcessCommand(request);
+                response = await ProcessCommand(request, cancellationToken);
 
                 if (response == null)
                 {
@@ -61,7 +61,7 @@ namespace Dodo1000Bot.Messengers
             return output;
         }
 
-        protected virtual Response ProcessCommand(Request request)
+        protected virtual Task<Response> ProcessCommand(Request request, CancellationToken cancellationToken)
         {
             return null;
         }
