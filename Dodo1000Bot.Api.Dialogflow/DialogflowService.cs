@@ -6,6 +6,7 @@ using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Services;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace Dodo1000Bot.Api.Dialogflow;
 public class DialogflowService : MessengerService<FulfillmentRequest, string>, IDialogflowService
 {
     private readonly IUsersRepository _usersRepository;
+    private readonly IDictionary<string, Func<Request, CancellationToken, Task>> _commandsDictionary;
 
     public DialogflowService(
         ILogger<DialogflowService> log,
@@ -22,21 +24,39 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
         IUsersRepository usersRepository) : base(log, conversationService, mapper)
     {
         _usersRepository = usersRepository;
+
+        _commandsDictionary = new Dictionary<string, Func<Request, CancellationToken, Task>>
+        {
+            { "SaveUser", SaveUser }
+        };
     }
 
     protected override async Task<Response> ProcessCommand(Request request, CancellationToken cancellationToken)
     {
-        await SaveUser(request.UserHash, request.Source, cancellationToken);
+        var response = new Response { Text = string.Empty };
 
-        return new Response { Text = string.Empty };
+        if (!_commandsDictionary.TryGetValue(request.Text, out Func<Request, CancellationToken, Task> action))
+        {
+            return response;
+        }
+
+        await action(request, cancellationToken);
+
+        return response;
     }
 
-    private async Task SaveUser(string userHash, Source source, CancellationToken cancellationToken)
+    /// <summary>
+    /// Action for key "SaveUser"
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    private async Task SaveUser(Request request, CancellationToken cancellationToken)
     {
         var user = new User
         {
-            MessengerUserId = userHash,
-            MessengerType = source
+            MessengerUserId = request.UserHash,
+            MessengerType = request.Source
         };
 
         try
