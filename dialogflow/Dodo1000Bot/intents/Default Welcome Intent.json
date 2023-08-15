@@ -6,7 +6,7 @@
   "responses": [
     {
       "resetContexts": false,
-      "action": "input.welcome",
+      "action": "SaveUser",
       "affectedContexts": [],
       "parameters": [],
       "messages": [
