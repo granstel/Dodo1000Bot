@@ -1,12 +1,12 @@
 {
-  "id": "22aff83d-44cf-48bb-8582-5048d99ced6b",
-  "name": "test",
+  "id": "96c0d62f-475a-43d1-a4a6-7f1fccea4c5a",
+  "name": "Stop",
   "auto": true,
   "contexts": [],
   "responses": [
     {
       "resetContexts": false,
-      "action": "Test",
+      "action": "DeleteUser",
       "affectedContexts": [],
       "parameters": [],
       "messages": [
@@ -16,7 +16,8 @@
           "textToSpeech": "",
           "lang": "ru",
           "speech": [
-            "Success test!"
+            "Very sorry, I\u0027ll miss you. Hope we see you again...",
+            "Well it\u0027s your choice, I can\u0027t blame you. Good luck and see you..."
           ],
           "condition": ""
         }
