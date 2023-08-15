@@ -45,7 +45,7 @@ namespace Dodo1000Bot.Services
         public async Task Delete(User user, CancellationToken cancellationToken)
         {
             await _connection.ExecuteAsync(
-                "DELETE FROM users WHERE MessengerUserId = @messengerUserId AND MessengerType = @messengerType)",
+                "DELETE FROM users WHERE MessengerUserId = @messengerUserId AND MessengerType = @messengerType",
                 new
                 {
                     messengerUserId = user.MessengerUserId,
