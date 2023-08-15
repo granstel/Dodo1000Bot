@@ -63,7 +63,7 @@ namespace Dodo1000Bot.Messengers
 
         protected virtual Task<Response> ProcessCommand(Request request, CancellationToken cancellationToken)
         {
-            return null;
+            return Task.FromResult<Response>(null);
         }
 
         protected virtual async Task<TOutput> AfterAsync(TInput input, Response response)
