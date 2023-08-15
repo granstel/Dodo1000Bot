@@ -27,7 +27,8 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
 
         _commandsDictionary = new Dictionary<string, Func<Request, CancellationToken, Task>>
         {
-            { "SaveUser", SaveUser }
+            { "SaveUser", SaveUser },
+            { "DeleteUser", DeleteUser }
         };
     }
 
@@ -40,8 +41,15 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
             return response;
         }
 
-        await action(request, cancellationToken);
-
+        try
+        {
+            await action(request, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            Log.LogError(e, "Can't {MethodName}", action.Method.Name);
+        }
+        
         return response;
     }
 
@@ -59,13 +67,23 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
             MessengerType = request.Source
         };
 
-        try
-        {
             await _usersRepository.SaveUser(user, cancellationToken);
-        }
-        catch (Exception e)
+    }
+
+    /// <summary>
+    /// Action for key "DeleteUser"
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    private async Task DeleteUser(Request request, CancellationToken cancellationToken)
+    {
+        var user = new User
         {
-            Log.LogError(e, "Can't save user");
-        }
+            MessengerUserId = request.UserHash,
+            MessengerType = request.Source
+        };
+
+        await _usersRepository.Delete(user, cancellationToken);
     }
 }

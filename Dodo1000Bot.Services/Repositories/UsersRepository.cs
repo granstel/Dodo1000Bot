@@ -41,5 +41,16 @@ namespace Dodo1000Bot.Services
                     messengerType = user.MessengerType
                 });
         }
+
+        public async Task Delete(User user, CancellationToken cancellationToken)
+        {
+            await _connection.ExecuteAsync(
+                "DELETE FROM users WHERE MessengerUserId = @messengerUserId AND MessengerType = @messengerType)",
+                new
+                {
+                    messengerUserId = user.MessengerUserId,
+                    messengerType = user.MessengerType
+                });
+        }
     }
 }
