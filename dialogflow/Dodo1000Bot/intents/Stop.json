@@ -1,12 +1,12 @@
 {
-  "id": "1423e936-710d-414d-a203-34250dc8eaf1",
-  "name": "Default Welcome Intent",
+  "id": "96c0d62f-475a-43d1-a4a6-7f1fccea4c5a",
+  "name": "Stop",
   "auto": true,
   "contexts": [],
   "responses": [
     {
       "resetContexts": false,
-      "action": "SaveUser",
+      "action": "DeleteUser",
       "affectedContexts": [],
       "parameters": [],
       "messages": [
@@ -16,8 +16,8 @@
           "textToSpeech": "",
           "lang": "ru",
           "speech": [
-            "Hello! You are now subscribed to notifications about Dodo brands. Now... just wait for the news)",
-            "Hi! You are now subscribed to notifications about Dodo brands. And now just wait for the news)"
+            "Very sorry, I\u0027ll miss you. Hope we see you again...",
+            "Well it\u0027s your choice, I can\u0027t blame you. Good luck and see you..."
           ],
           "condition": ""
         }
@@ -29,11 +29,7 @@
   "webhookUsed": true,
   "webhookForSlotFilling": false,
   "fallbackIntent": false,
-  "events": [
-    {
-      "name": "TELEGRAM_WELCOME"
-    }
-  ],
+  "events": [],
   "conditionalResponses": [],
   "condition": "",
   "conditionalFollowupEvents": []

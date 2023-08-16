@@ -57,7 +57,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         }
 
         [Test]
-        public async Task SetWebhookAsync_Invokation_Success()
+        public async Task SetWebhookAsync_Invocation_Success()
         {
             await _target.SetWebhookAsync(It.IsAny<string>(), CancellationToken.None);
 
@@ -65,7 +65,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         }
 
         [Test]
-        public async Task ProcessIncomingAsync_Invokations_Success()
+        public async Task ProcessIncomingAsync_Invocations_Success()
         {
             var inputModel = _fixture.Build<Update>()
                 .OmitAutoProperties()
