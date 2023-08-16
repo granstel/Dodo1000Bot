@@ -12,6 +12,7 @@ public class CreateCustomNotificationsTable: Migration
             CREATE TABLE IF NOT EXISTS custom_notifications (
               `Id` INT NOT NULL AUTO_INCREMENT,
               `Payload` JSON NOT NULL,
+              `UserId` INT NOT NULL,
               `CreatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
               PRIMARY KEY (`Id`),
               UNIQUE INDEX `Id_UNIQUE` (`Id` ASC) INVISIBLE);
