@@ -29,5 +29,6 @@ public static class DatabaseRegistration
         services.AddTransient<IUsersRepository, UsersRepository>();
         services.AddTransient<ISnapshotsRepository, SnapshotsRepository>();
         services.AddTransient<ICountriesRepository, CountriesRepository>();
+        services.AddTransient<ICustomNotificationsRepository, CustomNotificationsRepository>();
     }
 }
