@@ -53,7 +53,7 @@ public class StatisticsServiceTests
             .With(s => s.OrdersPerMinute, ordersPerMinute)
             .Create();
 
-        var expectedText = $"There is {ordersPerMinute} orders per minute! See that on https://realtime.dodobrands.io";
+        var expectedText = "There are more than 1000 orders per minute! See that on https://realtime.dodobrands.io";
 
         _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
             .Callback((Notification notification, CancellationToken ct) =>
