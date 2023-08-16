@@ -1,4 +1,6 @@
-﻿namespace Dodo1000Bot.Api.Dialogflow.Models;
+﻿using Dodo1000Bot.Models;
+
+namespace Dodo1000Bot.Api.Dialogflow.Models;
 
 public class Data
 {
@@ -11,4 +13,6 @@ public class Data
     public string Date { get; set; }
 
     public string Text { get; set; }
+
+    public FormattingEntities[] Entities { get; set; }
 }

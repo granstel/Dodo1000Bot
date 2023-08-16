@@ -31,6 +31,20 @@ namespace Dodo1000Bot.Services
             return users.ToImmutableArray();
         }
 
+        public async Task<int> GetUserId(string messengerUserId, Source messengerType, CancellationToken cancellationToken)
+        {
+            var userId = await _connection.QueryFirstOrDefaultAsync<int>(new CommandDefinition(
+                @"SELECT Id FROM users
+                  WHERE MessengerUserId = @messengerUserId AND MessengerType = @messengerType",
+                new
+                {
+                    messengerUserId,
+                    messengerType
+                }, cancellationToken: cancellationToken));
+
+            return userId;
+        }
+
         public async Task SaveUser(User user, CancellationToken cancellationToken)
         {
             await _connection.ExecuteAsync(

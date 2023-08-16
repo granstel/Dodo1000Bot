@@ -14,21 +14,26 @@ namespace Dodo1000Bot.Api.Dialogflow;
 
 public class DialogflowService : MessengerService<FulfillmentRequest, string>, IDialogflowService
 {
-    private readonly IUsersRepository _usersRepository;
     private readonly IDictionary<string, Func<Request, CancellationToken, Task>> _commandsDictionary;
+
+    private readonly IUsersRepository _usersRepository;
+    private readonly ICustomNotificationsRepository _customNotificationsRepository;
 
     public DialogflowService(
         ILogger<DialogflowService> log,
         IConversationService conversationService,
         IMapper mapper,
-        IUsersRepository usersRepository) : base(log, conversationService, mapper)
+        IUsersRepository usersRepository, 
+        ICustomNotificationsRepository customNotificationsRepository) : base(log, conversationService, mapper)
     {
         _usersRepository = usersRepository;
+        _customNotificationsRepository = customNotificationsRepository;
 
         _commandsDictionary = new Dictionary<string, Func<Request, CancellationToken, Task>>
         {
             { "SaveUser", SaveUser },
-            { "DeleteUser", DeleteUser }
+            { "DeleteUser", DeleteUser },
+            { "SaveCustomNotification", SaveCustomNotification }
         };
     }
 
@@ -36,7 +41,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
     {
         var response = new Response { Text = string.Empty };
 
-        if (!_commandsDictionary.TryGetValue(request.Text, out Func<Request, CancellationToken, Task> action))
+        if (!_commandsDictionary.TryGetValue(request.Action, out Func<Request, CancellationToken, Task> action))
         {
             return response;
         }
@@ -85,5 +90,27 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
         };
 
         await _usersRepository.Delete(user, cancellationToken);
+    }
+
+    /// <summary>
+    /// Action for key "SaveCustomNotification"
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    private async Task SaveCustomNotification(Request request, CancellationToken cancellationToken)
+    {
+        var notification = new Notification
+        {
+            Payload = new NotificationPayload
+            {
+                Text = request.Text,
+                Formatting = request.Formatting
+            }
+        };
+
+        var userId = await _usersRepository.GetUserId(request.UserHash, request.Source, cancellationToken);
+
+        await _customNotificationsRepository.Save(notification, userId, cancellationToken);
     }
 }
