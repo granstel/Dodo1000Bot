@@ -6,7 +6,7 @@ namespace Dodo1000Bot.Services;
 
 public interface ICustomNotificationsRepository
 {
-    Task Save(Notification notification, int userId, CancellationToken cancellationToken);
+    Task Save(Notification notification, CancellationToken cancellationToken);
     Task<Notification> Get(int id, CancellationToken cancellationToken);
     Task Delete(int id, CancellationToken cancellationToken);
 }

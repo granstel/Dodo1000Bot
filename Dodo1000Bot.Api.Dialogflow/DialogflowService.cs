@@ -109,8 +109,6 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
             }
         };
 
-        var userId = await _usersRepository.GetUserId(request.UserHash, request.Source, cancellationToken);
-
-        await _customNotificationsRepository.Save(notification, userId, cancellationToken);
+        await _customNotificationsRepository.Save(notification, cancellationToken);
     }
 }

@@ -16,16 +16,15 @@ public class CustomNotificationsRepository : ICustomNotificationsRepository
         _connection = connection;
     }
 
-    public async Task Save(Notification notification, int userId, CancellationToken cancellationToken)
+    public async Task Save(Notification notification, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(notification?.Payload);
 
         await _connection.ExecuteAsync(new CommandDefinition(
-            "INSERT IGNORE INTO custom_notifications (Payload, UserId) VALUES (@payload, @userId)",
+            "INSERT IGNORE INTO custom_notifications (Payload) VALUES (@payload)",
             new
             {
-                payload,
-                userId
+                payload
             }, cancellationToken: cancellationToken));
     }
 
