@@ -14,5 +14,5 @@ public class Data
 
     public string Text { get; set; }
 
-    public FormattingEntities[] Entities { get; set; }
+    public FormattingEntity[] Entities { get; set; }
 }

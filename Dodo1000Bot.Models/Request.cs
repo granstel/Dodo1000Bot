@@ -22,6 +22,6 @@ namespace Dodo1000Bot.Models
 
         public Appeal Appeal { get; set; }
 
-        public FormattingEntities Formatting { get; set; }
+        public FormattingEntity[] Formatting { get; set; }
     }
 }

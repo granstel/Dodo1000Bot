@@ -1,6 +1,6 @@
 ﻿namespace Dodo1000Bot.Models;
 
-public class FormattingEntities
+public class FormattingEntity
 {
     public FormattingTypes Type { get; set; }
 
