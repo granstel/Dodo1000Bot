@@ -1,4 +1,5 @@
 ﻿using Dodo1000Bot.Models;
+using System.Text.Json.Serialization;
 
 namespace Dodo1000Bot.Api.Dialogflow.Models;
 
@@ -13,6 +14,4 @@ public class Data
     public string Date { get; set; }
 
     public string Text { get; set; }
-
-    public FormattingEntity[] Entities { get; set; }
 }
