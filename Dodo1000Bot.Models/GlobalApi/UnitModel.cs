@@ -1,4 +1,6 @@
-﻿namespace Dodo1000Bot.Models.GlobalApi
+﻿using System;
+
+namespace Dodo1000Bot.Models.GlobalApi
 {
     public class UnitModel
     {
@@ -7,5 +9,7 @@
         public CoordinatesModel Coords { get; set; }
 
         public AddressModel Address { get; set; }
+
+        public DateOnly StartDate { get; set; }
     }
 }
