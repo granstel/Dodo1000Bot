@@ -53,7 +53,7 @@ public class StatisticsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = $"There are more than 1000 orders per minute! See that on https://realtime.dodobrands.io",
+                Text = $"📈 There are more than 1000 orders per minute! See that on https://realtime.dodobrands.io",
                 HappenedAt = DateTime.Now
             }
         };
@@ -78,7 +78,7 @@ public class StatisticsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = $"There is over 1 000 000 000 dollars revenue in {DateTime.Now.Year} year! " +
+                Text = $"💰 There is over 1 000 000 000 dollars revenue in {DateTime.Now.Year} year! " +
                        $"See that on https://realtime.dodobrands.io"
             }
         };
