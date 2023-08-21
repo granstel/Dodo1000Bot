@@ -72,7 +72,7 @@ public class UnitsService : CheckAndNotifyService
             var unitsCountSnapshot =
                 await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
 
-            if (unitsCountSnapshot is not null)
+            if (unitsCountSnapshot?.Data is not null)
             {
                 _log.LogInformation("unitsCountSnapshot is not null");
                 return;
@@ -97,7 +97,7 @@ public class UnitsService : CheckAndNotifyService
             var unitsCountSnapshot =
                 await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(unitsCountSnapshotName, cancellationToken);
 
-            if (unitsCountSnapshot is null)
+            if (unitsCountSnapshot?.Data is null)
             {
                 _log.LogInformation("unitsCountSnapshot is null");
                 return;
