@@ -1,0 +1,40 @@
+{
+  "id": "d221da74-8fa9-4ae6-b2ee-5a3061edde5e",
+  "name": "Default Fallback Intent",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "input.unknown",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "ru",
+          "speech": [
+            "I don\u0027t quite understand what you mean.",
+            "This last sentence is not clear to me.",
+            "But this is not entirely clear.",
+            "Can you say the same in other words?",
+            "Now I don\u0027t understand you at all.",
+            "Please try to express your thoughts in a different way."
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": true,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}
