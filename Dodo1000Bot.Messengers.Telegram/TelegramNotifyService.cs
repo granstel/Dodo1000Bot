@@ -58,21 +58,22 @@ public class TelegramNotifyService: INotifyService
 
         foreach (var notification in notifications)
         {
+            var messengerUserId = user.MessengerUserId;
             try
             {
-                await _client.SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text, parseMode: ParseMode.Html,
+                await _client.SendTextMessageAsync(messengerUserId, notification.Payload.Text, parseMode: ParseMode.Html,
                     cancellationToken: cancellationToken);
 
                 var coordinates = notification.Payload.Coordinates;
                 if (coordinates != null)
                 {
-                    await _client.SendLocationAsync(user.MessengerUserId, coordinates.Latitude, coordinates.Longitude, 
+                    await _client.SendLocationAsync(messengerUserId, coordinates.Latitude, coordinates.Longitude, 
                         cancellationToken: cancellationToken);
                 }
             }
             catch (Exception e)
             {
-                _log.LogError(e, "Error while send notification");
+                _log.LogError(e, "Error while send notification to {MessengerUserId}", messengerUserId);
                 return pushedNotifications;
             }
 
