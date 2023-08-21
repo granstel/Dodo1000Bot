@@ -63,6 +63,31 @@ public class UnitsService : CheckAndNotifyService
         }
     }
 
+    public async Task CreateUnitsCountSnapshotIfNotExists(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var snapshotName = nameof(_globalApiClient.UnitsCount);
+
+            var unitsCountSnapshot =
+                await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
+
+            if (unitsCountSnapshot is not null)
+            {
+                _log.LogInformation("unitsCountSnapshot is not null");
+                return;
+            }
+
+            var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
+
+            await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _log.LogError(e, "Can't {methodName}", nameof(CreateUnitsCountSnapshotIfNotExists));
+        }
+    }
+
     private async Task AboutTotalOverall(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
     {
         var totalOverall = unitsCount.Brands.Sum(b => b.Total);
