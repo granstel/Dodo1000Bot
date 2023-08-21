@@ -147,7 +147,7 @@ public class UnitsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = $"There is {totalOverall} units!"
+                Text = $"🏘 There is {totalOverall} units!"
             }
         };
 
@@ -169,7 +169,7 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand!"
+                    Text = $"🏘 There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand!"
                 }
             };
 
@@ -308,7 +308,7 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"There is new unit of {brand} - {unit.Name}! You can find it here👇",
+                    Text = $"🏠 Wow! There is new unit of {brand} - {unit.Name}! You can find it here👇",
                     Address = unit.Address?.Text,
                     Coordinates = unit.Coords,
                     Name = unit.Name
@@ -361,7 +361,7 @@ public class UnitsService : CheckAndNotifyService
             Payload = new NotificationPayload
             {
                 Text =
-                    $"There is {totalAtCountry.PizzeriaCount} units of {brand} at {countryName}!"
+                    $"🏘 There is {totalAtCountry.PizzeriaCount} units of {brand} at {countryName}!"
             }
         };
 
@@ -388,7 +388,7 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"There is new country of {brand} - {countryName}!"
+                    Text = $"🌏 There is new country of {brand} - {countryName}!"
                 }
             };
 

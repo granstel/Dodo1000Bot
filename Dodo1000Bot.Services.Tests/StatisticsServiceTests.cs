@@ -53,7 +53,7 @@ public class StatisticsServiceTests
             .With(s => s.OrdersPerMinute, ordersPerMinute)
             .Create();
 
-        var expectedText = "There are more than 1000 orders per minute! See that on https://realtime.dodobrands.io";
+        var expectedText = "📈 There are more than 1000 orders per minute! See that on https://realtime.dodobrands.io";
 
         _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
             .Callback((Notification notification, CancellationToken ct) =>
@@ -79,7 +79,7 @@ public class StatisticsServiceTests
             .With(s => s.Revenues, new[]{ revenueStatistics })
             .Create();
 
-        var expectedText = $"There is over 1 000 000 000 dollars revenue in {DateTime.Now.Year} year! " +
+        var expectedText = $"💰 There is over 1 000 000 000 dollars revenue in {DateTime.Now.Year} year! " +
                            $"See that on https://realtime.dodobrands.io";
 
         _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
