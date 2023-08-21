@@ -316,6 +316,7 @@ namespace Dodo1000Bot.Services.Tests
             var unitName = _fixture.Create<string>();
             var unitModel = _fixture.Build<UnitModel>()
                 .With(m => m.Name, unitName)
+                .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
                 .Create();
             var newUnitName = _fixture.Create<string>();
             var expectedCoordinates = _fixture.Build<CoordinatesModel>()
@@ -325,6 +326,7 @@ namespace Dodo1000Bot.Services.Tests
             var newUnitModel = _fixture.Build<UnitModel>()
                 .With(m => m.Name, newUnitName)
                 .With(m => m.Coords, expectedCoordinates)
+                .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
                 .Create();
 
             var unitListModel = _fixture.Build<UnitListModel>()
