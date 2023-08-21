@@ -104,8 +104,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
         {
             Payload = new NotificationPayload
             {
-                Text = request.Text,
-                Formatting = request.Formatting
+                Text = request.Text
             }
         };
 

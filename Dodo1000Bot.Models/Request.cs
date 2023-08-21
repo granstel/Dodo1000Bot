@@ -21,7 +21,5 @@ namespace Dodo1000Bot.Models
         public bool HasScreen { get; set; }
 
         public Appeal Appeal { get; set; }
-
-        public FormattingEntity[] Formatting { get; set; }
     }
 }

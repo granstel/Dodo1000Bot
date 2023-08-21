@@ -15,8 +15,6 @@ namespace Dodo1000Bot.Models.Domain
 
         public string Name { get; init; }
 
-        public FormattingEntity[] Formatting { get; set; }
-
         public override string ToString()
         {
             return $"{HappenedAt:d}{Text}";
