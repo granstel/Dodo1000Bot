@@ -1,0 +1,43 @@
+{
+  "id": "24692897-d4a1-431c-95e6-5660725b1492",
+  "name": "Custom notification - typed text",
+  "auto": true,
+  "contexts": [
+    "notification"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "SaveCustomNotification",
+      "affectedContexts": [
+        {
+          "name": "notification",
+          "lifespan": 0
+        }
+      ],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "ru",
+          "speech": [
+            "Excellent✨! Now, if your message passes moderation, you will soon see it here🔥! If not, alas, the message did not pass moderation, or something else went wrong😔. But I hope everything will be fine💖",
+            "Well done✨! Now, if your message passes moderation, you will soon see it here🔥! If not, sorry, the message did not pass moderation, or something else went wrong😔. But I hope everything will be fine💖"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": true,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

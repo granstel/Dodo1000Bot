@@ -24,22 +24,22 @@ public class NotificationsRepository : INotificationsRepository
     {
         var payload = JsonSerializer.Serialize(notification?.Payload);
 
-        await _connection.ExecuteAsync(
+        await _connection.ExecuteAsync(new CommandDefinition(
             "INSERT IGNORE INTO notifications (Payload, Distinction) VALUES (@payload, @distinction)",
             new
             {
                 payload,
                 notification?.Distinction
-            });
+            }, cancellationToken: cancellationToken));
     }
 
     public async Task<IList<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
     {
-        var records = await _connection.QueryAsync(
+        var records = await _connection.QueryAsync(new CommandDefinition(
             @"SELECT n.Id, n.Payload FROM notifications n 
                  LEFT JOIN pushed_notifications pn 
                     ON n.Id = pn.notificationId
-                  WHERE pn.id IS NULL");
+                  WHERE pn.id IS NULL", cancellationToken: cancellationToken));
 
         var notifications = records.Select(r => new Notification
         {
@@ -61,13 +61,13 @@ public class NotificationsRepository : INotificationsRepository
 
         foreach(var pushedNotification in pushedNotifications)
         {
-            await _connection.ExecuteAsync(
+            await _connection.ExecuteAsync(new CommandDefinition(
             "INSERT INTO pushed_notifications (NotificationId, UserId) VALUES (@notificationId, @userId)",
             new
             {
                 notificationId = pushedNotification.NotificationId,
                 userId = pushedNotification.UserId
-            }, transaction);
+            }, transaction, cancellationToken: cancellationToken));
         }
 
         await transaction.CommitAsync(cancellationToken);
@@ -76,11 +76,11 @@ public class NotificationsRepository : INotificationsRepository
 
     public async Task Delete(int notificationId, CancellationToken cancellationToken)
     {
-        await _connection.ExecuteAsync(
+        await _connection.ExecuteAsync(new CommandDefinition(
             "DELETE FROM notifications WHERE Id = @notificationId",
             new
             {
                 notificationId
-            });
+            }, cancellationToken: cancellationToken));
     }
 }

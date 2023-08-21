@@ -13,5 +13,7 @@ namespace Dodo1000Bot.Services
         Task SaveUser(User user, CancellationToken cancellationToken);
 
         Task Delete(User user, CancellationToken cancellationToken);
+
+        Task<int> GetUserId(string messengerUserId, Source messengerType, CancellationToken cancellationToken);
     }
 }

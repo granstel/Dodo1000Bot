@@ -63,6 +63,77 @@ public class UnitsService : CheckAndNotifyService
         }
     }
 
+    public async Task CreateUnitsCountSnapshotIfNotExists(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var snapshotName = nameof(_globalApiClient.UnitsCount);
+
+            var unitsCountSnapshot =
+                await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
+
+            if (unitsCountSnapshot?.Data is not null)
+            {
+                _log.LogInformation("unitsCountSnapshot is not null");
+                return;
+            }
+
+            var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
+
+            await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _log.LogError(e, "Can't {methodName}", nameof(CreateUnitsCountSnapshotIfNotExists));
+        }
+    }
+
+    public async Task CreateUnitsSnapshotIfNotExists(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var unitsCountSnapshotName = nameof(_globalApiClient.UnitsCount);
+
+            var unitsCountSnapshot =
+                await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(unitsCountSnapshotName, cancellationToken);
+
+            if (unitsCountSnapshot?.Data is null)
+            {
+                _log.LogInformation("unitsCountSnapshot is null");
+                return;
+            }
+            
+            List<Brands> brands = unitsCountSnapshot.Data.Brands.Select(b => b.Brand).ToList();
+
+            foreach (var brand in brands)
+            {
+                var totalUnitCountListModel = unitsCountSnapshot.Data
+                    .Brands.First(b => b.Brand == brand);
+
+                foreach (var country in totalUnitCountListModel.Countries)
+                {
+                    var countryId = country.CountryId;
+                    var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
+                    var unitsSnapshot = 
+                        await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
+
+                    if (unitsSnapshot?.Data is not null)
+                    {
+                        _log.LogInformation("unitsSnapshot at {brand} in {country} is not null", brand, countryId);
+                        return;
+                    }
+
+                    BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
+                    await UpdateSnapshot(snapshotName, unitsAtCountry, cancellationToken);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            _log.LogError(e, "Can't {methodName}", nameof(CreateUnitsCountSnapshotIfNotExists));
+        }
+    }
+
     private async Task AboutTotalOverall(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
     {
         var totalOverall = unitsCount.Brands.Sum(b => b.Total);

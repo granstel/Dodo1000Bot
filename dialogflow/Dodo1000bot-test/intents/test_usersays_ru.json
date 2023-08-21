@@ -1,14 +1,14 @@
 [
   {
-    "id": "5e4d33fd-59ce-4f36-833a-9e072b2ad3bf",
+    "id": "742e772e-c8bd-42e9-9a61-9979b9c57cb8",
     "data": [
       {
-        "text": "/stop",
+        "text": "/test",
         "userDefined": false
       }
     ],
     "isTemplate": false,
-    "count": 2,
+    "count": 0,
     "lang": "ru",
     "updated": 0
   }

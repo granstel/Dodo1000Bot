@@ -19,13 +19,13 @@ namespace Dodo1000Bot.Services
 
         public async Task<Snapshot<TData>> Get<TData>(string snapshotName, CancellationToken cancellationToken)
         {
-            var record = await _connection.QueryFirstOrDefaultAsync(
+            var record = await _connection.QueryFirstOrDefaultAsync(new CommandDefinition(
             @"SELECT * FROM snapshots 
               WHERE name = @name",
             new
             {
                 name = snapshotName,
-            });
+            }, cancellationToken: cancellationToken));
 
             var snapshot = new Snapshot<TData>
             {
@@ -51,7 +51,7 @@ namespace Dodo1000Bot.Services
         {
             var data = JsonSerializer.Serialize(snapshot.Data);
 
-            await _connection.ExecuteAsync(
+            await _connection.ExecuteAsync(new CommandDefinition(
                 "INSERT INTO snapshots (name, data, modifiedAt) VALUES (@name, @data, @modifiedAt)" +
                 "ON DUPLICATE KEY UPDATE data = @data, modifiedAt = @modifiedAt",
                 new
@@ -59,7 +59,7 @@ namespace Dodo1000Bot.Services
                     name = snapshot.Name,
                     data,
                     modifiedAt = snapshot.ModifiedAt
-                });
+                }, cancellationToken: cancellationToken));
         }
     }
 }

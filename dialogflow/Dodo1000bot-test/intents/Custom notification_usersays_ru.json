@@ -1,14 +1,14 @@
 [
   {
-    "id": "5e4d33fd-59ce-4f36-833a-9e072b2ad3bf",
+    "id": "d3dd6320-add9-4185-a3ad-738dde76603e",
     "data": [
       {
-        "text": "/stop",
+        "text": "/notification",
         "userDefined": false
       }
     ],
     "isTemplate": false,
-    "count": 2,
+    "count": 6,
     "lang": "ru",
     "updated": 0
   }

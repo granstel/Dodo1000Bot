@@ -1,0 +1,83 @@
+[
+  {
+    "id": "503781d5-9dd6-4492-808b-4388529013e4",
+    "data": [
+      {
+        "text": "It could be written including in ",
+        "userDefined": false
+      },
+      {
+        "text": "english",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "ru",
+    "updated": 0
+  },
+  {
+    "id": "6506773d-9e24-423e-9116-3e242b2d572d",
+    "data": [
+      {
+        "text": "Всё что угодно тут может быть написано",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 1,
+    "lang": "ru",
+    "updated": 0
+  },
+  {
+    "id": "64dae201-cc9b-44a0-a402-0418372a6635",
+    "data": [
+      {
+        "text": "Hello dear friends! ",
+        "userDefined": false
+      },
+      {
+        "text": "Hope",
+        "userDefined": false
+      },
+      {
+        "text": ", you are in good mood! Good night!",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 1,
+    "lang": "ru",
+    "updated": 0
+  },
+  {
+    "id": "8374ccb1-bc3c-482f-bca2-317ba119bb59",
+    "data": [
+      {
+        "text": "Это сообщение с разными способами форматирования и призывания человека @granstel",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 2,
+    "lang": "ru",
+    "updated": 0
+  },
+  {
+    "id": "c7fe4a5a-5168-433d-999d-eccbd1b882ae",
+    "data": [
+      {
+        "text": "Это сообщение с разными способами форматирования и призывания человека @",
+        "userDefined": false
+      },
+      {
+        "text": "granstel",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "ru",
+    "updated": 0
+  }
+]

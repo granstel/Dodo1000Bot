@@ -16,27 +16,27 @@ namespace Dodo1000Bot.Services
 
         public async Task<string> GetName(string code, CancellationToken cancellationToken)
         {
-            var name = await _connection.QueryFirstOrDefaultAsync<string>(
+            var name = await _connection.QueryFirstOrDefaultAsync<string>(new CommandDefinition(
             @"SELECT Name FROM countries 
               WHERE Code = @code",
             new
             {
                 code
-            });
+            }, cancellationToken: cancellationToken));
 
             return name;
         }
 
-        public async Task Save(string code, string name, CancellationToken cancellationToken1)
+        public async Task Save(string code, string name, CancellationToken cancellationToken)
         {
-            await _connection.ExecuteAsync(
+            await _connection.ExecuteAsync(new CommandDefinition(
                 "INSERT INTO countries (Code, Name) VALUES (@code, @name)" +
                 "ON DUPLICATE KEY UPDATE Code = @code, Name = @name",
                 new
                 {
                     code,
                     name
-                });
+                }, cancellationToken: cancellationToken));
         }
     }
 }

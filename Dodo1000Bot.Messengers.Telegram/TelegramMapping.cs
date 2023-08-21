@@ -17,7 +17,13 @@ namespace Dodo1000Bot.Messengers.Telegram
             .ForMember(d => d.Appeal, m => m.MapFrom(s => Appeal.NoOfficial))
             .ForMember(d => d.HasScreen, m => m.MapFrom(s => true))
             .ForMember(d => d.Language, m => m.Ignore())
-            .ForMember(d => d.NewSession, m => m.Ignore());
+            .ForMember(d => d.NewSession, m => m.Ignore())
+            .ForMember(d => d.Action, m => m.Ignore());
+
+            CreateMap<MessageEntity, FormattingEntity>()
+                .ForMember(d => d.Offset, m => m.MapFrom((s, d) => s.Offset))
+                .ForMember(d => d.Length, m => m.MapFrom((s, d) => s.Length))
+                .ForMember(d => d.Type, m => m.MapFrom((s, d) => s.Type));
         }
     }
 }
