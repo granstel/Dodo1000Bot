@@ -1,7 +1,4 @@
-﻿using Dodo1000Bot.Models;
-using System.Text.Json.Serialization;
-
-namespace Dodo1000Bot.Api.Dialogflow.Models;
+﻿namespace Dodo1000Bot.Api.Dialogflow.Models;
 
 public class Data
 {
