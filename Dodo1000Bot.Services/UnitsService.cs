@@ -308,7 +308,7 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🏠 There is new unit of {brand} - {unit.Name}! You can find it here👇",
+                    Text = $"🏠 Wow! There is new unit of {brand} - {unit.Name}! You can find it here👇",
                     Address = unit.Address?.Text,
                     Coordinates = unit.Coords,
                     Name = unit.Name

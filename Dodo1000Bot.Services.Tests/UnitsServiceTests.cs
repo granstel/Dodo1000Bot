@@ -107,7 +107,7 @@ namespace Dodo1000Bot.Services.Tests
 
             _countriesServiceMock.Setup(s => s.GetName(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
-            var expectedText = $"There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
+            var expectedText = $"🌏 There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
 
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
@@ -149,7 +149,7 @@ namespace Dodo1000Bot.Services.Tests
 
             _countriesServiceMock.Setup(s => s.GetName(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
-            var expectedText = $"There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
+            var expectedText = $"🌏 There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
 
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
@@ -357,7 +357,7 @@ namespace Dodo1000Bot.Services.Tests
                 r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            var expectedText = $"There is new unit of {brand} - {newUnitName}! You can find it here👇";
+            var expectedText = $"🏠 Wow! There is new unit of {brand} - {newUnitName}! You can find it here👇";
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
                 {
