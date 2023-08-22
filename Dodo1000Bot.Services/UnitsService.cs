@@ -147,7 +147,8 @@ public class UnitsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = "🎉"
+                Text = "😮",
+                HappenedAt = DateTime.Now
             }
         };
 
@@ -157,7 +158,7 @@ public class UnitsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = $"🏘 There are {totalOverall} units of all Dodo brands! 🎉"
+                Text = $"Wow! 🎉 \r\nThere are {totalOverall} units of all Dodo brands! 🥳"
             }
         };
 
@@ -179,7 +180,8 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🔥"
+                    Text = $"😮",
+                    HappenedAt = DateTime.Now
                 }
             };
 
@@ -189,7 +191,7 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🏘 There are {totalAtBrand.Value} units of {totalAtBrand.Key} brand! 🔥"
+                    Text = $"Wow! 🔥 \r\nThere are {totalAtBrand.Value} units of {totalAtBrand.Key} brand! 🥳"
                 }
             };
 
@@ -329,7 +331,17 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🏠 Wow! There is new unit of {brand} - {unit.Name}! You can find it here👇",
+                    Text = $"🏠",
+                    HappenedAt = DateTime.Now
+                }
+            };
+
+            await _notificationsService.Save(notification, cancellationToken);
+            notification = new Notification
+            {
+                Payload = new NotificationPayload
+                {
+                    Text = $"Wow! 🔥 \r\nThere is new unit of {brand} - {unit.Name}! You can find it here👇",
                     Address = unit.Address?.Text,
                     Coordinates = unit.Coords,
                     Name = unit.Name
@@ -381,8 +393,8 @@ public class UnitsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text =
-                    $"❤️‍🔥"
+                Text = $"😮",
+                HappenedAt = DateTime.Now
             }
         };
 
@@ -393,7 +405,7 @@ public class UnitsService : CheckAndNotifyService
             Payload = new NotificationPayload
             {
                 Text =
-                    $"🏘 There are {totalAtCountry.PizzeriaCount} units of {brand} at {countryName}! ❤️‍🔥"
+                    $"Incredible! 🥳 \r\nThere are {totalAtCountry.PizzeriaCount} units of {brand} at {countryName}! ❤️‍🔥"
             }
         };
 
@@ -420,7 +432,8 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"💫"
+                    Text = $"💫",
+                    HappenedAt = DateTime.Now
                 }
             };
 
@@ -430,7 +443,7 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🌏 There is new country of {brand} - {countryName}! 💫"
+                    Text = $"🌏 Hey! There is new country of {brand} - {countryName}! 💫"
                 }
             };
 
