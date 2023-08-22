@@ -147,7 +147,17 @@ public class UnitsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = $"🏘 There is {totalOverall} units!"
+                Text = "🎉"
+            }
+        };
+
+        await _notificationsService.Save(notification, cancellationToken);
+
+        notification = new Notification
+        {
+            Payload = new NotificationPayload
+            {
+                Text = $"🏘 There are {totalOverall} units of all Dodo brands! 🎉"
             }
         };
 
@@ -169,7 +179,17 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🏘 There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand!"
+                    Text = $"🔥"
+                }
+            };
+
+            await _notificationsService.Save(notification, cancellationToken);
+
+            notification = new Notification
+            {
+                Payload = new NotificationPayload
+                {
+                    Text = $"🏘 There are {totalAtBrand.Value} units of {totalAtBrand.Key} brand! 🔥"
                 }
             };
 
@@ -362,7 +382,18 @@ public class UnitsService : CheckAndNotifyService
             Payload = new NotificationPayload
             {
                 Text =
-                    $"🏘 There is {totalAtCountry.PizzeriaCount} units of {brand} at {countryName}!"
+                    $"❤️‍🔥"
+            }
+        };
+
+        await _notificationsService.Save(notification, cancellationToken);
+
+        notification = new Notification
+        {
+            Payload = new NotificationPayload
+            {
+                Text =
+                    $"🏘 There are {totalAtCountry.PizzeriaCount} units of {brand} at {countryName}! ❤️‍🔥"
             }
         };
 
@@ -389,7 +420,17 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🌏 There is new country of {brand} - {countryName}!"
+                    Text = $"💫"
+                }
+            };
+
+            await _notificationsService.Save(notification, cancellationToken);
+
+            notification = new Notification
+            {
+                Payload = new NotificationPayload
+                {
+                    Text = $"🌏 There is new country of {brand} - {countryName}! 💫"
                 }
             };
 
