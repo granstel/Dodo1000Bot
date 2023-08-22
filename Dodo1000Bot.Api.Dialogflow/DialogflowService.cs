@@ -7,9 +7,11 @@ using Dodo1000Bot.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+[assembly: InternalsVisibleTo("Dodo1000Bot.Api.Dialogflow.Tests")]
 namespace Dodo1000Bot.Api.Dialogflow;
 
 public class DialogflowService : MessengerService<FulfillmentRequest, string>, IDialogflowService
@@ -64,7 +66,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
     /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    private async Task SaveUser(Request request, CancellationToken cancellationToken)
+    internal async Task SaveUser(Request request, CancellationToken cancellationToken)
     {
         var user = new User
         {
