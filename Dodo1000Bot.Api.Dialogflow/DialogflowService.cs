@@ -68,7 +68,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
     {
         var user = new User
         {
-            MessengerUserId = request.UserHash,
+            MessengerUserId = request.ChatHash,
             MessengerType = request.Source
         };
 
@@ -85,7 +85,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
     {
         var user = new User
         {
-            MessengerUserId = request.UserHash,
+            MessengerUserId = request.ChatHash,
             MessengerType = request.Source
         };
 
