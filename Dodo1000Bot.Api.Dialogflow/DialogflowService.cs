@@ -83,7 +83,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
     /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    private async Task DeleteUser(Request request, CancellationToken cancellationToken)
+    internal async Task DeleteUser(Request request, CancellationToken cancellationToken)
     {
         var user = new User
         {

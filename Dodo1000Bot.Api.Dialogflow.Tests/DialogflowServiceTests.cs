@@ -6,7 +6,6 @@ using Dodo1000Bot.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using System.Threading;
 
 namespace Dodo1000Bot.Api.Dialogflow.Tests
 {
@@ -63,6 +62,26 @@ namespace Dodo1000Bot.Api.Dialogflow.Tests
                 .Returns(Task.CompletedTask);
 
             await _target.SaveUser(request, CancellationToken.None);
+        }
+
+        [Test]
+        public async Task DeleteUser_InvokesDeleteUser_CorrectValues()
+        {
+            var request = _fixture.Build<Request>()
+                .With(r => r.ChatHash)
+                .With(r => r.UserHash)
+                .With(r => r.Source)
+            .Create();
+
+            _usersRepositoryMock.Setup(r => r.Delete(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+                .Callback((User user, CancellationToken ct) =>
+                {
+                    Assert.AreEqual(request.ChatHash, user.MessengerUserId);
+                    Assert.AreEqual(request.Source, user.MessengerType);
+                })
+                .Returns(Task.CompletedTask);
+
+            await _target.DeleteUser(request, CancellationToken.None);
         }
     }
 }
