@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using AutoMapper;
+﻿using AutoMapper;
 using NUnit.Framework;
 
 namespace Dodo1000Bot.Api.Dialogflow.Tests
