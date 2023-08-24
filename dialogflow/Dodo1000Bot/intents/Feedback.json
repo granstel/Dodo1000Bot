@@ -1,6 +1,6 @@
 {
-  "id": "ba735312-bf1d-4f18-8e66-0bf36cc0ccf1",
-  "name": "Custom notification",
+  "id": "e2cdc8db-484e-4a1e-887e-c82973a0cfe3",
+  "name": "Feedback",
   "auto": true,
   "contexts": [],
   "responses": [
@@ -16,8 +16,7 @@
           "textToSpeech": "",
           "lang": "ru",
           "speech": [
-            "So just type your notification here and I will do all necessary. It could be link or text about anything, related to Drinkit coffeeshops, Doner42 doner, or Dodo pizza pizzeriaz",
-            "So just type your notification here and I will do whatever it takes. It could be link or text about anything, related to Drinkit coffeeshops, Doner42 doner, or Dodo pizza pizzerias"
+            "So just type your feedback here)"
           ],
           "condition": ""
         }
@@ -26,7 +25,7 @@
     }
   ],
   "priority": 500000,
-  "webhookUsed": false,
+  "webhookUsed": true,
   "webhookForSlotFilling": false,
   "fallbackIntent": false,
   "events": [],
