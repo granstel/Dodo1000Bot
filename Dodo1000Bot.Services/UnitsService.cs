@@ -331,17 +331,7 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🏠",
-                    HappenedAt = DateTime.Now
-                }
-            };
-
-            await _notificationsService.Save(notification, cancellationToken);
-            notification = new Notification
-            {
-                Payload = new NotificationPayload
-                {
-                    Text = $"Wow! 🔥 \r\nThere is new unit of {brand} - {unit.Name}! You can find it here👇",
+                    Text = $"🏠 Wow! There is new unit of {brand} - {unit.Name}! You can find it here👇",
                     Address = unit.Address?.Text,
                     Coordinates = unit.Coords,
                     Name = unit.Name
