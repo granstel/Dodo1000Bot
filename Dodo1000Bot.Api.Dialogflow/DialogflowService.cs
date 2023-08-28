@@ -18,17 +18,17 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
 {
     private readonly IDictionary<string, Func<Request, CancellationToken, Task>> _commandsDictionary;
 
-    private readonly IUsersRepository _usersRepository;
+    private readonly IUsersService _usersService;
     private readonly ICustomNotificationsRepository _customNotificationsRepository;
 
     public DialogflowService(
         ILogger<DialogflowService> log,
         IConversationService conversationService,
         IMapper mapper,
-        IUsersRepository usersRepository, 
+        IUsersService usersService, 
         ICustomNotificationsRepository customNotificationsRepository) : base(log, conversationService, mapper)
     {
-        _usersRepository = usersRepository;
+        _usersService = usersService;
         _customNotificationsRepository = customNotificationsRepository;
 
         _commandsDictionary = new Dictionary<string, Func<Request, CancellationToken, Task>>
@@ -74,7 +74,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
             MessengerType = request.Source
         };
 
-        await _usersRepository.SaveUser(user, cancellationToken);
+        await _usersService.SaveAndNotify(user, cancellationToken);
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
             MessengerType = request.Source
         };
 
-        await _usersRepository.Delete(user, cancellationToken);
+        await _usersService.Delete(user, cancellationToken);
     }
 
     /// <summary>

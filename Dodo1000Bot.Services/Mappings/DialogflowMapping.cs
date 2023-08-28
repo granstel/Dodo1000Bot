@@ -20,7 +20,7 @@ namespace Dodo1000Bot.Services.Mappings
                 .ForMember(d => d.Parameters, m => m.MapFrom(s => GetParameters(s)))
                 .ForMember(d => d.Buttons, m => m.MapFrom(s => GetButtons(s)))
                 .ForMember(d => d.Payload, m => m.MapFrom(s => GetPayload(s)))
-                .ForMember(d => d.EndConversation, m => m.MapFrom((s, d) =>
+                .ForMember(d => d.EndConversation, m => m.MapFrom((s, _) =>
                 {
                     const string endConversationKey = "end_conversation";
 
