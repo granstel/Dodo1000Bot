@@ -36,9 +36,9 @@ public class UsersService : IUsersService
     {
         try
         {
-            var usersCount = await _usersRepository.Count(cancellationToken);
+            var subscribersCount = await _usersRepository.Count(cancellationToken);
 
-            if (!CheckHelper.CheckRemainder(usersCount, 10))
+            if (!CheckHelper.CheckRemainder(subscribersCount, 10))
             {
                 return;
             }
@@ -47,7 +47,7 @@ public class UsersService : IUsersService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"👥 Hey! I already have {usersCount} subscribers! Thank you for staying with me 🤗",
+                    Text = $"👥 Hey! I already have {subscribersCount} subscribers! Thank you for staying with me 🤗",
                 }
             };
 
