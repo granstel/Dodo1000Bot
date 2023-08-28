@@ -56,7 +56,7 @@ namespace Dodo1000Bot.Services
         public async Task<int> Count(CancellationToken cancellationToken)
         {
             var count = await _connection.QuerySingleOrDefaultAsync<int>(new CommandDefinition(
-                "SELECT COUNT (Id) FROM users", 
+                "SELECT COUNT(Id) FROM users", 
                 cancellationToken: cancellationToken));
 
             return count;
