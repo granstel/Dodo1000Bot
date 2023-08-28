@@ -65,4 +65,20 @@ public class UsersServiceTests
         _notificationsServiceMock.Verify(s => 
             s.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
     }
+
+    [Test]
+    public async Task CheckAndNotifyAboutSubscribers_RemainderEqualsZero_NoAnyNotifications()
+    {
+        const int subscribersCount = 20;
+        _usersRepositoryMock.Setup(r => r.Count(It.IsAny<CancellationToken>())).ReturnsAsync(subscribersCount);
+
+        var expectedText = $"👥 Hey! I already have {subscribersCount} subscribers! Thank you for staying with me 🤗";
+
+        _notificationsServiceMock.Setup(s => s.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
+            .Callback((Notification notification, CancellationToken _) => 
+                Assert.AreEqual(expectedText, notification.Payload.Text))
+            .Returns(Task.CompletedTask);
+
+        await _target.CheckAndNotifyAboutSubscribers(CancellationToken.None);
+    }
 }
