@@ -74,7 +74,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
             MessengerType = request.Source
         };
 
-        await _usersService.Save(user, cancellationToken);
+        await _usersService.SaveAndNotify(user, cancellationToken);
     }
 
     /// <summary>

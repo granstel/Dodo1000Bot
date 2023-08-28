@@ -53,7 +53,7 @@ namespace Dodo1000Bot.Api.Dialogflow.Tests
                 .With(r => r.Source)
             .Create();
 
-            _usersServiceMock.Setup(r => r.Save(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+            _usersServiceMock.Setup(r => r.SaveAndNotify(It.IsAny<User>(), It.IsAny<CancellationToken>()))
                 .Callback((User user, CancellationToken _) =>
                 {
                     Assert.AreEqual(request.ChatHash, user.MessengerUserId);

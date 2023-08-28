@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.Domain;
 using Microsoft.Extensions.Logging;
+
+[assembly: InternalsVisibleTo("Dodo1000Bot.Services.Tests")]
 
 namespace Dodo1000Bot.Services;
 
@@ -22,10 +25,15 @@ public class UsersService : IUsersService
         _notificationsService = notificationsService;
     }
 
-    public async Task Save(User user, CancellationToken cancellationToken)
+    public async Task SaveAndNotify(User user, CancellationToken cancellationToken)
     {
         await _usersRepository.SaveUser(user, cancellationToken);
 
+        await CheckAndNotifyAboutSubscribers(cancellationToken);
+    }
+
+    internal async Task CheckAndNotifyAboutSubscribers(CancellationToken cancellationToken)
+    {
         try
         {
             var usersCount = await _usersRepository.Count(cancellationToken);
@@ -47,7 +55,7 @@ public class UsersService : IUsersService
         }
         catch (Exception e)
         {
-            _log.LogError(e, "Can't send notification about subscribers count");
+            _log.LogError(e, "Can't send notification about users count");
         }
     }
 

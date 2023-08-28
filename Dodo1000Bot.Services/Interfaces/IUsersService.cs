@@ -6,6 +6,6 @@ namespace Dodo1000Bot.Services;
 
 public interface IUsersService
 {
-    Task Save(User user, CancellationToken cancellationToken);
+    Task SaveAndNotify(User user, CancellationToken cancellationToken);
     Task Delete(User user, CancellationToken cancellationToken);
 }
