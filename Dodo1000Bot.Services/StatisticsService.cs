@@ -53,6 +53,17 @@ public class StatisticsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
+                Text = "😮",
+                HappenedAt = DateTime.Now
+            }
+        };
+
+        await _notificationsService.Save(notification, cancellationToken);
+
+        notification = new Notification
+        {
+            Payload = new NotificationPayload
+            {
                 Text = "📈 Wow! There are more than 1000 orders per minute! See that on https://realtime.dodobrands.io",
                 HappenedAt = DateTime.Now
             }
