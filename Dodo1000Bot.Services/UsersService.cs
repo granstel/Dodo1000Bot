@@ -1,18 +1,23 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.Domain;
+using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Services;
 
 public class UsersService : IUsersService
 {
+    private readonly ILogger<UsersService> _log;
     private readonly IUsersRepository _usersRepository;
     private readonly INotificationsService _notificationsService;
 
     public UsersService(
+        ILogger<UsersService> log, 
         IUsersRepository usersRepository, 
         INotificationsService notificationsService)
     {
+        _log = log;
         _usersRepository = usersRepository;
         _notificationsService = notificationsService;
     }
@@ -21,22 +26,29 @@ public class UsersService : IUsersService
     {
         await _usersRepository.SaveUser(user, cancellationToken);
 
-        var usersCount = await _usersRepository.Count(cancellationToken);
-
-        if (!CheckHelper.CheckRemainder(usersCount, 10))
+        try
         {
-            return;
-        }
+            var usersCount = await _usersRepository.Count(cancellationToken);
 
-        var notification = new Notification
-        {
-            Payload = new NotificationPayload
+            if (!CheckHelper.CheckRemainder(usersCount, 10))
             {
-                Text = $"👥 Hey! I already have {usersCount} subscribers! Thank you for staying with me 🤗",
+                return;
             }
-        };
 
-        await _notificationsService.Save(notification, cancellationToken);
+            var notification = new Notification
+            {
+                Payload = new NotificationPayload
+                {
+                    Text = $"👥 Hey! I already have {usersCount} subscribers! Thank you for staying with me 🤗",
+                }
+            };
+
+            await _notificationsService.Save(notification, cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _log.LogError(e, "Can't send notification about subscribers count");
+        }
     }
 
     public async Task Delete(User user, CancellationToken cancellationToken)
