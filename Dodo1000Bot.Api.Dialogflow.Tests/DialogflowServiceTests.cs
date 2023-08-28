@@ -17,7 +17,7 @@ namespace Dodo1000Bot.Api.Dialogflow.Tests
         private ILogger<DialogflowService> _log;
         private Mock<IConversationService> _conversationServiceMock;
         private Mock<IMapper> _mapperMock;
-        private Mock<IUsersRepository> _usersRepositoryMock;
+        private Mock<IUsersService> _usersServiceMock;
         private Mock<ICustomNotificationsRepository> _customNotificationsRepositoryMock;
 
         private DialogflowService _target;
@@ -32,14 +32,14 @@ namespace Dodo1000Bot.Api.Dialogflow.Tests
             _log = Mock.Of<ILogger<DialogflowService>>();
             _conversationServiceMock = _mockRepository.Create<IConversationService>();
             _mapperMock = _mockRepository.Create<IMapper>();
-            _usersRepositoryMock = _mockRepository.Create<IUsersRepository>();
+            _usersServiceMock = _mockRepository.Create<IUsersService>();
             _customNotificationsRepositoryMock = _mockRepository.Create<ICustomNotificationsRepository>();
 
             _target = new DialogflowService(
                 _log,
                 _conversationServiceMock.Object,
                 _mapperMock.Object,
-                _usersRepositoryMock.Object, _customNotificationsRepositoryMock.Object);
+                _usersServiceMock.Object, _customNotificationsRepositoryMock.Object);
 
             _fixture = new Fixture { OmitAutoProperties = true };
         }
@@ -53,8 +53,8 @@ namespace Dodo1000Bot.Api.Dialogflow.Tests
                 .With(r => r.Source)
             .Create();
 
-            _usersRepositoryMock.Setup(r => r.SaveUser(It.IsAny<User>(), It.IsAny<CancellationToken>()))
-                .Callback((User user, CancellationToken ct) =>
+            _usersServiceMock.Setup(r => r.Save(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+                .Callback((User user, CancellationToken _) =>
                 {
                     Assert.AreEqual(request.ChatHash, user.MessengerUserId);
                     Assert.AreEqual(request.Source, user.MessengerType);
@@ -73,8 +73,8 @@ namespace Dodo1000Bot.Api.Dialogflow.Tests
                 .With(r => r.Source)
             .Create();
 
-            _usersRepositoryMock.Setup(r => r.Delete(It.IsAny<User>(), It.IsAny<CancellationToken>()))
-                .Callback((User user, CancellationToken ct) =>
+            _usersServiceMock.Setup(r => r.Delete(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+                .Callback((User user, CancellationToken _) =>
                 {
                     Assert.AreEqual(request.ChatHash, user.MessengerUserId);
                     Assert.AreEqual(request.Source, user.MessengerType);
