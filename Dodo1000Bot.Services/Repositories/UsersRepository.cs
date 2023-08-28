@@ -31,20 +31,6 @@ namespace Dodo1000Bot.Services
             return users.ToImmutableArray();
         }
 
-        public async Task<int> GetUserId(string messengerUserId, Source messengerType, CancellationToken cancellationToken)
-        {
-            var userId = await _connection.QueryFirstOrDefaultAsync<int>(new CommandDefinition(
-                @"SELECT Id FROM users
-                  WHERE MessengerUserId = @messengerUserId AND MessengerType = @messengerType",
-                new
-                {
-                    messengerUserId,
-                    messengerType
-                }, cancellationToken: cancellationToken));
-
-            return userId;
-        }
-
         public async Task SaveUser(User user, CancellationToken cancellationToken)
         {
             await _connection.ExecuteAsync(new CommandDefinition(
@@ -65,6 +51,15 @@ namespace Dodo1000Bot.Services
                     messengerUserId = user.MessengerUserId,
                     messengerType = user.MessengerType
                 }, cancellationToken: cancellationToken));
+        }
+
+        public async Task<int> Count(CancellationToken cancellationToken)
+        {
+            var count = await _connection.QuerySingleOrDefaultAsync<int>(new CommandDefinition(
+                "SELECT COUNT (Id) FROM users", 
+                cancellationToken: cancellationToken));
+
+            return count;
         }
     }
 }

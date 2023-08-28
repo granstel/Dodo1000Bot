@@ -383,7 +383,7 @@ public class UnitsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = $"😮",
+                Text = "😮",
                 HappenedAt = DateTime.Now
             }
         };
