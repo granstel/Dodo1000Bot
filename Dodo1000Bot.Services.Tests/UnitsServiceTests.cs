@@ -140,7 +140,7 @@ namespace Dodo1000Bot.Services.Tests
         }
 
         [Test]
-        public async Task AboutNewCountries_NewCountryAtSameBrand_Notification()
+        public async Task AboutNewCountries_NewUnexpectedCountryAtSameBrand_NotificationWithoutFlag()
         {
             var country = _fixture.Build<UnitCountModel>()
                 .With(c => c.PizzeriaCount, 0)
@@ -169,12 +169,16 @@ namespace Dodo1000Bot.Services.Tests
 
             _countriesServiceMock.Setup(s => s.GetName(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
-            var expectedText = $"🌏 There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
+            var expectedTexts = new[]
+            {
+                "🤩",
+                $"🌏 Wow! There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}! 🤩",
+            };
 
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
                 {
-                    Assert.AreEqual(notification.Payload.Text, expectedText);
+                    Assert.True(expectedTexts.Contains(notification.Payload.Text), $"'{notification.Payload.Text}' is not expected text");
                 })
                 .Returns(Task.CompletedTask);
 

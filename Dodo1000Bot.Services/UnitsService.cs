@@ -418,7 +418,7 @@ public class UnitsService : CheckAndNotifyService
                     countModel.CountryCode, nameof(ICountriesService));
             }
 
-            var flag = Constants.TelegramFlags.GetValueOrDefault(countModel.CountryCode) ?? "🤩";
+            var flag = Constants.TelegramFlags.GetValueOrDefault(countModel.CountryCode ?? string.Empty) ?? "🤩";
             var notification = new Notification
             {
                 Payload = new NotificationPayload
