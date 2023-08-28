@@ -23,36 +23,6 @@ public class UnitsService : CheckAndNotifyService
     private readonly ISnapshotsRepository _snapshotsRepository;
     private readonly ICountriesService _countriesService;
 
-    private readonly Dictionary<string, string> telegramFlags = new()
-    {
-        {"ae", "🇦🇪"},
-        {"am", "🇦🇲"},
-        {"az", "🇦🇿"},
-        {"bg", "🇧🇬"},
-        {"by", "🇧🇾"},
-        {"cn", "🇨🇳"},
-        {"cy", "🇨🇾"},
-        {"de", "🇩🇪"},
-        {"ee", "🇪🇪"},
-        {"gb", "🇬🇧"},
-        {"ge", "🇬🇪"},
-        {"hr", "🇭🇷"},
-        {"id", "🇮🇩"},
-        {"kg", "🇰🇬"},
-        {"kz", "🇰🇿"},
-        {"lt", "🇱🇹"},
-        {"ng", "🇳🇬"},
-        {"pl", "🇵🇱"},
-        {"ro", "🇷🇴"},
-        {"rs", "🇷🇸"},
-        {"ru", "🇷🇺"},
-        {"si", "🇸🇮"},
-        {"tj", "🇹🇯"},
-        {"tr", "🇹🇷"},
-        {"uz", "🇺🇿"},
-        {"vn", "🇻🇳"},
-    };
-
     public UnitsService(
         ILogger<UnitsService> log, 
         IGlobalApiClient globalApiClient, 
@@ -448,7 +418,7 @@ public class UnitsService : CheckAndNotifyService
                     countModel.CountryCode, nameof(ICountriesService));
             }
 
-            var flag = telegramFlags.GetValueOrDefault(countModel.CountryCode) ?? "🤩";
+            var flag = Constants.TelegramFlags.GetValueOrDefault(countModel.CountryCode) ?? "🤩";
             var notification = new Notification
             {
                 Payload = new NotificationPayload

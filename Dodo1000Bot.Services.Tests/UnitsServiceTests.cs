@@ -9,6 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Services.Interfaces;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Dodo1000Bot.Services.Tests
 {
@@ -26,6 +28,16 @@ namespace Dodo1000Bot.Services.Tests
         private UnitsService _target;
 
         private Fixture _fixture;
+
+        private Random _random = new Random();
+
+        private string GetRandomCountryCode()
+        {
+            var keys = Constants.TelegramFlags.Keys;
+            var index = _random.Next(keys.Count);
+
+            return Constants.TelegramFlags.GetValueOrDefault(keys.ElementAt(index));
+        }
 
         [SetUp]
         public void SetUp()
@@ -84,9 +96,12 @@ namespace Dodo1000Bot.Services.Tests
                 .With(c => c.PizzeriaCount, 0)
                 .With(c => c.CountryName)
                 .Create();
+
+            var countryCode = GetRandomCountryCode();
             var newCountry = _fixture.Build<UnitCountModel>()
                 .With(c => c.PizzeriaCount, 0)
                 .With(c => c.CountryName)
+                .With(c => c.CountryCode, countryCode)
                 .Create();
 
             var brandUnitCount = _fixture.Build<BrandTotalUnitCountListModel>()
@@ -107,12 +122,17 @@ namespace Dodo1000Bot.Services.Tests
 
             _countriesServiceMock.Setup(s => s.GetName(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
-            var expectedText = $"🌏 There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
+            var flag = Constants.TelegramFlags.GetValueOrDefault(countryCode);
+            var expectedTexts = new string[] 
+            {
+                flag,
+                $"🌏 Wow! There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}! {flag}",
+            };
 
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
                 {
-                    Assert.AreEqual(notification.Payload.Text, expectedText);
+                    Assert.True(expectedTexts.Contains(notification.Payload.Text), $"'{notification.Payload.Text}' is not expected text");
                 })
                 .Returns(Task.CompletedTask);
 
