@@ -342,13 +342,20 @@ namespace Dodo1000Bot.Services.Tests
                 .With(m => m.Name, unitName)
                 .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
                 .Create();
-            var newUnitName = _fixture.Create<string>();
+
+            var newUnitLocality = _fixture.Build<LocalityModel>()
+                    .With(l => l.Name)
+                    .Create();
+            var newUnitAddress = _fixture.Build<AddressModel>()
+                    .With(a => a.Locality, newUnitLocality)
+                    .Create();
             var expectedCoordinates = _fixture.Build<CoordinatesModel>()
                 .With(c => c.Lat)
                 .With(c => c.Long)
                 .Create();
             var newUnitModel = _fixture.Build<UnitModel>()
-                .With(m => m.Name, newUnitName)
+                .With(m => m.Name)
+                .With(m => m.Address, newUnitAddress)
                 .With(m => m.Coords, expectedCoordinates)
                 .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
                 .Create();
@@ -383,7 +390,7 @@ namespace Dodo1000Bot.Services.Tests
                 r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            var expectedText = $"🏠 Wow! There is new unit of {brand} - {newUnitName}! You can find it here👇";
+            var expectedText = $"🏠 Wow! There is new {brand} at {newUnitModel.Address?.Locality?.Name}! You can find it here👇";
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
                 {
