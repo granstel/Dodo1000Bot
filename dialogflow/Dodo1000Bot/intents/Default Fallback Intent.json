@@ -12,6 +12,18 @@
       "messages": [
         {
           "type": "0",
+          "platform": "telegram",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "ru",
+          "speech": [
+            "Thank you, I\u0027ll sent it to my admin",
+            "Thank you, I already sent it to my admin"
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
           "title": "",
           "textToSpeech": "",
           "lang": "ru",
@@ -30,7 +42,7 @@
     }
   ],
   "priority": 500000,
-  "webhookUsed": false,
+  "webhookUsed": true,
   "webhookForSlotFilling": false,
   "fallbackIntent": true,
   "events": [],

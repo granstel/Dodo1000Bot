@@ -147,7 +147,18 @@ public class UnitsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = $"🏘 There is {totalOverall} units!"
+                Text = "😮",
+                HappenedAt = DateTime.Now
+            }
+        };
+
+        await _notificationsService.Save(notification, cancellationToken);
+
+        notification = new Notification
+        {
+            Payload = new NotificationPayload
+            {
+                Text = $"Wow! 🎉 \r\nThere are {totalOverall} units of all Dodo brands! 🥳"
             }
         };
 
@@ -169,7 +180,18 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🏘 There is {totalAtBrand.Value} units of {totalAtBrand.Key} brand!"
+                    Text = $"😮",
+                    HappenedAt = DateTime.Now
+                }
+            };
+
+            await _notificationsService.Save(notification, cancellationToken);
+
+            notification = new Notification
+            {
+                Payload = new NotificationPayload
+                {
+                    Text = $"Wow! 🔥 \r\nThere are {totalAtBrand.Value} units of {totalAtBrand.Key} brand! 🥳"
                 }
             };
 
@@ -309,7 +331,7 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🏠 Wow! There is new unit of {brand} - {unit.Name}! You can find it here👇",
+                    Text = $"🏠 Wow! There is new {brand} at {unit.Address?.Locality?.Name}! You can find it here👇",
                     Address = unit.Address?.Text,
                     Coordinates = unit.Coords,
                     Name = unit.Name
@@ -361,8 +383,19 @@ public class UnitsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
+                Text = $"😮",
+                HappenedAt = DateTime.Now
+            }
+        };
+
+        await _notificationsService.Save(notification, cancellationToken);
+
+        notification = new Notification
+        {
+            Payload = new NotificationPayload
+            {
                 Text =
-                    $"🏘 There is {totalAtCountry.PizzeriaCount} units of {brand} at {countryName}!"
+                    $"Incredible! 🥳 \r\nThere are {totalAtCountry.PizzeriaCount} units of {brand} at {countryName}! ❤️‍🔥"
             }
         };
 
@@ -385,11 +418,23 @@ public class UnitsService : CheckAndNotifyService
                     countModel.CountryCode, nameof(ICountriesService));
             }
 
+            var flag = Constants.TelegramFlags.GetValueOrDefault(countModel.CountryCode ?? string.Empty) ?? "🤩";
             var notification = new Notification
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🌏 There is new country of {brand} - {countryName}!"
+                    Text = flag,
+                    HappenedAt = DateTime.Now
+                }
+            };
+
+            await _notificationsService.Save(notification, cancellationToken);
+
+            notification = new Notification
+            {
+                Payload = new NotificationPayload
+                {
+                    Text = $"🌏 Wow! There is new country of {brand} - {countryName}! {flag}"
                 }
             };
 

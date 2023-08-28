@@ -9,6 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Services.Interfaces;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Dodo1000Bot.Services.Tests
 {
@@ -26,6 +28,16 @@ namespace Dodo1000Bot.Services.Tests
         private UnitsService _target;
 
         private Fixture _fixture;
+
+        private readonly Random _random = new();
+
+        private string GetRandomCountryCode()
+        {
+            var keys = Constants.TelegramFlags.Keys;
+            var index = _random.Next(keys.Count);
+
+            return keys.ElementAt(index);
+        }
 
         [SetUp]
         public void SetUp()
@@ -84,9 +96,12 @@ namespace Dodo1000Bot.Services.Tests
                 .With(c => c.PizzeriaCount, 0)
                 .With(c => c.CountryName)
                 .Create();
+
+            var countryCode = GetRandomCountryCode();
             var newCountry = _fixture.Build<UnitCountModel>()
                 .With(c => c.PizzeriaCount, 0)
                 .With(c => c.CountryName)
+                .With(c => c.CountryCode, countryCode)
                 .Create();
 
             var brandUnitCount = _fixture.Build<BrandTotalUnitCountListModel>()
@@ -107,12 +122,17 @@ namespace Dodo1000Bot.Services.Tests
 
             _countriesServiceMock.Setup(s => s.GetName(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
-            var expectedText = $"🌏 There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
+            var flag = Constants.TelegramFlags.GetValueOrDefault(countryCode);
+            var expectedTexts = new[]
+            {
+                flag,
+                $"🌏 Wow! There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}! {flag}",
+            };
 
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
                 {
-                    Assert.AreEqual(notification.Payload.Text, expectedText);
+                    Assert.True(expectedTexts.Contains(notification.Payload.Text), $"'{notification.Payload.Text}' is not expected text, country code is {countryCode}");
                 })
                 .Returns(Task.CompletedTask);
 
@@ -120,7 +140,7 @@ namespace Dodo1000Bot.Services.Tests
         }
 
         [Test]
-        public async Task AboutNewCountries_NewCountryAtSameBrand_Notification()
+        public async Task AboutNewCountries_NewUnexpectedCountryAtSameBrand_NotificationWithoutFlag()
         {
             var country = _fixture.Build<UnitCountModel>()
                 .With(c => c.PizzeriaCount, 0)
@@ -149,12 +169,16 @@ namespace Dodo1000Bot.Services.Tests
 
             _countriesServiceMock.Setup(s => s.GetName(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
-            var expectedText = $"🌏 There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}!";
+            var expectedTexts = new[]
+            {
+                "🤩",
+                $"🌏 Wow! There is new country of {brandUnitCount.Brand} - {newCountry.CountryName}! 🤩",
+            };
 
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
                 {
-                    Assert.AreEqual(notification.Payload.Text, expectedText);
+                    Assert.True(expectedTexts.Contains(notification.Payload.Text), $"'{notification.Payload.Text}' is not expected text");
                 })
                 .Returns(Task.CompletedTask);
 
@@ -318,13 +342,20 @@ namespace Dodo1000Bot.Services.Tests
                 .With(m => m.Name, unitName)
                 .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
                 .Create();
-            var newUnitName = _fixture.Create<string>();
+
+            var newUnitLocality = _fixture.Build<LocalityModel>()
+                    .With(l => l.Name)
+                    .Create();
+            var newUnitAddress = _fixture.Build<AddressModel>()
+                    .With(a => a.Locality, newUnitLocality)
+                    .Create();
             var expectedCoordinates = _fixture.Build<CoordinatesModel>()
                 .With(c => c.Lat)
                 .With(c => c.Long)
                 .Create();
             var newUnitModel = _fixture.Build<UnitModel>()
-                .With(m => m.Name, newUnitName)
+                .With(m => m.Name)
+                .With(m => m.Address, newUnitAddress)
                 .With(m => m.Coords, expectedCoordinates)
                 .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
                 .Create();
@@ -359,7 +390,7 @@ namespace Dodo1000Bot.Services.Tests
                 r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            var expectedText = $"🏠 Wow! There is new unit of {brand} - {newUnitName}! You can find it here👇";
+            var expectedText = $"🏠 Wow! There is new {brand} at {newUnitModel.Address?.Locality?.Name}! You can find it here👇";
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
                 {

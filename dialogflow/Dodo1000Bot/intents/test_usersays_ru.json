@@ -11,5 +11,17 @@
     "count": 0,
     "lang": "ru",
     "updated": 0
+  },
+  {
+    "data": [
+      {
+        "text": "/start test",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "ru",
+    "updated": 0
   }
 ]
