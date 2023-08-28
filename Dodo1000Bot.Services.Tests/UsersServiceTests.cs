@@ -54,4 +54,15 @@ public class UsersServiceTests
 
         await _target.SaveAndNotify(user, CancellationToken.None);
     }
+
+    [Test]
+    public async Task CheckAndNotifyAboutSubscribers_RemainderNotEqualsZero_NoAnyNotifications()
+    {
+        _usersRepositoryMock.Setup(r => r.Count(It.IsAny<CancellationToken>())).ReturnsAsync(9);
+
+        await _target.CheckAndNotifyAboutSubscribers(CancellationToken.None);
+
+        _notificationsServiceMock.Verify(s => 
+            s.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
 }
