@@ -9,7 +9,7 @@ namespace Dodo1000Bot.Api.DependencyModules
     {
         internal static void AddMapping(this IServiceCollection services, IEnumerable<string> names)
         {
-            services.AddSingleton<IMapper>(p => new Mapper(new MapperConfiguration(c =>
+            services.AddSingleton<IMapper>(_ => new Mapper(new MapperConfiguration(c =>
             {
                 c.AddMaps(names);
 
