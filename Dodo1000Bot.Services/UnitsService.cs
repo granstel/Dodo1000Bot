@@ -397,7 +397,7 @@ public class UnitsService : CheckAndNotifyService
             Payload = new NotificationPayload
             {
                 Text =
-                    $"Incredible! 🥳 \r\nThere are {totalAtCountry.PizzeriaCount} units of {brand} at {countryName}! ❤️‍🔥"
+                    $"Incredible! 🥳 \r\nThere are {totalAtCountry.PizzeriaCount} {brand} in the {countryName}! ❤️‍🔥"
             }
         };
 
