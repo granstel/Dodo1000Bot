@@ -158,7 +158,7 @@ public class UnitsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = $"Wow! 🎉 \r\nThere are {totalOverall} units of all Dodo brands! 🥳"
+                Text = $"Wow! 🎉 \r\nThere are {totalOverall} restaurants of all Dodo brands! 🥳"
             }
         };
 
