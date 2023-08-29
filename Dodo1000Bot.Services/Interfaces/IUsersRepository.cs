@@ -15,5 +15,7 @@ namespace Dodo1000Bot.Services
         Task Delete(User user, CancellationToken cancellationToken);
 
         Task<int> Count(CancellationToken cancellationToken);
+
+        Task<IList<User>> GetAdmins(Source messengerType, CancellationToken cancellationToken);
     }
 }
