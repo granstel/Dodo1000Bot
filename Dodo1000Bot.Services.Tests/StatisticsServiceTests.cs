@@ -84,7 +84,7 @@ public class StatisticsServiceTests
             .With(s => s.Revenues, new[]{ revenueStatistics })
             .Create();
 
-        var expectedText = $"💰 There is over 1 000 000 000 dollars revenue in {DateTime.Now.Year} year! " +
+        var expectedText = $"💰 There is over $1,000,000,000 revenue in {DateTime.Now.Year} year! " +
                            $"See that on https://realtime.dodobrands.io";
 
         _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))

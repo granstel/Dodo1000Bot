@@ -158,7 +158,7 @@ public class UnitsService : CheckAndNotifyService
         {
             Payload = new NotificationPayload
             {
-                Text = $"Wow! 🎉 \r\nThere are {totalOverall} units of all Dodo brands! 🥳"
+                Text = $"Wow! 🎉 \r\nThere are {totalOverall} restaurants of all Dodo brands! 🥳"
             }
         };
 
@@ -191,7 +191,7 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"Wow! 🔥 \r\nThere are {totalAtBrand.Value} units of {totalAtBrand.Key} brand! 🥳"
+                    Text = $"Wow! 🔥 \r\nThere are {totalAtBrand.Value} restaurants of {totalAtBrand.Key} brand! 🥳"
                 }
             };
 
@@ -278,14 +278,14 @@ public class UnitsService : CheckAndNotifyService
 
             foreach (var country in totalUnitCountListModel.Countries)
             {
-                await CheckUnitsCountAtCountryAndNotify(brand, country.CountryId, country.PizzeriaCount, 
+                await CheckUnitsCountAtCountryAndNotify(brand, country.CountryId, country.CountryCode, country.PizzeriaCount, 
                     unitsCountSnapshot, cancellationToken);
             }
         }
         _log.LogInformation("Finish AboutNewUnits");
     }
 
-    private async Task CheckUnitsCountAtCountryAndNotify(Brands brand, int countryId, int unitsCount,
+    private async Task CheckUnitsCountAtCountryAndNotify(Brands brand, int countryId, string countryCode, int unitsCount,
         BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start CheckUnitsCountAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
@@ -297,11 +297,11 @@ public class UnitsService : CheckAndNotifyService
 
         _log.LogInformation("unitsCount = {unitsCount}, unitsCountAtCountrySnapshot = {unitsCountAtCountrySnapshot}", unitsCount, unitsCountAtCountrySnapshot);
 
-        await CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, cancellationToken);
+        await CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, cancellationToken);
         _log.LogInformation("Finish CheckUnitsCountAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
     }
 
-    internal async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, int countryId, CancellationToken cancellationToken)
+    internal async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, int countryId, string countryCode, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
         BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
@@ -325,13 +325,15 @@ public class UnitsService : CheckAndNotifyService
 
         _log.LogInformation("difference: {difference}", difference.Serialize());
 
+        var flag = Constants.TelegramFlags.GetValueOrDefault(countryCode) ?? string.Empty;
+
         foreach (var unit in difference)
         {
             var notification = new Notification
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🏠 Wow! There is new {brand} at {unit.Address?.Locality?.Name}! You can find it here👇",
+                    Text = $"🏠 Wow! There is new {brand} in {unit.Address?.Locality?.Name}{flag}! You can find it here👇",
                     Address = unit.Address?.Text,
                     Coordinates = unit.Coords,
                     Name = unit.Name
@@ -395,7 +397,7 @@ public class UnitsService : CheckAndNotifyService
             Payload = new NotificationPayload
             {
                 Text =
-                    $"Incredible! 🥳 \r\nThere are {totalAtCountry.PizzeriaCount} units of {brand} at {countryName}! ❤️‍🔥"
+                    $"Incredible! 🥳 \r\nThere are {totalAtCountry.PizzeriaCount} {brand} in the {countryName}! ❤️‍🔥"
             }
         };
 
