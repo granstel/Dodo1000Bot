@@ -8,17 +8,18 @@ using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Services;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace Dodo1000Bot.Messengers.Telegram;
 
-public class TelegramNotifyService: INotifyService
+public class TelegramNotifyService : INotifyService
 {
+    private readonly ILogger<TelegramNotifyService> _log;
     private readonly IUsersRepository _usersRepository;
     private readonly ITelegramBotClient _client;
-    private readonly ILogger<TelegramNotifyService> _log;
 
-    public TelegramNotifyService(IUsersRepository usersRepository, ITelegramBotClient client, ILogger<TelegramNotifyService> log)
+    public TelegramNotifyService(ILogger<TelegramNotifyService> log, IUsersRepository usersRepository, ITelegramBotClient client)
     {
         _usersRepository = usersRepository;
         _client = client;
@@ -44,7 +45,7 @@ public class TelegramNotifyService: INotifyService
 
         foreach (var user in users)
         {
-            var pushedNotificationsToUsers = await PushNotificationsToUsers(notifications, user, cancellationToken);
+            var pushedNotificationsToUsers = await PushNotifications(notifications, user, cancellationToken);
 
             pushedNotifications.AddRange(pushedNotificationsToUsers);
         }
@@ -52,7 +53,10 @@ public class TelegramNotifyService: INotifyService
         return pushedNotifications;
     }
 
-    private async Task<IList<PushedNotification>> PushNotificationsToUsers(IList<Notification> notifications, User user, CancellationToken cancellationToken)
+    private async Task<IList<PushedNotification>> PushNotifications(
+        IList<Notification> notifications,
+        User user,
+        CancellationToken cancellationToken)
     {
         var pushedNotifications = new List<PushedNotification>();
 
@@ -87,5 +91,23 @@ public class TelegramNotifyService: INotifyService
         }
 
         return pushedNotifications;
+    }
+
+    public async Task SendToAdmin(Notification notification, CancellationToken cancellationToken)
+    {
+        var admins = await _usersRepository.GetAdmins(Source.Telegram, cancellationToken);
+
+        foreach (var admin in admins)
+        {
+            try
+            {
+                await _client.SendTextMessageAsync(admin.MessengerUserId, notification.Payload.Text, parseMode: ParseMode.Html,
+                    cancellationToken: cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e, "Error while send notification to {MessengerUserId}", admin.MessengerUserId);
+            }
+        }
     }
 }

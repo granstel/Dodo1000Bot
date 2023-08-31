@@ -11,4 +11,6 @@ public interface INotificationsService
     Task PushNotifications(CancellationToken cancellationToken);
 
     Task Delete(int notificationId, CancellationToken cancellationToken);
+
+    Task SendToAdmin(Notification notification, CancellationToken cancellationToken);
 }

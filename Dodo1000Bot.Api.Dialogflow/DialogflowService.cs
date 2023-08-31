@@ -20,13 +20,15 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
 
     private readonly IUsersService _usersService;
     private readonly ICustomNotificationsRepository _customNotificationsRepository;
+    private readonly INotificationsService _notificationsService;
 
     public DialogflowService(
         ILogger<DialogflowService> log,
         IConversationService conversationService,
         IMapper mapper,
-        IUsersService usersService, 
-        ICustomNotificationsRepository customNotificationsRepository) : base(log, conversationService, mapper)
+        IUsersService usersService,
+        ICustomNotificationsRepository customNotificationsRepository,
+        INotificationsService notificationsService) : base(log, conversationService, mapper)
     {
         _usersService = usersService;
         _customNotificationsRepository = customNotificationsRepository;
@@ -35,8 +37,10 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
         {
             { "SaveUser", SaveUser },
             { "DeleteUser", DeleteUser },
-            { "SaveCustomNotification", SaveCustomNotification }
+            { "SaveCustomNotification", SaveCustomNotification },
+            { "SendToAdmin", SendToAdmin }
         };
+        _notificationsService = notificationsService;
     }
 
     protected override async Task<Response> ProcessCommand(Request request, CancellationToken cancellationToken)
@@ -111,5 +115,24 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
         };
 
         await _customNotificationsRepository.Save(notification, cancellationToken);
+    }
+
+    /// <summary>
+    /// Action for key "SendToAdmin"
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    private async Task SendToAdmin(Request request, CancellationToken cancellationToken)
+    {
+        var notification = new Notification
+        {
+            Payload = new NotificationPayload
+            {
+                Text = request.Text
+            }
+        };
+
+        await _notificationsService.SendToAdmin(notification, cancellationToken);
     }
 }

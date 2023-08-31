@@ -40,7 +40,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
             _clientMock = _mockRepository.Create<ITelegramBotClient>();
             _logMock = Mock.Of<ILogger<TelegramNotifyService>>();
 
-            _target = new TelegramNotifyService(_usersRepositoryMock.Object, _clientMock.Object, _logMock);
+            _target = new TelegramNotifyService(_logMock, _usersRepositoryMock.Object, _clientMock.Object);
 
             _fixture = new Fixture { OmitAutoProperties = true };
         }
