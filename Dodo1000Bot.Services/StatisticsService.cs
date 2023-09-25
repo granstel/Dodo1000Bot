@@ -44,7 +44,7 @@ public class StatisticsService : CheckAndNotifyService
     {
         var ordersPerMinute = statistics.OrdersPerMinute;
 
-        if (!CheckGreaterOrEqual1000(ordersPerMinute))
+        if (!CheckHelper.CheckGreaterOrEqualGivenValue(ordersPerMinute, 1000))
         {
             return;
         }
@@ -80,7 +80,7 @@ public class StatisticsService : CheckAndNotifyService
 
         const int givenRevenue = 1_000_000_000;
 
-        if (!CheckGreaterOrEqualGivenValue(yearRevenue, givenRevenue))
+        if (!CheckHelper.CheckGreaterOrEqualGivenValue(yearRevenue, givenRevenue))
         {
             return;
         }
