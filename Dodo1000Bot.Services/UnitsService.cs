@@ -46,6 +46,7 @@ public class UnitsService : CheckAndNotifyService
             await AboutTotalOverall(unitsCount, cancellationToken);
             await AboutTotalAtBrands(unitsCount, cancellationToken);
             await AboutTotalAtCountries(unitsCount, cancellationToken);
+            await AboutTotalCountriesAtBrands(unitsCount, cancellationToken);
 
             var snapshotName = nameof(_globalApiClient.UnitsCount);
             var unitsCountSnapshot = 
@@ -138,7 +139,7 @@ public class UnitsService : CheckAndNotifyService
     {
         var totalOverall = unitsCount.Brands.Sum(b => b.Total);
 
-        if (!CheckRemainder1000(totalOverall))
+        if (!CheckHelper.CheckRemainder(totalOverall, 1000))
         {
             return;
         }
@@ -171,7 +172,7 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var totalAtBrand in totalAtBrands)
         {
-            if (!CheckRemainder1000(totalAtBrand.Value))
+            if (!CheckHelper.CheckRemainder(totalAtBrand.Value, 1000))
             {
                 continue;
             }
@@ -211,6 +212,32 @@ public class UnitsService : CheckAndNotifyService
             {
                 await CheckAndNotify1000(totalAtCountry, brand, cancellationToken);
             }
+        }
+    }
+
+    internal async Task AboutTotalCountriesAtBrands(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
+    {
+        var countriesCountAtBrands = unitsCount.Brands
+            .ToDictionary(b => b.Brand, b => b.Countries.Count());
+
+        foreach (var countriesCountAtBrand in countriesCountAtBrands)
+        {
+            var brand = countriesCountAtBrand.Key;
+
+            if (!CheckHelper.CheckRemainder(countriesCountAtBrand.Value, 10))
+            {
+                continue;
+            }
+
+            var notification = new Notification
+            {
+                Payload = new NotificationPayload
+                {
+                    Text = $"🌏 Awesome! {brand} is already in {countriesCountAtBrand.Value} countries!"
+                }
+            };
+
+            await _notificationsService.Save(notification, cancellationToken);
         }
     }
 
@@ -364,7 +391,7 @@ public class UnitsService : CheckAndNotifyService
 
     private async Task CheckAndNotify1000(UnitCountModel totalAtCountry, Brands brand, CancellationToken cancellationToken)
     {
-        if (!CheckRemainder1000(totalAtCountry.PizzeriaCount))
+        if (!CheckHelper.CheckRemainder(totalAtCountry.PizzeriaCount, 1000))
         {
             return;
         }
