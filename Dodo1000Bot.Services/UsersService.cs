@@ -38,7 +38,7 @@ public class UsersService : IUsersService
         {
             var subscribersCount = await _usersRepository.Count(cancellationToken);
 
-            if (!CheckHelper.CheckRemainder(subscribersCount, 10))
+            if (!CheckHelper.CheckRemainder(subscribersCount, 100))
             {
                 return;
             }
