@@ -15,13 +15,14 @@ namespace Dodo1000Bot.Messengers.Telegram;
 
 public class TelegramNotifyService: INotifyService
 {
-    private readonly IUsersService _usersService;
+    private readonly IUsersRepository _usersRepository;
     private readonly ITelegramBotClient _client;
     private readonly ILogger<TelegramNotifyService> _log;
 
-    public TelegramNotifyService(IUsersService usersService, ITelegramBotClient client, ILogger<TelegramNotifyService> log)
+    public TelegramNotifyService(IUsersRepository usersRepository, ITelegramBotClient client,
+        ILogger<TelegramNotifyService> log)
     {
-        _usersService = usersService;
+        _usersRepository = usersRepository;
         _client = client;
         _log = log;
     }
@@ -36,7 +37,7 @@ public class TelegramNotifyService: INotifyService
             return pushedNotifications;
         }
 
-        IEnumerable<User> users = await _usersService.GetUsers(Source.Telegram, cancellationToken);
+        IEnumerable<User> users = await _usersRepository.GetUsers(Source.Telegram, cancellationToken);
 
         if (users?.Any() != true)
         {
@@ -76,7 +77,7 @@ public class TelegramNotifyService: INotifyService
             catch (ApiRequestException e) when (e.ErrorCode == 403)
             {
                 _log.LogWarning(e, "Error while send notification to {MessengerUserId}, so user will be deleted", messengerUserId);
-                await _usersService.Delete(user, cancellationToken);
+                await _usersRepository.Delete(user, cancellationToken);
                 return pushedNotifications;
             }
             catch (Exception e)
