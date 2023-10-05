@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Microsoft.Extensions.Logging;
 
@@ -59,8 +61,9 @@ public class UsersService : IUsersService
         }
     }
 
-    public async Task Delete(User user, CancellationToken cancellationToken)
-    {
-        await _usersRepository.Delete(user, cancellationToken);
-    }
+    public Task Delete(User user, CancellationToken cancellationToken) => 
+        _usersRepository.Delete(user, cancellationToken);
+
+    public Task<IList<User>> GetUsers(Source messengerType, CancellationToken cancellationToken) =>
+        _usersRepository.GetUsers(messengerType, cancellationToken);
 }

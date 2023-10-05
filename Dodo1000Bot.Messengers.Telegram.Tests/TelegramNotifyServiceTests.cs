@@ -23,7 +23,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
     {
         private MockRepository _mockRepository;
 
-        private Mock<IUsersRepository> _usersRepositoryMock;
+        private Mock<IUsersService> _usersServiceMock;
         private Mock<ITelegramBotClient> _clientMock;
         private ILogger<TelegramNotifyService> _logMock;
 
@@ -36,11 +36,11 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         {
             _mockRepository = new MockRepository(MockBehavior.Strict);
 
-            _usersRepositoryMock = _mockRepository.Create<IUsersRepository>();
+            _usersServiceMock = _mockRepository.Create<IUsersService>();
             _clientMock = _mockRepository.Create<ITelegramBotClient>();
             _logMock = Mock.Of<ILogger<TelegramNotifyService>>();
 
-            _target = new TelegramNotifyService(_usersRepositoryMock.Object, _clientMock.Object, _logMock);
+            _target = new TelegramNotifyService(_usersServiceMock.Object, _clientMock.Object, _logMock);
 
             _fixture = new Fixture { OmitAutoProperties = true };
         }
@@ -72,7 +72,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
 
             var ct = CancellationToken.None;
 
-            _usersRepositoryMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(users);
+            _usersServiceMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(users);
 
             var result = await _target.NotifyAbout(notifications, ct);
 
@@ -95,7 +95,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
 
             var ct = CancellationToken.None;
 
-            _usersRepositoryMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(new []{user});
+            _usersServiceMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(new []{user});
             _clientMock.Setup(c => c.SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text,
             It.IsAny<ParseMode>(), It.IsAny<IEnumerable<MessageEntity>>(), 
             It.IsAny<bool>(), It.IsAny<bool>(), 
