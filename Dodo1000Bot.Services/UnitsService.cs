@@ -347,7 +347,7 @@ public class UnitsService : CheckAndNotifyService
         _log.LogInformation("unitsList: {unitsList}", unitsList.Serialize());
         _log.LogInformation("unitsListSnapshot: {unitsListSnapshot}", unitsListSnapshot.Serialize());
 
-        var difference = unitsList.ExceptBy(unitsListSnapshot.Select(u => u.Name), u => u.Name)
+        var difference = unitsList.ExceptBy(unitsListSnapshot.Select(u => u.StartDate), u => u.StartDate)
             .Where(u => u.StartDate.Year == DateTime.Today.Date.Year).ToList();
 
         _log.LogInformation("difference: {difference}", difference.Serialize());
