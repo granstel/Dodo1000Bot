@@ -370,9 +370,7 @@ namespace Dodo1000Bot.Services.Tests
                     .With(m => m.Countries, new []{unitListModel})
                     .Create();
 
-            var unitModelSnapshot = _fixture.Build<UnitModel>()
-                .With(m => m.Name, unitName)
-                .Create();
+            var unitModelSnapshot = unitModel;
             var unitListModelSnapshot = _fixture.Build<UnitListModel>()
                     .With(m => m.Pizzerias, new []{unitModelSnapshot})
                     .Create();

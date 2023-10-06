@@ -347,8 +347,12 @@ public class UnitsService : CheckAndNotifyService
         _log.LogInformation("unitsList: {unitsList}", unitsList.Serialize());
         _log.LogInformation("unitsListSnapshot: {unitsListSnapshot}", unitsListSnapshot.Serialize());
 
-        var difference = unitsList.ExceptBy(unitsListSnapshot.Select(u => u.StartDate), u => u.StartDate)
-            .Where(u => u.StartDate.Year == DateTime.Today.Date.Year).ToList();
+        const string formatOfDestinctions = "{0}-{1}";
+
+        var formattedDistinctions = unitsListSnapshot.Select(uls => string.Format(formatOfDestinctions, uls.Name, uls.StartDate));
+        var difference = unitsList.ExceptBy(formattedDistinctions, 
+                                            ul => string.Format(formatOfDestinctions, ul.Name, ul.StartDate))
+            .Where(ul => ul.StartDate.Year == DateTime.Today.Date.Year).ToList();
 
         _log.LogInformation("difference: {difference}", difference.Serialize());
 
