@@ -242,7 +242,7 @@ namespace Dodo1000Bot.Services.Tests
         }
 
         [Test]
-        public async Task CheckUnitsOfBrandAtCountryAndNotify_SameUnitNames_NoAnyNotifications()
+        public async Task CheckUnitsCountAtCountryAndNotify_SameUnitNames_NoAnyNotifications()
         {
             var brand = _fixture.Create<Brands>();
             var countryId = _fixture.Create<int>();
@@ -282,11 +282,13 @@ namespace Dodo1000Bot.Services.Tests
                 r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, CancellationToken.None);
+            var restaurantsCountAtBrand = _fixture.Create<int>();
+            var totalOverall = _fixture.Create<int>();
+            await _target.CheckUnitsCountAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
         }
 
         [Test]
-        public async Task CheckUnitsOfBrandAtCountryAndNotify_LessUnitsThanAtSnapshot_NoAnyNotification()
+        public async Task CheckUnitsCountAtCountryAndNotify_LessUnitsThanAtSnapshot_NoAnyNotification()
         {
             var brand = _fixture.Create<Brands>();
             var countryId = _fixture.Create<int>();
@@ -330,11 +332,14 @@ namespace Dodo1000Bot.Services.Tests
                 r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, CancellationToken.None);
+            var restaurantsCountAtBrand = _fixture.Create<int>();
+            var totalOverall = _fixture.Create<int>();
+
+            await _target.CheckUnitsCountAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
         }
 
         [Test]
-        public async Task CheckUnitsOfBrandAtCountryAndNotify_NewUnit_Notification()
+        public async Task CheckUnitsCountAtCountryAndNotify_NewUnit_Notification()
         {
             var brand = _fixture.Create<Brands>();
             var countryId = _fixture.Create<int>();
@@ -389,7 +394,13 @@ namespace Dodo1000Bot.Services.Tests
                 r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            var expectedText = $"Wow! There is new {brand} in {newUnitModel.Address?.Locality?.Name}! You can find it here👆";
+            var restaurantsCountAtBrand = _fixture.Create<int>();
+            var totalOverall = _fixture.Create<int>();
+
+            var expectedText =
+                $"Wow! There is new {brand} in {newUnitModel.Address?.Locality?.Name}! You can find it here👆 " +
+                $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
+
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
                 {
@@ -398,11 +409,11 @@ namespace Dodo1000Bot.Services.Tests
                 })
                 .Returns(Task.CompletedTask);
 
-            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, CancellationToken.None);
+            await _target.CheckUnitsCountAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
         }
 
         [Test]
-        public async Task CheckUnitsOfBrandAtCountryAndNotify_OldUnitWithNewDate_Notification()
+        public async Task CheckUnitsCountAtCountryAndNotify_OldUnitWithNewDate_Notification()
         {
             var brand = _fixture.Create<Brands>();
             var countryId = _fixture.Create<int>();
@@ -459,7 +470,13 @@ namespace Dodo1000Bot.Services.Tests
                 r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            var expectedText = $"Wow! There is new {brand} in {unitModelWithDate.Address?.Locality?.Name}! You can find it here👆";
+            var restaurantsCountAtBrand = _fixture.Create<int>();
+            var totalOverall = _fixture.Create<int>();
+
+            var expectedText =
+                $"Wow! There is new {brand} in {unitModelWithDate.Address?.Locality?.Name}! You can find it here👆 " +
+                $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
+
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
                 {
@@ -468,7 +485,7 @@ namespace Dodo1000Bot.Services.Tests
                 })
                 .Returns(Task.CompletedTask);
 
-            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, CancellationToken.None);
+            await _target.CheckUnitsCountAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
         }
     }
 }

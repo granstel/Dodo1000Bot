@@ -298,37 +298,24 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var brand in brands)
         {
-            var totalUnitCountListModel = unitsCount
-                .Brands.First(b => b.Brand == brand);
+            var countriesOfBrand = unitsCount
+                .Brands.First(b => b.Brand == brand).Countries;
 
             _log.LogInformation("Brand {brand}", brand);
 
-            foreach (var country in totalUnitCountListModel.Countries)
+            var restaurantsAtBrand = unitsCount.Brands.Where(b => b.Brand == brand).Select(b => b.Total).FirstOrDefault();
+            var totalOverall = unitsCount.Brands.Sum(b => b.Total);
+
+            foreach (var country in countriesOfBrand)
             {
-                await CheckUnitsCountAtCountryAndNotify(brand, country.CountryId, country.CountryCode, country.PizzeriaCount, 
-                    unitsCountSnapshot, cancellationToken);
+                await CheckUnitsCountAtCountryAndNotify(brand, country.CountryId, country.CountryCode, restaurantsAtBrand, totalOverall, cancellationToken);
             }
         }
         _log.LogInformation("Finish AboutNewUnits");
     }
 
-    private async Task CheckUnitsCountAtCountryAndNotify(Brands brand, int countryId, string countryCode, int unitsCount,
-        BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
-    {
-        _log.LogInformation("Start CheckUnitsCountAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
-
-        var unitsCountAtCountrySnapshot = unitsCountSnapshot
-            .Brands.FirstOrDefault(b => b.Brand == brand)?
-            .Countries.Where(c => c.CountryId == countryId)
-            .Select(c => c.PizzeriaCount).FirstOrDefault();
-
-        _log.LogInformation("unitsCount = {unitsCount}, unitsCountAtCountrySnapshot = {unitsCountAtCountrySnapshot}", unitsCount, unitsCountAtCountrySnapshot);
-
-        await CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, cancellationToken);
-        _log.LogInformation("Finish CheckUnitsCountAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
-    }
-
-    internal async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, int countryId, string countryCode, CancellationToken cancellationToken)
+    internal async Task CheckUnitsCountAtCountryAndNotify(Brands brand, int countryId, string countryCode,
+        int restaurantsCountAtBrand, int totalOverall, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
         BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
@@ -365,7 +352,8 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"Wow! There is new {brand}{brandEmoji} in {unit.Address?.Locality?.Name}{flag}! You can find it here👆",
+                    Text = $"Wow! There is new {brand}{brandEmoji} in {unit.Address?.Locality?.Name}{flag}! You can find it here👆 " +
+                           $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥",
                     Address = unit.Address?.Text,
                     Coordinates = unit.Coords,
                     Name = unit.Name
