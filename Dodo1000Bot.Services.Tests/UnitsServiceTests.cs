@@ -284,6 +284,7 @@ namespace Dodo1000Bot.Services.Tests
 
             var restaurantsCountAtBrand = _fixture.Create<int>();
             var totalOverall = _fixture.Create<int>();
+
             await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
         }
 
