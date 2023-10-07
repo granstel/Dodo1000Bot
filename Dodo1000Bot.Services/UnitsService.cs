@@ -356,7 +356,7 @@ public class UnitsService : CheckAndNotifyService
 
         _log.LogInformation("difference: {difference}", difference.Serialize());
 
-        var brandEmoji = Constants.BrandsEmoji.GetValueOrDefault(brand) ?? "🏠";
+        var brandEmoji = Constants.BrandsEmoji.GetValueOrDefault(brand) ?? string.Empty;
         var flag = Constants.TelegramFlags.GetValueOrDefault(countryCode) ?? string.Empty;
 
         foreach (var unit in difference)
@@ -365,7 +365,7 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"{brandEmoji} Wow! There is new {brand} in {unit.Address?.Locality?.Name}{flag}! You can find it here👇",
+                    Text = $"Wow! There is new {brand}{brandEmoji} in {unit.Address?.Locality?.Name}{flag}! You can find it here👆",
                     Address = unit.Address?.Text,
                     Coordinates = unit.Coords,
                     Name = unit.Name
