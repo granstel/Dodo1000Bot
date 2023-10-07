@@ -63,16 +63,15 @@ public class TelegramNotifyService: INotifyService
             var messengerUserId = user.MessengerUserId;
             try
             {
-                await _client.SendTextMessageAsync(messengerUserId, notification.Payload.Text,
-                    parseMode: ParseMode.Html,
-                    cancellationToken: cancellationToken);
-
                 var coordinates = notification.Payload.Coordinates;
                 if (coordinates != null)
                 {
                     await _client.SendLocationAsync(messengerUserId, coordinates.Latitude, coordinates.Longitude,
                         cancellationToken: cancellationToken);
                 }
+                await _client.SendTextMessageAsync(messengerUserId, notification.Payload.Text,
+                    parseMode: ParseMode.Html,
+                    cancellationToken: cancellationToken);
             }
             catch (ApiRequestException e) when (e.ErrorCode == 403)
             {

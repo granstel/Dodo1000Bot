@@ -389,7 +389,7 @@ namespace Dodo1000Bot.Services.Tests
                 r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            var expectedText = $"🏠 Wow! There is new {brand} in {newUnitModel.Address?.Locality?.Name}! You can find it here👇";
+            var expectedText = $"🏠 Wow! There is new {brand} in {newUnitModel.Address?.Locality?.Name}! You can find it here👆";
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
                 {
@@ -459,7 +459,7 @@ namespace Dodo1000Bot.Services.Tests
                 r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            var expectedText = $"🏠 Wow! There is new {brand} in {unitModelWithDate.Address?.Locality?.Name}! You can find it here👇";
+            var expectedText = $"🏠 Wow! There is new {brand} in {unitModelWithDate.Address?.Locality?.Name}! You can find it here👆";
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
                 {
