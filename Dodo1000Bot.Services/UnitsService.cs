@@ -308,13 +308,13 @@ public class UnitsService : CheckAndNotifyService
 
             foreach (var country in countriesOfBrand)
             {
-                await CheckUnitsCountAtCountryAndNotify(brand, country.CountryId, country.CountryCode, restaurantsAtBrand, totalOverall, cancellationToken);
+                await CheckUnitsOfBrandAtCountryAndNotify(brand, country.CountryId, country.CountryCode, restaurantsAtBrand, totalOverall, cancellationToken);
             }
         }
         _log.LogInformation("Finish AboutNewUnits");
     }
 
-    internal async Task CheckUnitsCountAtCountryAndNotify(Brands brand, int countryId, string countryCode,
+    internal async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, int countryId, string countryCode,
         int restaurantsCountAtBrand, int totalOverall, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);

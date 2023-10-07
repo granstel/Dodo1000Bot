@@ -242,7 +242,7 @@ namespace Dodo1000Bot.Services.Tests
         }
 
         [Test]
-        public async Task CheckUnitsCountAtCountryAndNotify_SameUnitNames_NoAnyNotifications()
+        public async Task CheckUnitsOfBrandAtCountryAndNotify_SameUnitNames_NoAnyNotifications()
         {
             var brand = _fixture.Create<Brands>();
             var countryId = _fixture.Create<int>();
@@ -284,11 +284,11 @@ namespace Dodo1000Bot.Services.Tests
 
             var restaurantsCountAtBrand = _fixture.Create<int>();
             var totalOverall = _fixture.Create<int>();
-            await _target.CheckUnitsCountAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
+            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
         }
 
         [Test]
-        public async Task CheckUnitsCountAtCountryAndNotify_LessUnitsThanAtSnapshot_NoAnyNotification()
+        public async Task CheckUnitsOfBrandAtCountryAndNotify_LessUnitsThanAtSnapshot_NoAnyNotification()
         {
             var brand = _fixture.Create<Brands>();
             var countryId = _fixture.Create<int>();
@@ -335,11 +335,11 @@ namespace Dodo1000Bot.Services.Tests
             var restaurantsCountAtBrand = _fixture.Create<int>();
             var totalOverall = _fixture.Create<int>();
 
-            await _target.CheckUnitsCountAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
+            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
         }
 
         [Test]
-        public async Task CheckUnitsCountAtCountryAndNotify_NewUnit_Notification()
+        public async Task CheckUnitsOfBrandAtCountryAndNotify_NewUnit_Notification()
         {
             var brand = _fixture.Create<Brands>();
             var countryId = _fixture.Create<int>();
@@ -409,11 +409,11 @@ namespace Dodo1000Bot.Services.Tests
                 })
                 .Returns(Task.CompletedTask);
 
-            await _target.CheckUnitsCountAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
+            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
         }
 
         [Test]
-        public async Task CheckUnitsCountAtCountryAndNotify_OldUnitWithNewDate_Notification()
+        public async Task CheckUnitsOfBrandAtCountryAndNotify_OldUnitWithNewDate_Notification()
         {
             var brand = _fixture.Create<Brands>();
             var countryId = _fixture.Create<int>();
@@ -485,7 +485,7 @@ namespace Dodo1000Bot.Services.Tests
                 })
                 .Returns(Task.CompletedTask);
 
-            await _target.CheckUnitsCountAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
+            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
         }
     }
 }
