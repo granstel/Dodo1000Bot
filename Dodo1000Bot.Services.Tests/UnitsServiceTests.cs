@@ -343,7 +343,6 @@ namespace Dodo1000Bot.Services.Tests
             var unitName = _fixture.Create<string>();
             var unitModel = _fixture.Build<UnitModel>()
                 .With(m => m.Name, unitName)
-                .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
                 .Create();
 
             var newUnitLocality = _fixture.Build<LocalityModel>()
@@ -352,14 +351,14 @@ namespace Dodo1000Bot.Services.Tests
             var newUnitAddress = _fixture.Build<AddressModel>()
                     .With(a => a.Locality, newUnitLocality)
                     .Create();
-            var expectedCoordinates = _fixture.Build<CoordinatesModel>()
+            var newUnitCoordinates = _fixture.Build<CoordinatesModel>()
                 .With(c => c.Lat)
                 .With(c => c.Long)
                 .Create();
             var newUnitModel = _fixture.Build<UnitModel>()
                 .With(m => m.Name)
                 .With(m => m.Address, newUnitAddress)
-                .With(m => m.Coords, expectedCoordinates)
+                .With(m => m.Coords, newUnitCoordinates)
                 .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
                 .Create();
 
@@ -370,9 +369,8 @@ namespace Dodo1000Bot.Services.Tests
                     .With(m => m.Countries, new []{unitListModel})
                     .Create();
 
-            var unitModelSnapshot = unitModel;
             var unitListModelSnapshot = _fixture.Build<UnitListModel>()
-                    .With(m => m.Pizzerias, new []{unitModelSnapshot})
+                    .With(m => m.Pizzerias, new []{unitModel})
                     .Create();
             var unitsAtCountrySnapshot = _fixture.Build<BrandData<UnitListModel>>()
                     .With(m => m.Countries, new []{unitListModelSnapshot})
@@ -396,7 +394,7 @@ namespace Dodo1000Bot.Services.Tests
                 .Callback((Notification notification, CancellationToken _) =>
                 {
                     Assert.AreEqual(notification.Payload.Text, expectedText);
-                    Assert.AreEqual(notification.Payload.Coordinates, expectedCoordinates);
+                    Assert.AreEqual(notification.Payload.Coordinates, newUnitCoordinates);
                 })
                 .Returns(Task.CompletedTask);
 
