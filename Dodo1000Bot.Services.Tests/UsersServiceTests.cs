@@ -69,7 +69,7 @@ public class UsersServiceTests
     [Test]
     public async Task CheckAndNotifyAboutSubscribers_RemainderEqualsZero_NoAnyNotifications()
     {
-        const int subscribersCount = 20;
+        const int subscribersCount = 200;
         _usersRepositoryMock.Setup(r => r.Count(It.IsAny<CancellationToken>())).ReturnsAsync(subscribersCount);
 
         var expectedText = $"👥 Hey! I already have {subscribersCount} subscribers! Thank you for staying with me 🤗";

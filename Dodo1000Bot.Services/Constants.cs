@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using Dodo1000Bot.Models;
 
 namespace Dodo1000Bot.Services
 {
     public static class Constants
     {
-        public static Dictionary<string, string> TelegramFlags = new()
+        public static readonly Dictionary<string, string> TelegramFlags = new()
         {
             {"ae", "🇦🇪"},
             {"am", "🇦🇲"},
@@ -32,6 +33,13 @@ namespace Dodo1000Bot.Services
             {"tr", "🇹🇷"},
             {"uz", "🇺🇿"},
             {"vn", "🇻🇳"},
+        };
+
+        public static readonly Dictionary<Brands, string> BrandsEmoji = new()
+        {
+            { Brands.Dodopizza, "🍕" },
+            { Brands.Drinkit, "☕" },
+            { Brands.Doner42, "🌯" },
         };
     }
 }

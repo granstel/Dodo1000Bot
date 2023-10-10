@@ -46,6 +46,7 @@ public class UnitsService : CheckAndNotifyService
             await AboutTotalOverall(unitsCount, cancellationToken);
             await AboutTotalAtBrands(unitsCount, cancellationToken);
             await AboutTotalAtCountries(unitsCount, cancellationToken);
+            await AboutTotalCountriesAtBrands(unitsCount, cancellationToken);
 
             var snapshotName = nameof(_globalApiClient.UnitsCount);
             var unitsCountSnapshot = 
@@ -138,7 +139,7 @@ public class UnitsService : CheckAndNotifyService
     {
         var totalOverall = unitsCount.Brands.Sum(b => b.Total);
 
-        if (!CheckRemainder1000(totalOverall))
+        if (!CheckHelper.CheckRemainder(totalOverall, 1000))
         {
             return;
         }
@@ -171,7 +172,7 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var totalAtBrand in totalAtBrands)
         {
-            if (!CheckRemainder1000(totalAtBrand.Value))
+            if (!CheckHelper.CheckRemainder(totalAtBrand.Value, 1000))
             {
                 continue;
             }
@@ -211,6 +212,32 @@ public class UnitsService : CheckAndNotifyService
             {
                 await CheckAndNotify1000(totalAtCountry, brand, cancellationToken);
             }
+        }
+    }
+
+    internal async Task AboutTotalCountriesAtBrands(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
+    {
+        var countriesCountAtBrands = unitsCount.Brands
+            .ToDictionary(b => b.Brand, b => b.Countries.Count());
+
+        foreach (var countriesCountAtBrand in countriesCountAtBrands)
+        {
+            var brand = countriesCountAtBrand.Key;
+
+            if (!CheckHelper.CheckRemainder(countriesCountAtBrand.Value, 10))
+            {
+                continue;
+            }
+
+            var notification = new Notification
+            {
+                Payload = new NotificationPayload
+                {
+                    Text = $"🌏 Awesome! {brand} is already in {countriesCountAtBrand.Value} countries!"
+                }
+            };
+
+            await _notificationsService.Save(notification, cancellationToken);
         }
     }
 
@@ -271,37 +298,24 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var brand in brands)
         {
-            var totalUnitCountListModel = unitsCount
-                .Brands.First(b => b.Brand == brand);
+            var countriesOfBrand = unitsCount
+                .Brands.First(b => b.Brand == brand).Countries;
 
             _log.LogInformation("Brand {brand}", brand);
 
-            foreach (var country in totalUnitCountListModel.Countries)
+            var restaurantsAtBrand = unitsCount.Brands.Where(b => b.Brand == brand).Select(b => b.Total).FirstOrDefault();
+            var totalOverall = unitsCount.Brands.Sum(b => b.Total);
+
+            foreach (var country in countriesOfBrand)
             {
-                await CheckUnitsCountAtCountryAndNotify(brand, country.CountryId, country.CountryCode, country.PizzeriaCount, 
-                    unitsCountSnapshot, cancellationToken);
+                await CheckUnitsOfBrandAtCountryAndNotify(brand, country.CountryId, country.CountryCode, restaurantsAtBrand, totalOverall, cancellationToken);
             }
         }
         _log.LogInformation("Finish AboutNewUnits");
     }
 
-    private async Task CheckUnitsCountAtCountryAndNotify(Brands brand, int countryId, string countryCode, int unitsCount,
-        BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
-    {
-        _log.LogInformation("Start CheckUnitsCountAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
-
-        var unitsCountAtCountrySnapshot = unitsCountSnapshot
-            .Brands.FirstOrDefault(b => b.Brand == brand)?
-            .Countries.Where(c => c.CountryId == countryId)
-            .Select(c => c.PizzeriaCount).FirstOrDefault();
-
-        _log.LogInformation("unitsCount = {unitsCount}, unitsCountAtCountrySnapshot = {unitsCountAtCountrySnapshot}", unitsCount, unitsCountAtCountrySnapshot);
-
-        await CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, cancellationToken);
-        _log.LogInformation("Finish CheckUnitsCountAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
-    }
-
-    internal async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, int countryId, string countryCode, CancellationToken cancellationToken)
+    internal async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, int countryId, string countryCode,
+        int restaurantsCountAtBrand, int totalOverall, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
         BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
@@ -320,11 +334,16 @@ public class UnitsService : CheckAndNotifyService
         _log.LogInformation("unitsList: {unitsList}", unitsList.Serialize());
         _log.LogInformation("unitsListSnapshot: {unitsListSnapshot}", unitsListSnapshot.Serialize());
 
-        var difference = unitsList.ExceptBy(unitsListSnapshot.Select(u => u.Name), u => u.Name)
-            .Where(u => u.StartDate.Year == DateTime.Today.Date.Year).ToList();
+        const string formatOfDestinctions = "{0}-{1}";
+
+        var formattedDistinctions = unitsListSnapshot.Select(uls => string.Format(formatOfDestinctions, uls.Name, uls.StartDate));
+        var difference = unitsList.ExceptBy(formattedDistinctions, 
+                                            ul => string.Format(formatOfDestinctions, ul.Name, ul.StartDate))
+            .Where(ul => ul.StartDate.Year == DateTime.Today.Date.Year).ToList();
 
         _log.LogInformation("difference: {difference}", difference.Serialize());
 
+        var brandEmoji = Constants.BrandsEmoji.GetValueOrDefault(brand) ?? string.Empty;
         var flag = Constants.TelegramFlags.GetValueOrDefault(countryCode) ?? string.Empty;
 
         foreach (var unit in difference)
@@ -333,7 +352,8 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🏠 Wow! There is new {brand} in {unit.Address?.Locality?.Name}{flag}! You can find it here👇",
+                    Text = $"Wow! There is new {brand}{brandEmoji} in {unit.Address?.Locality?.Name}{flag}! You can find it here👆 " +
+                           $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥",
                     Address = unit.Address?.Text,
                     Coordinates = unit.Coords,
                     Name = unit.Name
@@ -364,7 +384,7 @@ public class UnitsService : CheckAndNotifyService
 
     private async Task CheckAndNotify1000(UnitCountModel totalAtCountry, Brands brand, CancellationToken cancellationToken)
     {
-        if (!CheckRemainder1000(totalAtCountry.PizzeriaCount))
+        if (!CheckHelper.CheckRemainder(totalAtCountry.PizzeriaCount, 1000))
         {
             return;
         }
