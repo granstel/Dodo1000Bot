@@ -60,10 +60,10 @@ public class NotificationsService : INotificationsService
     {
         try
         {
-            IEnumerable<Task<IEnumerable<PushedNotification>>> tasks = 
+            IEnumerable<Task> tasks = 
                 _notifyServices.Select(s => s.SendToAdmin(notification, cancellationToken));
 
-            IEnumerable<PushedNotification>[] tasksResults = await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks);
         }
         catch (Exception e)
         {

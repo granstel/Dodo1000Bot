@@ -38,7 +38,7 @@ public class TelegramNotifyService : INotifyService
             return pushedNotifications;
         }
 
-        IEnumerable<User> users = await _usersRepository.GetUsers(Source.Telegram, cancellationToken);
+        IList<Models.Domain.User> users = await _usersRepository.GetUsers(Source.Telegram, cancellationToken);
 
         if (users?.Any() != true)
         {
@@ -55,7 +55,7 @@ public class TelegramNotifyService : INotifyService
         return pushedNotifications;
     }
 
-    private async Task<IList<PushedNotification>> PushNotificationsToUser(IList<Notification> notifications, User user, CancellationToken cancellationToken)
+    private async Task<IList<PushedNotification>> PushNotificationsToUser(IList<Notification> notifications, Models.Domain.User user, CancellationToken cancellationToken)
     {
         var pushedNotifications = new List<PushedNotification>();
 

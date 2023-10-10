@@ -10,5 +10,5 @@ public interface INotifyService
     Task<IEnumerable<PushedNotification>> NotifyAbout(IList<Notification> notifications,
         CancellationToken cancellationToken);
 
-    Task<IEnumerable<PushedNotification>> SendToAdmin(Notification notification, CancellationToken cancellationToken);
+    Task SendToAdmin(Notification notification, CancellationToken cancellationToken);
 }
