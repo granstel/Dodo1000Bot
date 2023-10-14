@@ -399,7 +399,7 @@ namespace Dodo1000Bot.Services.Tests
             var totalOverall = _fixture.Create<int>();
 
             var expectedText =
-                $"Wow! There is new {brand} in {newUnitModel.Address?.Locality?.Name}! You can find it here👆 " +
+                $"Wow! There is new {brand} in {newUnitModel.Address?.Locality?.Name}! You can find it on the map👆 " +
                 $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
 
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
@@ -475,7 +475,7 @@ namespace Dodo1000Bot.Services.Tests
             var totalOverall = _fixture.Create<int>();
 
             var expectedText =
-                $"Wow! There is new {brand} in {unitModelWithDate.Address?.Locality?.Name}! You can find it here👆 " +
+                $"Wow! There is new {brand} in {unitModelWithDate.Address?.Locality?.Name}! You can find it on the map👆 " +
                 $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
 
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
