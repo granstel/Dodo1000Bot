@@ -4,4 +4,4 @@ These events are determined using open data available through [Dodo IS API](http
 
 To subscribe to notifications, just start a dialogue with the bot!
 
-Published at [Dodo IS Marketplace](https://marketplace.dodois.io/apps/11EE418D3C8814B9A55A4652C9FA8BC6)
+Published in the [Dodo IS Marketplace](https://marketplace.dodois.io/apps/11EE418D3C8814B9A55A4652C9FA8BC6)
