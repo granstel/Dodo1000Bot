@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,5 +54,20 @@ public class NotificationsService : INotificationsService
     public async Task Delete(int notificationId, CancellationToken cancellationToken)
     {
         await _notificationsRepository.Delete(notificationId, cancellationToken);
+    }
+
+    public async Task SendToAdmin(Notification notification, CancellationToken cancellationToken)
+    {
+        try
+        {
+            IEnumerable<Task> tasks = 
+                _notifyServices.Select(s => s.SendToAdmin(notification, cancellationToken));
+
+            await Task.WhenAll(tasks);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Can't send to admin");
+        }
     }
 }

@@ -144,7 +144,7 @@ public class UnitsService : CheckAndNotifyService
             return;
         }
 
-        var notification = new Notification
+        var notification = new Notification(NotificationType.Emoji)
         {
             Payload = new NotificationPayload
             {
@@ -155,11 +155,12 @@ public class UnitsService : CheckAndNotifyService
 
         await _notificationsService.Save(notification, cancellationToken);
 
-        notification = new Notification
+        notification = new Notification(NotificationType.TotalOverall)
         {
             Payload = new NotificationPayload
             {
-                Text = $"Wow! 🎉 \r\nThere are {totalOverall} restaurants of all Dodo brands! 🥳"
+                Text = $"Wow! 🎉 \r\nThere are {totalOverall} restaurants of all Dodo brands! 🥳 \r\n" +
+                       $"You can see them all on https://realtime.dodobrands.io"
             }
         };
 
@@ -177,18 +178,18 @@ public class UnitsService : CheckAndNotifyService
                 continue;
             }
 
-            var notification = new Notification
+            var notification = new Notification(NotificationType.Emoji)
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"😮",
+                    Text = "😮",
                     HappenedAt = DateTime.Now
                 }
             };
 
             await _notificationsService.Save(notification, cancellationToken);
 
-            notification = new Notification
+            notification = new Notification(NotificationType.TotalAtBrands)
             {
                 Payload = new NotificationPayload
                 {
@@ -229,7 +230,7 @@ public class UnitsService : CheckAndNotifyService
                 continue;
             }
 
-            var notification = new Notification
+            var notification = new Notification(NotificationType.TotalCountriesAtBrands)
             {
                 Payload = new NotificationPayload
                 {
@@ -348,7 +349,7 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var unit in difference)
         {
-            var notification = new Notification
+            var notification = new Notification(NotificationType.NewUnit)
             {
                 Payload = new NotificationPayload
                 {
@@ -401,7 +402,7 @@ public class UnitsService : CheckAndNotifyService
                 totalAtCountry.CountryCode, nameof(ICountriesService));
         }
 
-        var notification = new Notification
+        var notification = new Notification(NotificationType.Emoji)
         {
             Payload = new NotificationPayload
             {
@@ -412,12 +413,12 @@ public class UnitsService : CheckAndNotifyService
 
         await _notificationsService.Save(notification, cancellationToken);
 
-        notification = new Notification
+        notification = new Notification(NotificationType.TotalAtCountries)
         {
             Payload = new NotificationPayload
             {
                 Text =
-                    $"Incredible! 🥳 \r\nThere are {totalAtCountry.PizzeriaCount} {brand} in the {countryName}! ❤️‍🔥"
+                    $"Incredible! 🥳 \r\nThere are {totalAtCountry.PizzeriaCount} {brand} restaurants in the {countryName}! ❤️‍🔥"
             }
         };
 
@@ -441,7 +442,7 @@ public class UnitsService : CheckAndNotifyService
             }
 
             var flag = Constants.TelegramFlags.GetValueOrDefault(countModel.CountryCode ?? string.Empty) ?? "🤩";
-            var notification = new Notification
+            var notification = new Notification(NotificationType.Emoji)
             {
                 Payload = new NotificationPayload
                 {
@@ -452,7 +453,7 @@ public class UnitsService : CheckAndNotifyService
 
             await _notificationsService.Save(notification, cancellationToken);
 
-            notification = new Notification
+            notification = new Notification(NotificationType.NewCountry)
             {
                 Payload = new NotificationPayload
                 {

@@ -61,5 +61,18 @@ namespace Dodo1000Bot.Services
 
             return count;
         }
+
+        public async Task<IList<User>> GetAdmins(Source messengerType, CancellationToken cancellationToken)
+        {
+            var users = await _connection.QueryAsync<User>(new CommandDefinition(
+                @"SELECT Id, MessengerUserId, MessengerType FROM users
+                  WHERE MessengerType = @messengerType AND IsAdmin = 1",
+                new
+                {
+                    messengerType
+                }, cancellationToken: cancellationToken));
+
+            return users.ToImmutableArray();
+        }
     }
 }

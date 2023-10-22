@@ -1,5 +1,18 @@
 [
   {
+    "id": "011fa91f-21af-4935-9308-0c32a8a48c73",
+    "data": [
+      {
+        "text": "/feedback@dodo1000bot",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "ru",
+    "updated": 0
+  },
+  {
     "id": "cf4da945-bd40-4da8-91ed-fb39b93ce9f7",
     "data": [
       {
@@ -34,7 +47,7 @@
       }
     ],
     "isTemplate": false,
-    "count": 1,
+    "count": 3,
     "lang": "ru",
     "updated": 0
   }

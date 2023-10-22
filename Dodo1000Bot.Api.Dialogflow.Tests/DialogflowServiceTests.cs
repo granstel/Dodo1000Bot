@@ -19,6 +19,7 @@ namespace Dodo1000Bot.Api.Dialogflow.Tests
         private Mock<IMapper> _mapperMock;
         private Mock<IUsersService> _usersServiceMock;
         private Mock<ICustomNotificationsRepository> _customNotificationsRepositoryMock;
+        private Mock<INotificationsService> _notificationsService;
 
         private DialogflowService _target;
 
@@ -34,12 +35,15 @@ namespace Dodo1000Bot.Api.Dialogflow.Tests
             _mapperMock = _mockRepository.Create<IMapper>();
             _usersServiceMock = _mockRepository.Create<IUsersService>();
             _customNotificationsRepositoryMock = _mockRepository.Create<ICustomNotificationsRepository>();
+            _notificationsService = _mockRepository.Create<INotificationsService>();
 
             _target = new DialogflowService(
                 _log,
                 _conversationServiceMock.Object,
                 _mapperMock.Object,
-                _usersServiceMock.Object, _customNotificationsRepositoryMock.Object);
+                _usersServiceMock.Object, 
+                _customNotificationsRepositoryMock.Object,
+                _notificationsService.Object);
 
             _fixture = new Fixture { OmitAutoProperties = true };
         }

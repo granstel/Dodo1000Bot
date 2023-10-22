@@ -8,7 +8,7 @@
   "responses": [
     {
       "resetContexts": false,
-      "action": "SaveCustomNotification",
+      "action": "SendToAdmin",
       "affectedContexts": [
         {
           "name": "notification",

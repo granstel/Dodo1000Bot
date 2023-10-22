@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.RealtimeBoard;
 using Microsoft.Extensions.Logging;
@@ -49,7 +50,7 @@ public class StatisticsService : CheckAndNotifyService
             return;
         }
 
-        var notification = new Notification
+        var notification = new Notification(NotificationType.Emoji)
         {
             Payload = new NotificationPayload
             {
@@ -60,7 +61,7 @@ public class StatisticsService : CheckAndNotifyService
 
         await _notificationsService.Save(notification, cancellationToken);
 
-        notification = new Notification
+        notification = new Notification(NotificationType.OrdersPerMinute)
         {
             Payload = new NotificationPayload
             {
@@ -85,7 +86,7 @@ public class StatisticsService : CheckAndNotifyService
             return;
         }
 
-        var notification = new Notification
+        var notification = new Notification(NotificationType.YearRevenue)
         {
             Payload = new NotificationPayload
             {

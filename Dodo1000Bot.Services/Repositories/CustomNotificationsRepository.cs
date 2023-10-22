@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using MySql.Data.MySqlClient;
 
@@ -42,7 +43,7 @@ public class CustomNotificationsRepository : ICustomNotificationsRepository
             return null;
         }
 
-        var notification = new Notification
+        var notification = new Notification(NotificationType.Custom)
         {
             Id = record.Id,
             Payload = JsonSerializer.Deserialize<NotificationPayload>(record.Payload)

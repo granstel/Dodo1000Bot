@@ -8,6 +8,18 @@
       }
     ],
     "isTemplate": false,
+    "count": 3,
+    "lang": "ru",
+    "updated": 0
+  },
+  {
+    "data": [
+      {
+        "text": "/stop@dodo1000bot",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
     "count": 2,
     "lang": "ru",
     "updated": 0

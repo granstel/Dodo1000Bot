@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using MySql.Data.MySqlClient;
 
@@ -25,9 +26,10 @@ public class NotificationsRepository : INotificationsRepository
         var payload = JsonSerializer.Serialize(notification?.Payload);
 
         await _connection.ExecuteAsync(new CommandDefinition(
-            "INSERT IGNORE INTO notifications (Payload, Distinction) VALUES (@payload, @distinction)",
+            "INSERT IGNORE INTO notifications (Type, Payload, Distinction) VALUES (@type, @payload, @distinction)",
             new
             {
+                notification?.Type,
                 payload,
                 notification?.Distinction
             }, cancellationToken: cancellationToken));
@@ -36,12 +38,12 @@ public class NotificationsRepository : INotificationsRepository
     public async Task<IList<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
     {
         var records = await _connection.QueryAsync(new CommandDefinition(
-            @"SELECT n.Id, n.Payload FROM notifications n 
+            @"SELECT n.Id, n.Type, n.Payload FROM notifications n 
                  LEFT JOIN pushed_notifications pn 
                     ON n.Id = pn.notificationId
                   WHERE pn.id IS NULL", cancellationToken: cancellationToken));
 
-        var notifications = records.Select(r => new Notification
+        var notifications = records.Select(r => new Notification(r.Type is NotificationType ? (NotificationType)r.Type : NotificationType.Custom)
         {
             Id = r.Id,
             Payload = JsonSerializer.Deserialize<NotificationPayload>(r.Payload)

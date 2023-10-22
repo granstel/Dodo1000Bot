@@ -17,7 +17,7 @@ namespace Dodo1000Bot.Models.Domain
 
         public override string ToString()
         {
-            return $"{HappenedAt:d}{Text}";
+            return $"{HappenedAt:d}{Text}".ToUpper().Replace(" ", string.Empty);
         }
     }
 }

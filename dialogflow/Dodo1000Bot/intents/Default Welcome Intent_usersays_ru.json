@@ -193,5 +193,17 @@
     "count": 0,
     "lang": "ru",
     "updated": 0
+  },
+  {
+    "data": [
+      {
+        "text": "/start@dodo1000bot",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 5,
+    "lang": "ru",
+    "updated": 0
   }
 ]
