@@ -10,7 +10,7 @@ public class AddColumn_notifications_Type: Migration
         Execute.Sql
         (@"
             ALTER TABLE notifications 
-            ADD COLUMN `Type` TINYINT(2) NOT NULL DEFAULT 0,
+            ADD COLUMN `Type` TINYINT(2) NOT NULL DEFAULT 0 AFTER `Id`,
             ADD INDEX `Type` (`Type` ASC) VISIBLE;
         ");
     }
