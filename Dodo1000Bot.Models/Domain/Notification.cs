@@ -12,6 +12,6 @@
 
         public NotificationPayload Payload { get; set; }
 
-        public string Distinction => $"{Type}{Payload}";
+        public string Distinction => $"{Payload}";
     }
 }
