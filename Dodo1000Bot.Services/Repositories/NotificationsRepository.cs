@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using MySql.Data.MySqlClient;
 
@@ -42,7 +43,7 @@ public class NotificationsRepository : INotificationsRepository
                     ON n.Id = pn.notificationId
                   WHERE pn.id IS NULL", cancellationToken: cancellationToken));
 
-        var notifications = records.Select(r => new Notification(r.Type)
+        var notifications = records.Select(r => new Notification(r.Type is NotificationType ? (NotificationType)r.Type : NotificationType.Custom)
         {
             Id = r.Id,
             Payload = JsonSerializer.Deserialize<NotificationPayload>(r.Payload)
