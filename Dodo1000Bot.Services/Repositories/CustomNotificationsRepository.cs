@@ -42,7 +42,7 @@ public class CustomNotificationsRepository : ICustomNotificationsRepository
             return null;
         }
 
-        var notification = new Notification
+        var notification = new Notification(record.Type)
         {
             Id = record.Id,
             Payload = JsonSerializer.Deserialize<NotificationPayload>(record.Payload)

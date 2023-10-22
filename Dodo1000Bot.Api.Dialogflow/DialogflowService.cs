@@ -106,7 +106,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
     /// <returns></returns>
     private async Task SaveCustomNotification(Request request, CancellationToken cancellationToken)
     {
-        var notification = new Notification
+        var notification = new Notification(NotificationType.Custom)
         {
             Payload = new NotificationPayload
             {
@@ -125,7 +125,7 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
     /// <returns></returns>
     private async Task SendToAdmin(Request request, CancellationToken cancellationToken)
     {
-        var notification = new Notification
+        var notification = new Notification(NotificationType.Admin)
         {
             Payload = new NotificationPayload
             {

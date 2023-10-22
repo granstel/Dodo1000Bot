@@ -45,7 +45,7 @@ public class UsersService : IUsersService
                 return;
             }
 
-            var notification = new Notification
+            var notification = new Notification(NotificationType.SubscribersCount)
             {
                 Payload = new NotificationPayload
                 {
