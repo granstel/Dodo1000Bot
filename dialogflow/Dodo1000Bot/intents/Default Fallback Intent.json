@@ -6,7 +6,7 @@
   "responses": [
     {
       "resetContexts": false,
-      "action": "input.unknown",
+      "action": "SendToAdmin",
       "affectedContexts": [],
       "parameters": [],
       "messages": [
