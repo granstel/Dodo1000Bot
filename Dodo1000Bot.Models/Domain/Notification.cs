@@ -8,7 +8,7 @@
         }
         public int Id { get; set; }
 
-        private NotificationType Type { get; }
+        public NotificationType Type { get; }
 
         public NotificationPayload Payload { get; set; }
 
