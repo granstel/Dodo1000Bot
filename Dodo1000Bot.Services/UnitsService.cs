@@ -346,6 +346,7 @@ public class UnitsService : CheckAndNotifyService
     {
         _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
 
+        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
         var unitsSnapshot = 
             await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
 
