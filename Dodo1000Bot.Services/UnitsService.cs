@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 [assembly: InternalsVisibleTo("Dodo1000Bot.Services.Tests")]
 
 namespace Dodo1000Bot.Services;
-
+using AllUnitsDictionary = Dictionary<Brands, Dictionary<UnitCountModel, IEnumerable<UnitModel>>>;
 public class UnitsService : CheckAndNotifyService
 {
     private readonly ILogger<UnitsService> _log;
@@ -43,20 +43,23 @@ public class UnitsService : CheckAndNotifyService
         {
             var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
             _log.LogInformation("unitsCount: {unitsCount}", unitsCount.Serialize());
-            await AboutTotalOverall(unitsCount, cancellationToken);
-            await AboutTotalAtBrands(unitsCount, cancellationToken);
-            await AboutTotalAtCountries(unitsCount, cancellationToken);
-            await AboutTotalCountriesAtBrands(unitsCount, cancellationToken);
+            //await AboutTotalOverall(unitsCount, cancellationToken);
+            //await AboutTotalAtBrands(unitsCount, cancellationToken);
+            //await AboutTotalAtCountries(unitsCount, cancellationToken);
+            //await AboutTotalCountriesAtBrands(unitsCount, cancellationToken);
 
             var snapshotName = nameof(_globalApiClient.UnitsCount);
-            var unitsCountSnapshot = 
+            var unitsCountSnapshot =
                 await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
-            _log.LogInformation("unitsCountSnapshot: {unitsCountSnapshot}", unitsCountSnapshot.Serialize());
-            await AboutNewCountries(unitsCount, unitsCountSnapshot.Data, cancellationToken);
-            await AboutNewUnits(unitsCount, unitsCountSnapshot.Data, cancellationToken);
-            _log.LogInformation("Before UpdateSnapshot at CheckAndNotify");
-            await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
-            _log.LogInformation("After UpdateSnapshot at CheckAndNotify");
+            //_log.LogInformation("unitsCountSnapshot: {unitsCountSnapshot}", unitsCountSnapshot.Serialize());
+            //await AboutNewCountries(unitsCount, unitsCountSnapshot.Data, cancellationToken);
+
+            var allUnits = await GetAbsolutelyAllUnits(unitsCount, cancellationToken);
+
+            await AboutNewUnits(allUnits, unitsCountSnapshot.Data, cancellationToken);
+            //_log.LogInformation("Before UpdateSnapshot at CheckAndNotify");
+            //await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
+            //_log.LogInformation("After UpdateSnapshot at CheckAndNotify");
         }
         catch (Exception e)
         {
@@ -286,7 +289,29 @@ public class UnitsService : CheckAndNotifyService
         return unitsCountBrands.ToDictionary(b => b.Brand, b => b.Countries.ToList());
     }
 
-    internal async Task AboutNewUnits(BrandListTotalUnitCountListModel unitsCount, BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
+    private async Task<AllUnitsDictionary> GetAbsolutelyAllUnits(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
+    {
+        var allUnits = new AllUnitsDictionary();
+        var brands = unitsCount.Brands.Select(b => b.Brand).ToList();
+
+        foreach (var brand in brands)
+        {
+            allUnits.Add(brand, new Dictionary<UnitCountModel, IEnumerable<UnitModel>>());
+            var countriesOfBrand = unitsCount
+                .Brands.First(b => b.Brand == brand).Countries;
+
+            foreach (var country in countriesOfBrand)
+            {
+                var unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, country.CountryId, cancellationToken);
+                var unitsList = GetUnitsList(unitsAtCountry);
+                allUnits[brand].Add(country, unitsList);
+            }
+        }
+
+        return allUnits;
+    }
+
+    internal async Task AboutNewUnits(AllUnitsDictionary allUnits, BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start AboutNewUnits");
         if (unitsCountSnapshot is null)
@@ -295,41 +320,37 @@ public class UnitsService : CheckAndNotifyService
             return;
         }
 
-        List<Brands> brands = unitsCount.Brands.Select(b => b.Brand).ToList();
+        var brands = allUnits.Keys;
 
         foreach (var brand in brands)
         {
-            var countriesOfBrand = unitsCount
-                .Brands.First(b => b.Brand == brand).Countries;
+            var allUnitsAtBrand = allUnits.GetValueOrDefault(brand);
+            var countriesOfBrand = allUnitsAtBrand.Keys;
 
             _log.LogInformation("Brand {brand}", brand);
 
-            var restaurantsAtBrand = unitsCount.Brands.Where(b => b.Brand == brand).Select(b => b.Total).FirstOrDefault();
-            var totalOverall = unitsCount.Brands.Sum(b => b.Total);
+            var restaurantsAtBrand = allUnitsAtBrand.Values.Sum(c => c.Count());
+            var totalOverall = allUnits.Sum(b => b.Value.Sum(c => c.Value.Count()));
 
             foreach (var country in countriesOfBrand)
             {
-                await CheckUnitsOfBrandAtCountryAndNotify(brand, country.CountryId, country.CountryCode, restaurantsAtBrand, totalOverall, cancellationToken);
+                var unitsList = allUnitsAtBrand.GetValueOrDefault(country);
+                await CheckUnitsOfBrandAtCountryAndNotify(unitsList, brand, country.CountryId, country.CountryCode, restaurantsAtBrand, totalOverall, cancellationToken);
             }
         }
         _log.LogInformation("Finish AboutNewUnits");
     }
 
-    internal async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, int countryId, string countryCode,
+    internal async Task CheckUnitsOfBrandAtCountryAndNotify(IEnumerable<UnitModel> unitsList, Brands brand, int countryId, string countryCode,
         int restaurantsCountAtBrand, int totalOverall, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
-        BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
 
-        _log.LogInformation("unitsAtCountry: {unitsAtCountry}", unitsAtCountry.Serialize());
-
-        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
         var unitsSnapshot = 
             await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
 
         _log.LogInformation("unitsSnapshot: {unitsSnapshot}", unitsSnapshot.Serialize());
 
-        IEnumerable<UnitModel> unitsList = GetUnitsList(unitsAtCountry);
         IEnumerable<UnitModel> unitsListSnapshot = GetUnitsList(unitsSnapshot?.Data);
 
         _log.LogInformation("unitsList: {unitsList}", unitsList.Serialize());
@@ -363,9 +384,6 @@ public class UnitsService : CheckAndNotifyService
 
             await _notificationsService.Save(notification, cancellationToken);
         }
-        _log.LogInformation("Before UpdateSnapshot at CheckUnitsOfBrandAtCountryAndNotify");
-        await UpdateSnapshot(snapshotName, unitsAtCountry, cancellationToken);
-        _log.LogInformation("After UpdateSnapshot at CheckUnitsOfBrandAtCountryAndNotify");
         _log.LogInformation("Finish CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
     }
 
