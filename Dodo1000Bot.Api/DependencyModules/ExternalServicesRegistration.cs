@@ -24,6 +24,8 @@ namespace Dodo1000Bot.Api.DependencyModules
 
             services.AddHttpClient<IGlobalApiClient, GlobalApiClient>(configuration.GlobalApiEndpoint, 
                 nameof(configuration.GlobalApiEndpoint));
+            services.AddHttpClient<IPublicApiClient, PublicApiClient>(configuration.PublicApiEndpoint, 
+                nameof(configuration.PublicApiEndpoint));
             services.AddHttpClient<IRealtimeBoardApiClient, RealtimeBoardApiClient>(configuration.RealtimeBoardApiClientEndpoint, 
                 nameof(configuration.RealtimeBoardApiClientEndpoint));
             services.AddHttpClient<IRestcountriesApiClient, RestcountriesApiClient>(configuration.RestcountriesApiClientEndpoint, 

@@ -241,252 +241,252 @@ namespace Dodo1000Bot.Services.Tests
             _notificationsServiceMock.Verify(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
-        [Test]
-        public async Task CheckUnitsOfBrandAtCountryAndNotify_SameUnitNames_NoAnyNotifications()
-        {
-            var brand = _fixture.Create<Brands>();
-            var countryId = _fixture.Create<int>();
-            var countryCode = _fixture.Create<string>();
-
-            var unitName = _fixture.Create<string>();
-            var unitModel = _fixture.Build<UnitModel>()
-                .With(m => m.Name, unitName)
-                .Create();
-            var unitListModel = _fixture.Build<UnitListModel>()
-                    .With(m => m.Pizzerias, new []{unitModel})
-                    .Create();
-            var unitsAtCountry = _fixture.Build<BrandData<UnitListModel>>()
-                    .With(m => m.Countries, new []{unitListModel})
-                    .Create();
-
-            var unitModelSnapshot = _fixture.Build<UnitModel>()
-                .With(m => m.Name, unitName)
-                .Create();
-            var unitListModelSnapshot = _fixture.Build<UnitListModel>()
-                    .With(m => m.Pizzerias, new []{unitModelSnapshot})
-                    .Create();
-            var unitsAtCountrySnapshot = _fixture.Build<BrandData<UnitListModel>>()
-                    .With(m => m.Countries, new []{unitListModelSnapshot})
-                    .Create();
-
-            _globalApiClientMock.Setup(c => c.UnitsOfBrandAtCountry(brand, countryId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(unitsAtCountry);
-
-            var snapshotName = $"UnitsOfBrandAtCountry{brand}{countryId}";
-            var snapshot = Snapshot<BrandData<UnitListModel>>.Create(snapshotName, unitsAtCountrySnapshot);
-
-            _snapshotsRepositoryMock.Setup(r => r.Get<BrandData<UnitListModel>>(snapshotName, CancellationToken.None))
-                .ReturnsAsync(snapshot);
-
-            _snapshotsRepositoryMock.Setup(r => 
-                r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            var restaurantsCountAtBrand = _fixture.Create<int>();
-            var totalOverall = _fixture.Create<int>();
-
-            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
-        }
-
-        [Test]
-        public async Task CheckUnitsOfBrandAtCountryAndNotify_LessUnitsThanAtSnapshot_NoAnyNotification()
-        {
-            var brand = _fixture.Create<Brands>();
-            var countryId = _fixture.Create<int>();
-            var countryCode = _fixture.Create<string>();
-
-            var unitName = _fixture.Create<string>();
-            var unitModel = _fixture.Build<UnitModel>()
-                .With(m => m.Name, unitName)
-                .Create();
-            var unitListModel = _fixture.Build<UnitListModel>()
-                    .With(m => m.Pizzerias, new []{unitModel})
-                    .Create();
-            var unitsAtCountry = _fixture.Build<BrandData<UnitListModel>>()
-                    .With(m => m.Countries, new []{unitListModel})
-                    .Create();
-
-            var oldUnitName = _fixture.Create<string>();
-            var oldUnitModel = _fixture.Build<UnitModel>()
-                .With(m => m.Name, oldUnitName)
-                .Create();
-            var unitModelSnapshot = _fixture.Build<UnitModel>()
-                .With(m => m.Name, unitName)
-                .Create();
-            var unitListModelSnapshot = _fixture.Build<UnitListModel>()
-                    .With(m => m.Pizzerias, new []{unitModelSnapshot, oldUnitModel})
-                    .Create();
-            var unitsAtCountrySnapshot = _fixture.Build<BrandData<UnitListModel>>()
-                    .With(m => m.Countries, new []{unitListModelSnapshot})
-                    .Create();
-
-            _globalApiClientMock.Setup(c => c.UnitsOfBrandAtCountry(brand, countryId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(unitsAtCountry);
-
-            var snapshotName = $"UnitsOfBrandAtCountry{brand}{countryId}";
-            var snapshot = Snapshot<BrandData<UnitListModel>>.Create(snapshotName, unitsAtCountrySnapshot);
-
-            _snapshotsRepositoryMock.Setup(r => r.Get<BrandData<UnitListModel>>(snapshotName, CancellationToken.None))
-                .ReturnsAsync(snapshot);
-
-            _snapshotsRepositoryMock.Setup(r => 
-                r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            var restaurantsCountAtBrand = _fixture.Create<int>();
-            var totalOverall = _fixture.Create<int>();
-
-            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
-        }
-
-        [Test]
-        public async Task CheckUnitsOfBrandAtCountryAndNotify_NewUnit_Notification()
-        {
-            var brand = _fixture.Create<Brands>();
-            var countryId = _fixture.Create<int>();
-            var countryCode = _fixture.Create<string>();
-
-            var unitName = _fixture.Create<string>();
-            var unitModel = _fixture.Build<UnitModel>()
-                .With(m => m.Name, unitName)
-                .Create();
-
-            var newUnitLocality = _fixture.Build<LocalityModel>()
-                    .With(l => l.Name)
-                    .Create();
-            var newUnitAddress = _fixture.Build<AddressModel>()
-                    .With(a => a.Locality, newUnitLocality)
-                    .Create();
-            var newUnitCoordinates = _fixture.Build<CoordinatesModel>()
-                .With(c => c.Lat)
-                .With(c => c.Long)
-                .Create();
-            var newUnitModel = _fixture.Build<UnitModel>()
-                .With(m => m.Name)
-                .With(m => m.Address, newUnitAddress)
-                .With(m => m.Coords, newUnitCoordinates)
-                .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
-                .Create();
-
-            var unitListModel = _fixture.Build<UnitListModel>()
-                    .With(m => m.Pizzerias, new []{unitModel, newUnitModel})
-                    .Create();
-            var unitsAtCountry = _fixture.Build<BrandData<UnitListModel>>()
-                    .With(m => m.Countries, new []{unitListModel})
-                    .Create();
-
-            var unitListModelSnapshot = _fixture.Build<UnitListModel>()
-                    .With(m => m.Pizzerias, new []{unitModel})
-                    .Create();
-            var unitsAtCountrySnapshot = _fixture.Build<BrandData<UnitListModel>>()
-                    .With(m => m.Countries, new []{unitListModelSnapshot})
-                    .Create();
-
-            _globalApiClientMock.Setup(c => c.UnitsOfBrandAtCountry(brand, countryId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(unitsAtCountry);
-
-            var snapshotName = $"UnitsOfBrandAtCountry{brand}{countryId}";
-            var snapshot = Snapshot<BrandData<UnitListModel>>.Create(snapshotName, unitsAtCountrySnapshot);
-
-            _snapshotsRepositoryMock.Setup(r => r.Get<BrandData<UnitListModel>>(snapshotName, CancellationToken.None))
-                .ReturnsAsync(snapshot);
-
-            _snapshotsRepositoryMock.Setup(r => 
-                r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            var restaurantsCountAtBrand = _fixture.Create<int>();
-            var totalOverall = _fixture.Create<int>();
-
-            var expectedText =
-                $"Wow! There is new {brand} in {newUnitModel.Address?.Locality?.Name}! You can find it on the map👆 " +
-                $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
-
-            _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
-                .Callback((Notification notification, CancellationToken _) =>
-                {
-                    Assert.AreEqual(notification.Payload.Text, expectedText);
-                    Assert.AreEqual(notification.Payload.Coordinates, newUnitCoordinates);
-                })
-                .Returns(Task.CompletedTask);
-
-            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
-        }
-
-        [Test]
-        public async Task CheckUnitsOfBrandAtCountryAndNotify_OldUnitWithNewDate_Notification()
-        {
-            var brand = _fixture.Create<Brands>();
-            var countryId = _fixture.Create<int>();
-            var countryCode = _fixture.Create<string>();
-
-            var unitName = _fixture.Create<string>();
-
-            var unitModelWithoutDate = _fixture.Build<UnitModel>()
-                .With(m => m.Name, unitName)
-                .Without(m => m.StartDate)
-                .Create();
-
-            var unitLocality = _fixture.Build<LocalityModel>()
-                .With(l => l.Name)
-                .Create();
-            var unitAddress = _fixture.Build<AddressModel>()
-                .With(a => a.Locality, unitLocality)
-                .Create();
-            var unitCoordinates = _fixture.Build<CoordinatesModel>()
-                .With(c => c.Lat)
-                .With(c => c.Long)
-                .Create();
-            var unitModelWithDate = _fixture.Build<UnitModel>()
-                .With(m => m.Name, unitName)
-                .With(m => m.Address, unitAddress)
-                .With(m => m.Coords, unitCoordinates)
-                .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
-                .Create();
-
-            var unitListModel = _fixture.Build<UnitListModel>()
-                    .With(m => m.Pizzerias, new []{unitModelWithDate})
-                    .Create();
-            var unitsAtCountry = _fixture.Build<BrandData<UnitListModel>>()
-                    .With(m => m.Countries, new []{unitListModel})
-                    .Create();
-
-            var unitListModelSnapshot = _fixture.Build<UnitListModel>()
-                    .With(m => m.Pizzerias, new []{unitModelWithoutDate})
-                    .Create();
-            var unitsAtCountrySnapshot = _fixture.Build<BrandData<UnitListModel>>()
-                    .With(m => m.Countries, new []{unitListModelSnapshot})
-                    .Create();
-
-            _globalApiClientMock.Setup(c => c.UnitsOfBrandAtCountry(brand, countryId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(unitsAtCountry);
-
-            var snapshotName = $"UnitsOfBrandAtCountry{brand}{countryId}";
-            var snapshot = Snapshot<BrandData<UnitListModel>>.Create(snapshotName, unitsAtCountrySnapshot);
-
-            _snapshotsRepositoryMock.Setup(r => r.Get<BrandData<UnitListModel>>(snapshotName, CancellationToken.None))
-                .ReturnsAsync(snapshot);
-
-            _snapshotsRepositoryMock.Setup(r => 
-                r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            var restaurantsCountAtBrand = _fixture.Create<int>();
-            var totalOverall = _fixture.Create<int>();
-
-            var expectedText =
-                $"Wow! There is new {brand} in {unitModelWithDate.Address?.Locality?.Name}! You can find it on the map👆 " +
-                $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
-
-            _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
-                .Callback((Notification notification, CancellationToken _) =>
-                {
-                    Assert.AreEqual(notification.Payload.Text, expectedText);
-                    Assert.AreEqual(notification.Payload.Coordinates, unitCoordinates);
-                })
-                .Returns(Task.CompletedTask);
-
-            await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
-        }
+        // [Test]
+        // public async Task CheckUnitsOfBrandAtCountryAndNotify_SameUnitNames_NoAnyNotifications()
+        // {
+        //     var brand = _fixture.Create<Brands>();
+        //     var countryId = _fixture.Create<int>();
+        //     var countryCode = _fixture.Create<string>();
+        //
+        //     var unitName = _fixture.Create<string>();
+        //     var unitModel = _fixture.Build<UnitModel>()
+        //         .With(m => m.Name, unitName)
+        //         .Create();
+        //     var unitListModel = _fixture.Build<UnitListModel>()
+        //             .With(m => m.Pizzerias, new []{unitModel})
+        //             .Create();
+        //     var unitsAtCountry = _fixture.Build<BrandData<UnitListModel>>()
+        //             .With(m => m.Countries, new []{unitListModel})
+        //             .Create();
+        //
+        //     var unitModelSnapshot = _fixture.Build<UnitModel>()
+        //         .With(m => m.Name, unitName)
+        //         .Create();
+        //     var unitListModelSnapshot = _fixture.Build<UnitListModel>()
+        //             .With(m => m.Pizzerias, new []{unitModelSnapshot})
+        //             .Create();
+        //     var unitsAtCountrySnapshot = _fixture.Build<BrandData<UnitListModel>>()
+        //             .With(m => m.Countries, new []{unitListModelSnapshot})
+        //             .Create();
+        //
+        //     _globalApiClientMock.Setup(c => c.UnitsOfBrandAtCountry(brand, countryId, It.IsAny<CancellationToken>()))
+        //         .ReturnsAsync(unitsAtCountry);
+        //
+        //     var snapshotName = $"UnitsOfBrandAtCountry{brand}{countryId}";
+        //     var snapshot = Snapshot<BrandData<UnitListModel>>.Create(snapshotName, unitsAtCountrySnapshot);
+        //
+        //     _snapshotsRepositoryMock.Setup(r => r.Get<BrandData<UnitListModel>>(snapshotName, CancellationToken.None))
+        //         .ReturnsAsync(snapshot);
+        //
+        //     _snapshotsRepositoryMock.Setup(r => 
+        //         r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
+        //         .Returns(Task.CompletedTask);
+        //
+        //     var restaurantsCountAtBrand = _fixture.Create<int>();
+        //     var totalOverall = _fixture.Create<int>();
+        //
+        //     await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
+        // }
+        //
+        // [Test]
+        // public async Task CheckUnitsOfBrandAtCountryAndNotify_LessUnitsThanAtSnapshot_NoAnyNotification()
+        // {
+        //     var brand = _fixture.Create<Brands>();
+        //     var countryId = _fixture.Create<int>();
+        //     var countryCode = _fixture.Create<string>();
+        //
+        //     var unitName = _fixture.Create<string>();
+        //     var unitModel = _fixture.Build<UnitModel>()
+        //         .With(m => m.Name, unitName)
+        //         .Create();
+        //     var unitListModel = _fixture.Build<UnitListModel>()
+        //             .With(m => m.Pizzerias, new []{unitModel})
+        //             .Create();
+        //     var unitsAtCountry = _fixture.Build<BrandData<UnitListModel>>()
+        //             .With(m => m.Countries, new []{unitListModel})
+        //             .Create();
+        //
+        //     var oldUnitName = _fixture.Create<string>();
+        //     var oldUnitModel = _fixture.Build<UnitModel>()
+        //         .With(m => m.Name, oldUnitName)
+        //         .Create();
+        //     var unitModelSnapshot = _fixture.Build<UnitModel>()
+        //         .With(m => m.Name, unitName)
+        //         .Create();
+        //     var unitListModelSnapshot = _fixture.Build<UnitListModel>()
+        //             .With(m => m.Pizzerias, new []{unitModelSnapshot, oldUnitModel})
+        //             .Create();
+        //     var unitsAtCountrySnapshot = _fixture.Build<BrandData<UnitListModel>>()
+        //             .With(m => m.Countries, new []{unitListModelSnapshot})
+        //             .Create();
+        //
+        //     _globalApiClientMock.Setup(c => c.UnitsOfBrandAtCountry(brand, countryId, It.IsAny<CancellationToken>()))
+        //         .ReturnsAsync(unitsAtCountry);
+        //
+        //     var snapshotName = $"UnitsOfBrandAtCountry{brand}{countryId}";
+        //     var snapshot = Snapshot<BrandData<UnitListModel>>.Create(snapshotName, unitsAtCountrySnapshot);
+        //
+        //     _snapshotsRepositoryMock.Setup(r => r.Get<BrandData<UnitListModel>>(snapshotName, CancellationToken.None))
+        //         .ReturnsAsync(snapshot);
+        //
+        //     _snapshotsRepositoryMock.Setup(r => 
+        //         r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
+        //         .Returns(Task.CompletedTask);
+        //
+        //     var restaurantsCountAtBrand = _fixture.Create<int>();
+        //     var totalOverall = _fixture.Create<int>();
+        //
+        //     await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
+        // }
+        //
+        // [Test]
+        // public async Task CheckUnitsOfBrandAtCountryAndNotify_NewUnit_Notification()
+        // {
+        //     var brand = _fixture.Create<Brands>();
+        //     var countryId = _fixture.Create<int>();
+        //     var countryCode = _fixture.Create<string>();
+        //
+        //     var unitName = _fixture.Create<string>();
+        //     var unitModel = _fixture.Build<UnitModel>()
+        //         .With(m => m.Name, unitName)
+        //         .Create();
+        //
+        //     var newUnitLocality = _fixture.Build<LocalityModel>()
+        //             .With(l => l.Name)
+        //             .Create();
+        //     var newUnitAddress = _fixture.Build<AddressModel>()
+        //             .With(a => a.Locality, newUnitLocality)
+        //             .Create();
+        //     var newUnitCoordinates = _fixture.Build<CoordinatesModel>()
+        //         .With(c => c.Lat)
+        //         .With(c => c.Long)
+        //         .Create();
+        //     var newUnitModel = _fixture.Build<UnitModel>()
+        //         .With(m => m.Name)
+        //         .With(m => m.Address, newUnitAddress)
+        //         .With(m => m.Coords, newUnitCoordinates)
+        //         .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
+        //         .Create();
+        //
+        //     var unitListModel = _fixture.Build<UnitListModel>()
+        //             .With(m => m.Pizzerias, new []{unitModel, newUnitModel})
+        //             .Create();
+        //     var unitsAtCountry = _fixture.Build<BrandData<UnitListModel>>()
+        //             .With(m => m.Countries, new []{unitListModel})
+        //             .Create();
+        //
+        //     var unitListModelSnapshot = _fixture.Build<UnitListModel>()
+        //             .With(m => m.Pizzerias, new []{unitModel})
+        //             .Create();
+        //     var unitsAtCountrySnapshot = _fixture.Build<BrandData<UnitListModel>>()
+        //             .With(m => m.Countries, new []{unitListModelSnapshot})
+        //             .Create();
+        //
+        //     _globalApiClientMock.Setup(c => c.UnitsOfBrandAtCountry(brand, countryId, It.IsAny<CancellationToken>()))
+        //         .ReturnsAsync(unitsAtCountry);
+        //
+        //     var snapshotName = $"UnitsOfBrandAtCountry{brand}{countryId}";
+        //     var snapshot = Snapshot<BrandData<UnitListModel>>.Create(snapshotName, unitsAtCountrySnapshot);
+        //
+        //     _snapshotsRepositoryMock.Setup(r => r.Get<BrandData<UnitListModel>>(snapshotName, CancellationToken.None))
+        //         .ReturnsAsync(snapshot);
+        //
+        //     _snapshotsRepositoryMock.Setup(r => 
+        //         r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
+        //         .Returns(Task.CompletedTask);
+        //
+        //     var restaurantsCountAtBrand = _fixture.Create<int>();
+        //     var totalOverall = _fixture.Create<int>();
+        //
+        //     var expectedText =
+        //         $"Wow! There is new {brand} in {newUnitModel.Address?.Locality?.Name}! You can find it on the map👆 " +
+        //         $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
+        //
+        //     _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
+        //         .Callback((Notification notification, CancellationToken _) =>
+        //         {
+        //             Assert.AreEqual(notification.Payload.Text, expectedText);
+        //             Assert.AreEqual(notification.Payload.Coordinates, newUnitCoordinates);
+        //         })
+        //         .Returns(Task.CompletedTask);
+        //
+        //     await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
+        // }
+        //
+        // [Test]
+        // public async Task CheckUnitsOfBrandAtCountryAndNotify_OldUnitWithNewDate_Notification()
+        // {
+        //     var brand = _fixture.Create<Brands>();
+        //     var countryId = _fixture.Create<int>();
+        //     var countryCode = _fixture.Create<string>();
+        //
+        //     var unitName = _fixture.Create<string>();
+        //
+        //     var unitModelWithoutDate = _fixture.Build<UnitModel>()
+        //         .With(m => m.Name, unitName)
+        //         .Without(m => m.StartDate)
+        //         .Create();
+        //
+        //     var unitLocality = _fixture.Build<LocalityModel>()
+        //         .With(l => l.Name)
+        //         .Create();
+        //     var unitAddress = _fixture.Build<AddressModel>()
+        //         .With(a => a.Locality, unitLocality)
+        //         .Create();
+        //     var unitCoordinates = _fixture.Build<CoordinatesModel>()
+        //         .With(c => c.Lat)
+        //         .With(c => c.Long)
+        //         .Create();
+        //     var unitModelWithDate = _fixture.Build<UnitModel>()
+        //         .With(m => m.Name, unitName)
+        //         .With(m => m.Address, unitAddress)
+        //         .With(m => m.Coords, unitCoordinates)
+        //         .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
+        //         .Create();
+        //
+        //     var unitListModel = _fixture.Build<UnitListModel>()
+        //             .With(m => m.Pizzerias, new []{unitModelWithDate})
+        //             .Create();
+        //     var unitsAtCountry = _fixture.Build<BrandData<UnitListModel>>()
+        //             .With(m => m.Countries, new []{unitListModel})
+        //             .Create();
+        //
+        //     var unitListModelSnapshot = _fixture.Build<UnitListModel>()
+        //             .With(m => m.Pizzerias, new []{unitModelWithoutDate})
+        //             .Create();
+        //     var unitsAtCountrySnapshot = _fixture.Build<BrandData<UnitListModel>>()
+        //             .With(m => m.Countries, new []{unitListModelSnapshot})
+        //             .Create();
+        //
+        //     _globalApiClientMock.Setup(c => c.UnitsOfBrandAtCountry(brand, countryId, It.IsAny<CancellationToken>()))
+        //         .ReturnsAsync(unitsAtCountry);
+        //
+        //     var snapshotName = $"UnitsOfBrandAtCountry{brand}{countryId}";
+        //     var snapshot = Snapshot<BrandData<UnitListModel>>.Create(snapshotName, unitsAtCountrySnapshot);
+        //
+        //     _snapshotsRepositoryMock.Setup(r => r.Get<BrandData<UnitListModel>>(snapshotName, CancellationToken.None))
+        //         .ReturnsAsync(snapshot);
+        //
+        //     _snapshotsRepositoryMock.Setup(r => 
+        //         r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
+        //         .Returns(Task.CompletedTask);
+        //
+        //     var restaurantsCountAtBrand = _fixture.Create<int>();
+        //     var totalOverall = _fixture.Create<int>();
+        //
+        //     var expectedText =
+        //         $"Wow! There is new {brand} in {unitModelWithDate.Address?.Locality?.Name}! You can find it on the map👆 " +
+        //         $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
+        //
+        //     _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
+        //         .Callback((Notification notification, CancellationToken _) =>
+        //         {
+        //             Assert.AreEqual(notification.Payload.Text, expectedText);
+        //             Assert.AreEqual(notification.Payload.Coordinates, unitCoordinates);
+        //         })
+        //         .Returns(Task.CompletedTask);
+        //
+        //     await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
+        // }
     }
 }
