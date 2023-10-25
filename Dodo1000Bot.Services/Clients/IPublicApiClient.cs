@@ -1,10 +1,11 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.PublicApi;
 
 namespace Dodo1000Bot.Services.Clients;
 
 public interface IPublicApiClient
 {
-    Task<UnitInfo[]> UnitInfo(string countryCode, CancellationToken cancellationToken);
+    Task<UnitInfo[]> UnitInfo(Brands brand, string countryCode, CancellationToken cancellationToken);
 }

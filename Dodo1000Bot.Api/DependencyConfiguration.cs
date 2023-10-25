@@ -24,6 +24,7 @@ namespace Dodo1000Bot.Api
             services.AddSingleton(configuration.UnitsJob);
             services.AddSingleton(configuration.StatisticsJob);
             services.AddSingleton(configuration.Management);
+            services.AddSingleton(configuration.PublicApiEndpoints);
 
             services.AddInternalServices();
             services.AddJobs(configuration);

@@ -1,4 +1,7 @@
-﻿namespace Dodo1000Bot.Services.Configuration
+﻿using System.Collections.Generic;
+using Dodo1000Bot.Models;
+
+namespace Dodo1000Bot.Services.Configuration
 {
     public class AppConfiguration
     {
@@ -14,7 +17,7 @@
 
         public string GlobalApiEndpoint { get; set; }
 
-        public string PublicApiEndpoint { get; set; }
+        public PublicApiEndpoints PublicApiEndpoints { get; set; }
 
         public string RealtimeBoardApiClientEndpoint { get; set; }
 
