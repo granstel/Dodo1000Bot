@@ -23,9 +23,8 @@ namespace Dodo1000Bot.Api.DependencyModules
             services.AddSingleton<IRedisCacheService>(RegisterCacheService);
 
             services.AddHttpClient<IGlobalApiClient, GlobalApiClient>(configuration.GlobalApiEndpoint, 
-                nameof(configuration.GlobalApiEndpoint));
-            services.AddHttpClient<IPublicApiClient, PublicApiClient>(configuration.PublicApiEndpoint, 
-                nameof(configuration.PublicApiEndpoint));
+                nameof(GlobalApiClient));
+            services.AddHttpClient<IPublicApiClient, PublicApiClient>(nameof(PublicApiClient));
             services.AddHttpClient<IRealtimeBoardApiClient, RealtimeBoardApiClient>(configuration.RealtimeBoardApiClientEndpoint, 
                 nameof(configuration.RealtimeBoardApiClientEndpoint));
             services.AddHttpClient<IRestcountriesApiClient, RestcountriesApiClient>(configuration.RestcountriesApiClientEndpoint, 
