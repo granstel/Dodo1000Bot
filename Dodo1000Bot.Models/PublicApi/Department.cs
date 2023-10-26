@@ -6,7 +6,7 @@
 
         public string Name { get; set; }
 
-        public int Type { get; set; }
+        public DepartmentType Type { get; set; }
 
         public int State { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -7,6 +8,8 @@ using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
+using Dodo1000Bot.Models.PublicApi;
+using Dodo1000Bot.Services.Clients;
 using Dodo1000Bot.Services.Extensions;
 using Dodo1000Bot.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -19,6 +22,7 @@ public class UnitsService : CheckAndNotifyService
 {
     private readonly ILogger<UnitsService> _log;
     private readonly IGlobalApiClient _globalApiClient;
+    private readonly IPublicApiClient _publicApiClient;
     private readonly INotificationsService _notificationsService;
     private readonly ISnapshotsRepository _snapshotsRepository;
     private readonly ICountriesService _countriesService;
@@ -26,12 +30,14 @@ public class UnitsService : CheckAndNotifyService
     public UnitsService(
         ILogger<UnitsService> log, 
         IGlobalApiClient globalApiClient, 
+        IPublicApiClient publicApiClient, 
         INotificationsService notificationsService, 
         ISnapshotsRepository snapshotsRepository, 
         ICountriesService countriesService)
     {
         _log = log;
         _globalApiClient = globalApiClient;
+        _publicApiClient = publicApiClient;
         _notificationsService = notificationsService;
         _snapshotsRepository = snapshotsRepository;
         _countriesService = countriesService;
@@ -303,6 +309,26 @@ public class UnitsService : CheckAndNotifyService
             foreach (var country in countriesOfBrand)
             {
                 var unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, country.CountryId, cancellationToken);
+                var allunitInfo = await _publicApiClient.UnitInfo(brand, country.CountryCode, cancellationToken);
+                var unitInfo = allunitInfo.Where(u => u.DepartmentState == DepartmentState.Open &&
+                                          u.State == UnitState.Open &&
+                                          u.Type == UnitType.Pizzeria).ToArray();
+                var testUnits = allunitInfo.Where(u => u.Name.Contains("учеб", StringComparison.InvariantCultureIgnoreCase) ||
+                                                       u.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase) ||
+                                                       u.Name.Contains("call", StringComparison.InvariantCultureIgnoreCase)
+                                                       ).ToArray();
+
+                var departmentsTasks = unitInfo.Select(u => u.DepartmentId).Distinct().Select(id =>
+                    _publicApiClient.GetDepartmentById(brand, country.CountryCode, id, cancellationToken));
+
+                var departments = await Task.WhenAll(departmentsTasks);
+
+                var filteredDeps = departments.Where(d => d.Type == DepartmentType.Department).ToList();
+                var depsIds = filteredDeps.Select(d => d.Id);
+                var filteredUnits = unitInfo.Where(u => depsIds.Contains(u.DepartmentId)).ToArray();
+
+                var unitsCountAtCountry = country.PizzeriaCount;
+
                 var unitsList = GetUnitsList(unitsAtCountry);
                 allUnits[brand].Add(country, unitsList);
             }
@@ -334,7 +360,16 @@ public class UnitsService : CheckAndNotifyService
 
             foreach (var country in countriesOfBrand)
             {
+                var unitInfo = await _publicApiClient.UnitInfo(brand, country.CountryCode, cancellationToken);
+                unitInfo = unitInfo.Where(u => u.DepartmentState == Models.PublicApi.DepartmentState.Open &&
+                                          u.State == Models.PublicApi.UnitState.Open &&
+                                          u.Type == Models.PublicApi.UnitType.Pizzeria).ToArray();
                 var unitsList = allUnitsAtBrand.GetValueOrDefault(country);
+
+                var unitsCountAtCountry = unitsCountSnapshot.Brands.First(b => b.Brand == brand)
+                    .Countries.First(c => c.CountryCode == country.CountryCode)
+                    .PizzeriaCount;
+
                 await CheckUnitsOfBrandAtCountryAndNotify(unitsList, brand, country.CountryId, country.CountryCode, restaurantsAtBrand, totalOverall, cancellationToken);
             }
         }
