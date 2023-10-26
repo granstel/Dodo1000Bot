@@ -32,4 +32,14 @@ public class PublicApiClient : IPublicApiClient
 
         return unitsInfo;
     }
+
+    public async Task<Department> GetDepartmentById(Brands brand, string countryCode, int departmentId, CancellationToken cancellationToken)
+    {
+        var endpoint = _endpoints.GetValueOrDefault(brand);
+        var url = $"{endpoint}{countryCode}/api/v1/GetDepartmentById/{departmentId}";
+
+        var department = await _httpClient.GetAsync<Department>(url, _serializerOptions, cancellationToken);
+
+        return department;
+    }
 }

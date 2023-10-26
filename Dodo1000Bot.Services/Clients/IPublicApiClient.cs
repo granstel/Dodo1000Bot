@@ -8,4 +8,6 @@ namespace Dodo1000Bot.Services.Clients;
 public interface IPublicApiClient
 {
     Task<UnitInfo[]> UnitInfo(Brands brand, string countryCode, CancellationToken cancellationToken);
+
+    Task<Department> GetDepartmentById(Brands brand, string countryCode, int departmentId, CancellationToken cancellationToken);
 }
