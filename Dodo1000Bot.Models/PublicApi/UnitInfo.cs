@@ -6,9 +6,11 @@ public class UnitInfo
 
     public int DepartmentId { get; set; }
 
-    public int DepartmentState { get; set; }
+    public string Name { get; set; }
 
-    public int State { get; set; }
+    public DepartmentState DepartmentState { get; set; }
 
-    public int Type { get; set; }
+    public UnitState State { get; set; }
+
+    public UnitType Type { get; set; }
 }
