@@ -30,5 +30,6 @@ public static class DatabaseRegistration
         services.AddTransient<ISnapshotsRepository, SnapshotsRepository>();
         services.AddTransient<ICountriesRepository, CountriesRepository>();
         services.AddTransient<ICustomNotificationsRepository, CustomNotificationsRepository>();
+        services.AddTransient<INotificationTemplatesRepository, NotificationTemplatesRepository>();
     }
 }
