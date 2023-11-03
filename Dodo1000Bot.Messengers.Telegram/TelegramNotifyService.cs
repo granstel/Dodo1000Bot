@@ -16,15 +16,23 @@ namespace Dodo1000Bot.Messengers.Telegram;
 public class TelegramNotifyService : INotifyService
 {
     private readonly ILogger<TelegramNotifyService> _log;
-    private readonly IUsersRepository _usersRepository;
     private readonly ITelegramBotClient _client;
+    private readonly IUsersRepository _usersRepository;
+    private readonly INotificationTemplatesRepository _notificationTemplatesRepository;
 
-    public TelegramNotifyService(IUsersRepository usersRepository, ITelegramBotClient client,
-        ILogger<TelegramNotifyService> log)
+    public Source Source => Source.Telegram;
+
+    public TelegramNotifyService(
+        ILogger<TelegramNotifyService> log,
+        ITelegramBotClient client,
+        IUsersRepository usersRepository,
+        INotificationTemplatesRepository notificationTemplatesRepository
+        )
     {
-        _usersRepository = usersRepository;
-        _client = client;
         _log = log;
+        _client = client;
+        _usersRepository = usersRepository;
+        _notificationTemplatesRepository = notificationTemplatesRepository;
     }
 
     public async Task<IEnumerable<PushedNotification>> NotifyAbout(IList<Notification> notifications,
@@ -37,7 +45,7 @@ public class TelegramNotifyService : INotifyService
             return pushedNotifications;
         }
 
-        IList<Models.Domain.User> users = await _usersRepository.GetUsers(Source.Telegram, cancellationToken);
+        IList<User> users = await _usersRepository.GetUsers(Source, cancellationToken);
 
         if (users?.Any() != true)
         {
@@ -54,12 +62,23 @@ public class TelegramNotifyService : INotifyService
         return pushedNotifications;
     }
 
-    private async Task<IList<PushedNotification>> PushNotificationsToUser(IList<Notification> notifications, Models.Domain.User user, CancellationToken cancellationToken)
+    private async Task<IList<PushedNotification>> PushNotificationsToUser(IList<Notification> notifications, User user, CancellationToken cancellationToken)
     {
         var pushedNotifications = new List<PushedNotification>();
 
+        const string DefaultLanguageCode = "en";
+
         foreach (var notification in notifications)
         {
+            var template = await _notificationTemplatesRepository.GetRandom(notification.Type, Source, user.LanguageCode ?? DefaultLanguageCode, cancellationToken);
+
+            var text = notification.Payload.Text;
+
+            if (template?.Template is not null)
+            {
+                text = string.Format(template.Template, notification.Payload.TemplateArguments);
+            }
+
             var messengerUserId = user.MessengerUserId;
             try
             {
@@ -69,9 +88,7 @@ public class TelegramNotifyService : INotifyService
                     await _client.SendLocationAsync(messengerUserId, coordinates.Latitude, coordinates.Longitude,
                         cancellationToken: cancellationToken);
                 }
-                await _client.SendTextMessageAsync(messengerUserId, notification.Payload.Text,
-                    parseMode: ParseMode.Html,
-                    cancellationToken: cancellationToken);
+                await _client.SendTextMessageAsync(messengerUserId, text, parseMode: ParseMode.Html, cancellationToken: cancellationToken);
             }
             catch (ApiRequestException e) when (e.ErrorCode == 403)
             {

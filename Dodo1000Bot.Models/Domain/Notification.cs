@@ -6,12 +6,13 @@
         {
             Type = type;
         }
+
         public int Id { get; set; }
 
         public NotificationType Type { get; }
 
         public NotificationPayload Payload { get; set; }
 
-        public string Distinction => $"{Payload}";
+        public string Distinction => $"{Type}{Payload}";
     }
 }

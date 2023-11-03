@@ -23,9 +23,10 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
     {
         private MockRepository _mockRepository;
 
-        private Mock<IUsersRepository> _usersRepositoryMock;
-        private Mock<ITelegramBotClient> _clientMock;
         private ILogger<TelegramNotifyService> _logMock;
+        private Mock<ITelegramBotClient> _clientMock;
+        private Mock<IUsersRepository> _usersRepositoryMock;
+        private Mock<INotificationTemplatesRepository> _notificationTemplatesRepository;
 
         private TelegramNotifyService _target;
 
@@ -36,11 +37,16 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         {
             _mockRepository = new MockRepository(MockBehavior.Strict);
 
-            _usersRepositoryMock = _mockRepository.Create<IUsersRepository>();
-            _clientMock = _mockRepository.Create<ITelegramBotClient>();
             _logMock = Mock.Of<ILogger<TelegramNotifyService>>();
+            _clientMock = _mockRepository.Create<ITelegramBotClient>();
+            _usersRepositoryMock = _mockRepository.Create<IUsersRepository>();
+            _notificationTemplatesRepository = _mockRepository.Create<INotificationTemplatesRepository>();
 
-            _target = new TelegramNotifyService(_usersRepositoryMock.Object, _clientMock.Object, _logMock);
+            _target = new TelegramNotifyService(
+                _logMock,
+                _clientMock.Object,
+                _usersRepositoryMock.Object,
+                _notificationTemplatesRepository.Object);
 
             _fixture = new Fixture { OmitAutoProperties = true };
         }

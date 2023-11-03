@@ -3,7 +3,7 @@ using Dodo1000Bot.Models.Domain;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dodo1000Bot.Services.Interfaces
+namespace Dodo1000Bot.Services
 {
     public interface INotificationTemplatesRepository
     {
