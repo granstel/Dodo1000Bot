@@ -349,17 +349,26 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var unit in difference)
         {
-            var textFormat = "Wow! There is new {0} in {1}! You can find it on the map👆 \r\n" +
-                             "It's {2} restaurant of {3} and {4} of all Dodo brands 🔥";
-            var arguments = new[] 
-            {
-                $"{brand}{brandEmoji}",
-                $"{unit.Address?.Locality?.Name}{flag}",
-                $"{restaurantsCountAtBrand}",
-                $"{brand}",
-                $"{totalOverall}"
+            var textFormat = "Wow! There is new {brandWithEmoji} in {localityWithFlag}! You can find it on the map👆 \r\n" +
+                             "It's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
+            var arguments = new {
+                brandWithEmoji = $"{brand}{brandEmoji}",
+                localityWithFlag = $"{unit.Address?.Locality?.Name}{flag}",
+                restaurantsCountAtBrand = $"{restaurantsCountAtBrand}",
+                brand = $"{brand}",
+                totalOverall = $"{totalOverall}"
             };
 
+            var properties = arguments.GetType().GetProperties();
+
+            var text = textFormat;
+            foreach (var property in properties)
+            {
+                var name = property.Name;
+                var value = property.GetValue(arguments)!.ToString();
+                text = text.Replace($"{{{name}}}", value);
+            }
+            
             var notification = new Notification(NotificationType.NewUnit)
             {
                 Payload = new NotificationPayload

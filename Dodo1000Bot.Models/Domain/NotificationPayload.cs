@@ -15,7 +15,7 @@ namespace Dodo1000Bot.Models.Domain
 
         public string Name { get; init; }
 
-        public string[] TemplateArguments { get; set; }
+        public object TemplateArguments { get; set; }
 
         public override string ToString()
         {
