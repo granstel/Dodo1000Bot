@@ -10,7 +10,7 @@ public class AddColumn_users_LanguageCode: Migration
         Execute.Sql
         (@"
             ALTER TABLE users 
-            ADD COLUMN `LanguageCode` VARCHAR(2) NULL AFTER `IsAdmin`;
+            ADD COLUMN `LanguageCode` VARCHAR(2) NOT NULL DEFAULT 'en' AFTER `IsAdmin`;
         ");
     }
 
