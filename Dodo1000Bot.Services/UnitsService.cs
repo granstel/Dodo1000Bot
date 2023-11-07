@@ -349,9 +349,9 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var unit in difference)
         {
-            var textFormat = "Wow! There is new {brandWithEmoji} in {localityWithFlag}! You can find it on the map👆 \r\n" +
+            var textTemplate = "Wow! There is new {brandWithEmoji} in {localityWithFlag}! You can find it on the map👆 \r\n" +
                              "It's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
-            var arguments = new {
+            var parameters = new {
                 brandWithEmoji = $"{brand}{brandEmoji}",
                 localityWithFlag = $"{unit.Address?.Locality?.Name}{flag}",
                 restaurantsCountAtBrand = $"{restaurantsCountAtBrand}",
@@ -363,11 +363,11 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = textFormat,
+                    Text = textTemplate,
                     Address = unit.Address?.Text,
                     Coordinates = unit.Coords,
                     Name = unit.Name,
-                    TemplateArguments = arguments.Serialize()
+                    TemplateParameters = parameters.Serialize()
                 }
             };
 

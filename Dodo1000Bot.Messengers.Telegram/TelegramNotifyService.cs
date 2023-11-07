@@ -81,11 +81,11 @@ public class TelegramNotifyService : INotifyService
                 text = template.Template;
             }
 
-            var properties = notification.Payload.TemplateArguments.Deserialize<JObject>();
-            foreach (var property in properties)
+            var parameters = notification.Payload.TemplateParameters.Deserialize<JObject>();
+            foreach (var parameter in parameters)
             {
-                var name = property.Key;
-                var value = property.Value.Value<string>();
+                var name = parameter.Key;
+                var value = parameter.Value.Value<string>();
                 text = text.Replace($"{{{name}}}", value);
             }
 
