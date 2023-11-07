@@ -15,11 +15,11 @@ namespace Dodo1000Bot.Models.Domain
 
         public string Name { get; init; }
 
-        public object TemplateArguments { get; set; }
+        public string TemplateArguments { get; set; }
 
         public override string ToString()
         {
-            return $"{HappenedAt:d}{Text}{string.Join(',', TemplateArguments ?? Array.Empty<string>())}".ToUpper().Replace(" ", string.Empty);
+            return $"{HappenedAt:d}{Text}{string.Join(',', TemplateArguments)}".ToUpper().Replace(" ", string.Empty);
         }
     }
 }

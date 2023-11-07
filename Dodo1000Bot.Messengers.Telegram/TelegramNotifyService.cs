@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Services;
+using Dodo1000Bot.Services.Extensions;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types.Enums;
@@ -66,17 +68,25 @@ public class TelegramNotifyService : INotifyService
     {
         var pushedNotifications = new List<PushedNotification>();
 
-        const string DefaultLanguageCode = "en";
+        const string defaultLanguageCode = "en";
 
         foreach (var notification in notifications)
         {
-            var template = await _notificationTemplatesRepository.GetRandom(notification.Type, Source, user.LanguageCode ?? DefaultLanguageCode, cancellationToken);
+            var template = await _notificationTemplatesRepository.GetRandom(notification.Type, Source, user.LanguageCode ?? defaultLanguageCode, cancellationToken);
 
             var text = notification.Payload.Text;
 
             if (template?.Template is not null)
             {
-                text = string.Format(template.Template, notification.Payload.TemplateArguments);
+                text = template.Template;
+            }
+
+            var properties = notification.Payload.TemplateArguments.Deserialize<JObject>();
+            foreach (var property in properties)
+            {
+                var name = property.Key;
+                var value = property.Value.Value<string>();
+                text = text.Replace($"{{{name}}}", value);
             }
 
             var messengerUserId = user.MessengerUserId;

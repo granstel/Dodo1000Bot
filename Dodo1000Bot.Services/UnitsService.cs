@@ -359,25 +359,15 @@ public class UnitsService : CheckAndNotifyService
                 totalOverall = $"{totalOverall}"
             };
 
-            var properties = arguments.GetType().GetProperties();
-
-            var text = textFormat;
-            foreach (var property in properties)
-            {
-                var name = property.Name;
-                var value = property.GetValue(arguments)!.ToString();
-                text = text.Replace($"{{{name}}}", value);
-            }
-            
             var notification = new Notification(NotificationType.NewUnit)
             {
                 Payload = new NotificationPayload
                 {
-                    Text = string.Format(textFormat, arguments),
+                    Text = textFormat,
                     Address = unit.Address?.Text,
                     Coordinates = unit.Coords,
                     Name = unit.Name,
-                    TemplateArguments = arguments
+                    TemplateArguments = arguments.Serialize()
                 }
             };
 
