@@ -45,11 +45,17 @@ public class UsersService : IUsersService
                 return;
             }
 
+            var textTemplate = "👥 Hey! I already have {subscribersCount} subscribers! Thank you for staying with me 🤗";
+            var parameters = new
+            {
+                subscribersCount
+            };
+
             var notification = new Notification(NotificationType.SubscribersCount)
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"👥 Hey! I already have {subscribersCount} subscribers! Thank you for staying with me 🤗",
+                    Text = textTemplate,
                 }
             };
 

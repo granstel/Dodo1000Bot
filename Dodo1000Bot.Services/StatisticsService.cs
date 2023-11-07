@@ -86,12 +86,18 @@ public class StatisticsService : CheckAndNotifyService
             return;
         }
 
+        var textTemplate = "💰 There is over $1,000,000,000 revenue in {year} year! " +
+                       "See that on https://realtime.dodobrands.io";
+        var parameters = new
+        {
+            year = DateTime.Now.Year
+        };
+
         var notification = new Notification(NotificationType.YearRevenue)
         {
             Payload = new NotificationPayload
             {
-                Text = $"💰 There is over $1,000,000,000 revenue in {DateTime.Now.Year} year! " +
-                       $"See that on https://realtime.dodobrands.io"
+                Text = textTemplate
             }
         };
 
