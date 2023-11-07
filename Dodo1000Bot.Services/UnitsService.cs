@@ -155,12 +155,18 @@ public class UnitsService : CheckAndNotifyService
 
         await _notificationsService.Save(notification, cancellationToken);
 
+        var textTemplate = "Wow! 🎉 \r\nThere are {totalOverall} restaurants of all Dodo brands! 🥳 \r\n" +
+                                "You can see them all on https://realtime.dodobrands.io";
+        var parameters = new {
+            totalOverall = totalOverall.ToString()
+        };
+        
         notification = new Notification(NotificationType.TotalOverall)
         {
             Payload = new NotificationPayload
             {
-                Text = $"Wow! 🎉 \r\nThere are {totalOverall} restaurants of all Dodo brands! 🥳 \r\n" +
-                       $"You can see them all on https://realtime.dodobrands.io"
+                Text = textTemplate,
+                TemplateParameters = parameters.Serialize()
             }
         };
 
@@ -189,11 +195,18 @@ public class UnitsService : CheckAndNotifyService
 
             await _notificationsService.Save(notification, cancellationToken);
 
+            var textTemplate = "Wow! 🔥 \r\nThere are {totalAtBrand} restaurants of {brand} brand! 🥳";
+            var parameters = new {
+                totalAtBrand = totalAtBrand.Value.ToString(),
+                brand = totalAtBrand.Key.ToString()
+            };
+
             notification = new Notification(NotificationType.TotalAtBrands)
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"Wow! 🔥 \r\nThere are {totalAtBrand.Value} restaurants of {totalAtBrand.Key} brand! 🥳"
+                    Text = textTemplate,
+                    TemplateParameters = parameters.Serialize()
                 }
             };
 
@@ -230,11 +243,18 @@ public class UnitsService : CheckAndNotifyService
                 continue;
             }
 
+            var textTemplate = "🌏 Awesome! {brand} is already in {countriesCountAtBrand} countries!";
+            var parameters = new {
+                brand = brand.ToString(),
+                countriesCountAtBrand = countriesCountAtBrand.Value
+            };
+
             var notification = new Notification(NotificationType.TotalCountriesAtBrands)
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🌏 Awesome! {brand} is already in {countriesCountAtBrand.Value} countries!"
+                    Text = textTemplate,
+                    TemplateParameters = parameters.Serialize()
                 }
             };
 
@@ -354,9 +374,9 @@ public class UnitsService : CheckAndNotifyService
             var parameters = new {
                 brandWithEmoji = $"{brand}{brandEmoji}",
                 localityWithFlag = $"{unit.Address?.Locality?.Name}{flag}",
-                restaurantsCountAtBrand = $"{restaurantsCountAtBrand}",
-                brand = $"{brand}",
-                totalOverall = $"{totalOverall}"
+                restaurantsCountAtBrand = restaurantsCountAtBrand.ToString(),
+                brand = brand.ToString(),
+                totalOverall = totalOverall.ToString()
             };
 
             var notification = new Notification(NotificationType.NewUnit)
@@ -423,12 +443,19 @@ public class UnitsService : CheckAndNotifyService
 
         await _notificationsService.Save(notification, cancellationToken);
 
+        var textTemplate = "Incredible! 🥳 \r\nThere are {pizzeriaCount} {brand} restaurants in the {countryName}! ❤️‍🔥";
+        var parameters = new {
+            pizzeriaCount = totalAtCountry.PizzeriaCount.ToString(),
+            brand = brand.ToString(),
+            countryName
+        };
+
         notification = new Notification(NotificationType.TotalAtCountries)
         {
             Payload = new NotificationPayload
             {
-                Text =
-                    $"Incredible! 🥳 \r\nThere are {totalAtCountry.PizzeriaCount} {brand} restaurants in the {countryName}! ❤️‍🔥"
+                Text = textTemplate,
+                TemplateParameters = parameters.Serialize()
             }
         };
 
@@ -463,11 +490,19 @@ public class UnitsService : CheckAndNotifyService
 
             await _notificationsService.Save(notification, cancellationToken);
 
+            var textTemplate = "🌏 Wow! There is new country of {brand} - {countryName}! {flag}";
+            var parameters = new {
+                brand = brand.ToString(),
+                countryName,
+                flag
+            };
+
             notification = new Notification(NotificationType.NewCountry)
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"🌏 Wow! There is new country of {brand} - {countryName}! {flag}"
+                    Text = textTemplate,
+                    TemplateParameters = parameters.Serialize()
                 }
             };
 
