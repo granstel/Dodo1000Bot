@@ -16,7 +16,7 @@ namespace Dodo1000Bot.Messengers.Telegram
             .ForMember(d => d.Source, m => m.MapFrom(s => Source.Telegram))
             .ForMember(d => d.Appeal, m => m.MapFrom(s => Appeal.NoOfficial))
             .ForMember(d => d.HasScreen, m => m.MapFrom(s => true))
-            .ForMember(d => d.Language, m => m.Ignore())
+            .ForMember(d => d.Language, m => m.MapFrom((s, _) => s.Message?.From?.LanguageCode))
             .ForMember(d => d.NewSession, m => m.Ignore())
             .ForMember(d => d.Action, m => m.Ignore());
 

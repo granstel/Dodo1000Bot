@@ -75,7 +75,8 @@ public class DialogflowService : MessengerService<FulfillmentRequest, string>, I
         var user = new User
         {
             MessengerUserId = request.ChatHash,
-            MessengerType = request.Source
+            MessengerType = request.Source,
+            LanguageCode = request.Language
         };
 
         await _usersService.SaveAndNotify(user, cancellationToken);

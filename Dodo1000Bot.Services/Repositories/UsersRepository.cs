@@ -21,7 +21,7 @@ namespace Dodo1000Bot.Services
         public async Task<IList<User>> GetUsers(Source messengerType, CancellationToken cancellationToken)
         {
             var users = await _connection.QueryAsync<User>(new CommandDefinition(
-                @"SELECT Id, MessengerUserId, MessengerType FROM users
+                @"SELECT Id, MessengerUserId, MessengerType, LanguageCode FROM users
                   WHERE MessengerType = @messengerType",
                 new
                 {
@@ -34,11 +34,12 @@ namespace Dodo1000Bot.Services
         public async Task SaveUser(User user, CancellationToken cancellationToken)
         {
             await _connection.ExecuteAsync(new CommandDefinition(
-                "INSERT IGNORE INTO users (MessengerUserId, MessengerType) VALUES (@messengerUserId, @messengerType)",
+                "INSERT IGNORE INTO users (MessengerUserId, MessengerType, LanguageCode) VALUES (@messengerUserId, @messengerType, @languageCode)",
                 new
                 {
                     messengerUserId = user.MessengerUserId,
-                    messengerType = user.MessengerType
+                    messengerType = user.MessengerType,
+                    languageCode = user.LanguageCode
                 }, cancellationToken: cancellationToken));
         }
 
@@ -65,7 +66,7 @@ namespace Dodo1000Bot.Services
         public async Task<IList<User>> GetAdmins(Source messengerType, CancellationToken cancellationToken)
         {
             var users = await _connection.QueryAsync<User>(new CommandDefinition(
-                @"SELECT Id, MessengerUserId, MessengerType FROM users
+                @"SELECT Id, MessengerUserId, MessengerType, LanguageCode FROM users
                   WHERE MessengerType = @messengerType AND IsAdmin = 1",
                 new
                 {
