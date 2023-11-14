@@ -22,12 +22,12 @@ public class NotificationTemplatesRepository : INotificationTemplatesRepository
         string languageCode,
         CancellationToken cancellationToken)
     {
-        var template = await _connection.QueryFirstOrDefaultAsync<NotificationTemplate?>(new CommandDefinition(
-            "SELECT * FROM notification_templates WHERE" +
-            "NotificationType = @notificationType AND" +
-            "MessengerType = @messengerType AND" +
-            "LanguageCode = @languageCode" +
-            "ORDER BY RAND() LIMIT 1",
+        var template = await _connection.QuerySingleOrDefaultAsync<NotificationTemplate>(new CommandDefinition(
+            @"SELECT * FROM notification_templates WHERE
+            NotificationType = @notificationType AND
+            MessengerType = @messengerType AND
+            LanguageCode = @languageCode
+            ORDER BY RAND() LIMIT 1",
             new
             {
                 notificationType,
