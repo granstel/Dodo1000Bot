@@ -22,7 +22,7 @@ public class NotificationTemplatesRepository : INotificationTemplatesRepository
         string languageCode,
         CancellationToken cancellationToken)
     {
-        var template = await _connection.QuerySingleOrDefaultAsync<NotificationTemplate>(new CommandDefinition(
+        var template = await _connection.QueryFirstOrDefaultAsync<NotificationTemplate?>(new CommandDefinition(
             "SELECT * FROM notification_templates WHERE" +
             "NotificationType = @notificationType AND" +
             "MessengerType = @messengerType AND" +
