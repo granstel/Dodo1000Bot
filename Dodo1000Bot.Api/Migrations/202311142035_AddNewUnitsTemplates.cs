@@ -1,4 +1,5 @@
-﻿using Dodo1000Bot.Models;
+﻿using System.Collections.Generic;
+using Dodo1000Bot.Models;
 using FluentMigrator;
 
 namespace Dodo1000Bot.Api.Migrations;
@@ -8,37 +9,21 @@ public class AddNewUnitsTemplates: Migration
 {
     public override void Up()
     {
-        var templates = new TemplateMigrationParameter[]
+        var templates = new Dictionary<string, string>[]
         {
             new()
             {
-                NotificationType = NotificationType.NewUnit,
-                MessengerType = Source.Telegram,
-                LanguageCode = "en",
-                Template =
-                    "Wow! There is a new {brandWithEmoji} store in {localityWithFlag}! You can find it on the map 👆 \r\n" +
-                    "It's the {restaurantsCountAtBrand} restaurant of {brand} and the {totalOverall} of the entire Dodo Brands 🔥",
+                { "NotificationType", NotificationType.NewUnit.ToString("D") },
+                { "MessengerType", Source.Telegram.ToString("D") },
+                { "LanguageCode", "'en'" },
+                { "Template", "\"Wow! There is a new {brandWithEmoji} store in {localityWithFlag}! You can find it on the map 👆 \r\n" +
+                              "It's the {restaurantsCountAtBrand} restaurant of {brand} and the {totalOverall} of the entire Dodo Brands 🔥\""}
             },
         };
 
         foreach (var template in templates)
         {
-            Execute.EmbeddedScript(@"
-                INSERT INTO notification_templates
-                (
-                    `NotificationType`,
-                    `MessengerType`,
-                    `LanguageCode`,
-                    `Template`
-                )
-                VALUES
-                (
-                    @NotificationType,
-                    @MessengerType,
-                    @LanguageCode,
-                    @Template
-                );
-            ");
+            Execute.Script("Migrations/Scripts/AddTemplate.sql", template);
         }
     }
 

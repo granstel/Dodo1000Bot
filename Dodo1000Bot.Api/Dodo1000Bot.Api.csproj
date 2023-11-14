@@ -26,4 +26,10 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Migrations\Scripts\AddTemplate.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
