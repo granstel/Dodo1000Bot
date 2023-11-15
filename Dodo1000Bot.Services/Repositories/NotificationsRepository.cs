@@ -43,7 +43,7 @@ public class NotificationsRepository : INotificationsRepository
                     ON n.Id = pn.notificationId
                   WHERE pn.id IS NULL", cancellationToken: cancellationToken));
 
-        var notifications = records.Select(r => new Notification(r.Type is NotificationType ? (NotificationType)r.Type : NotificationType.Custom)
+        var notifications = records.Select(r => new Notification((NotificationType)r.Type)
         {
             Id = r.Id,
             Payload = JsonSerializer.Deserialize<NotificationPayload>(r.Payload)
