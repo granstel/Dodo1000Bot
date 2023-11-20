@@ -313,10 +313,9 @@ public class UnitsService : CheckAndNotifyService
                 var filteredPublicApiUnitInfo = publicApiUnitInfo.Where(u => u.DepartmentState == DepartmentState.Open &&
                                           u.State == UnitState.Open &&
                                           u.Type == UnitType.Pizzeria).ToArray();
-                var testUnits = publicApiUnitInfo.Where(u => u.Name.Contains("учеб", StringComparison.InvariantCultureIgnoreCase) ||
-                                                       u.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase) ||
-                                                       u.Name.Contains("call", StringComparison.InvariantCultureIgnoreCase)
-                                                       ).ToArray();
+                var globalApiTestUnits = globalApiUnitsAtCountry.Countries.SelectMany(c => c.Pizzerias.Where(FilterTestUnits)).ToArray();
+                var publicApiTestUnits = publicApiUnitInfo.Where(FilterTestUnits1).ToArray();
+                var filteredPublicApiTestUnits = filteredPublicApiUnitInfo.Where(FilterTestUnits1).ToArray();
 
                 var departmentsTasks = filteredPublicApiUnitInfo.Select(u => u.DepartmentId).Distinct().Select(id =>
                     _publicApiClient.GetDepartmentById(brand, country.CountryCode, id, cancellationToken));
@@ -336,6 +335,18 @@ public class UnitsService : CheckAndNotifyService
 
         return allUnits;
     }
+
+    private bool FilterTestUnits1(UnitInfo u) => 
+        u.Name.Contains("учеб", StringComparison.InvariantCultureIgnoreCase) ||
+        u.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase) ||
+        u.Name.Contains("тест", StringComparison.InvariantCultureIgnoreCase) ||
+        u.Name.Contains("call", StringComparison.InvariantCultureIgnoreCase);
+
+    private bool FilterTestUnits(UnitModel u) => 
+        u.Name.Contains("учеб", StringComparison.InvariantCultureIgnoreCase) ||
+        u.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase) ||
+        u.Name.Contains("тест", StringComparison.InvariantCultureIgnoreCase) ||
+        u.Name.Contains("call", StringComparison.InvariantCultureIgnoreCase);
 
     internal async Task AboutNewUnits(AllUnitsDictionary allUnits, BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
     {
