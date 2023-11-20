@@ -1,4 +1,7 @@
-﻿namespace Dodo1000Bot.Models.PublicApi;
+﻿using System;
+using Dodo1000Bot.Models.GlobalApi;
+
+namespace Dodo1000Bot.Models.PublicApi;
 
 public class UnitInfo
 {
@@ -13,4 +16,12 @@ public class UnitInfo
     public UnitState State { get; set; }
 
     public UnitType Type { get; set; }
+
+    public CoordinatesModel Location { get; set; }
+
+    public string Address { get; set; }
+
+    public AddressDetails AddressDetails { get; set; }
+
+    public DateOnly BeginDateWork { get; set; }
 }

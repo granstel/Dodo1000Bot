@@ -67,7 +67,7 @@ public class TelegramNotifyService : INotifyService
                 var coordinates = notification.Payload.Coordinates;
                 if (coordinates != null)
                 {
-                    await _client.SendLocationAsync(messengerUserId, coordinates.Latitude, coordinates.Longitude,
+                    await _client.SendLocationAsync(messengerUserId, coordinates.LatitudeOrDefault, coordinates.LongitudeOrDefault,
                         cancellationToken: cancellationToken);
                 }
                 await _client.SendTextMessageAsync(messengerUserId, notification.Payload.Text,

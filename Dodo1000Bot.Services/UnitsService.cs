@@ -11,7 +11,6 @@ using Dodo1000Bot.Models.GlobalApi;
 using Dodo1000Bot.Models.PublicApi;
 using Dodo1000Bot.Services.Clients;
 using Dodo1000Bot.Services.Extensions;
-using Dodo1000Bot.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 [assembly: InternalsVisibleTo("Dodo1000Bot.Services.Tests")]
@@ -308,14 +307,10 @@ public class UnitsService : CheckAndNotifyService
 
             foreach (var country in countriesOfBrand)
             {
-                var globalApiUnitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, country.CountryId, cancellationToken);
                 var publicApiUnitInfo = await _publicApiClient.UnitInfo(brand, country.CountryCode, cancellationToken);
                 var filteredPublicApiUnitInfo = publicApiUnitInfo.Where(u => u.DepartmentState == DepartmentState.Open &&
                                           u.State == UnitState.Open &&
                                           u.Type == UnitType.Pizzeria).ToArray();
-                var globalApiTestUnits = globalApiUnitsAtCountry.Countries.SelectMany(c => c.Pizzerias.Where(FilterTestUnits)).ToArray();
-                var publicApiTestUnits = publicApiUnitInfo.Where(FilterTestUnits1).ToArray();
-                var filteredPublicApiTestUnits = filteredPublicApiUnitInfo.Where(FilterTestUnits1).ToArray();
 
                 var departmentsTasks = filteredPublicApiUnitInfo.Select(u => u.DepartmentId).Distinct().Select(id =>
                     _publicApiClient.GetDepartmentById(brand, country.CountryCode, id, cancellationToken));
@@ -326,9 +321,7 @@ public class UnitsService : CheckAndNotifyService
                 var filteredPublicApiDepartmentsIds = filteredPublicApiDepartments.Select(d => d.Id);
                 var filteredPublicApiUnitsByPublicApiDepartments = filteredPublicApiUnitInfo.Where(u => filteredPublicApiDepartmentsIds.Contains(u.DepartmentId)).ToArray();
 
-                var unitsCountAtCountry = country.PizzeriaCount;
-
-                var unitsList = GetUnitsList(globalApiUnitsAtCountry);
+                var unitsList = GetUnitsList(filteredPublicApiUnitsByPublicApiDepartments);
                 allUnits[brand].Add(country, unitsList);
             }
         }
@@ -336,17 +329,28 @@ public class UnitsService : CheckAndNotifyService
         return allUnits;
     }
 
-    private bool FilterTestUnits1(UnitInfo u) => 
-        u.Name.Contains("учеб", StringComparison.InvariantCultureIgnoreCase) ||
-        u.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase) ||
-        u.Name.Contains("тест", StringComparison.InvariantCultureIgnoreCase) ||
-        u.Name.Contains("call", StringComparison.InvariantCultureIgnoreCase);
-
-    private bool FilterTestUnits(UnitModel u) => 
-        u.Name.Contains("учеб", StringComparison.InvariantCultureIgnoreCase) ||
-        u.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase) ||
-        u.Name.Contains("тест", StringComparison.InvariantCultureIgnoreCase) ||
-        u.Name.Contains("call", StringComparison.InvariantCultureIgnoreCase);
+    private IEnumerable<UnitModel> GetUnitsList(UnitInfo[] filteredPublicApiUnitsByPublicApiDepartments)
+    {
+        return filteredPublicApiUnitsByPublicApiDepartments.Select(u => new UnitModel
+        {
+            Name = u.Name,
+            Coords = new CoordinatesModel
+            {
+                Lat = u.Location.Lat,
+                Long = u.Location.Long
+            },
+            Address = new AddressModel
+            {
+                Text = u.Address,
+                Locality = new LocalityModel
+                {
+                    Id = u.AddressDetails.LocalityId,
+                    Name = u.AddressDetails.LocalityName
+                }
+            },
+            StartDate = u.BeginDateWork
+        });
+    }
 
     internal async Task AboutNewUnits(AllUnitsDictionary allUnits, BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
     {
