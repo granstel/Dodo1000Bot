@@ -8,7 +8,6 @@ using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Services;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types.Enums;
 

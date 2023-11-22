@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -399,11 +398,11 @@ public class UnitsService : CheckAndNotifyService
         _log.LogInformation("unitsList: {unitsList}", unitsList.Serialize());
         _log.LogInformation("unitsListSnapshot: {unitsListSnapshot}", unitsListSnapshot.Serialize());
 
-        const string formatOfDestinctions = "{0}-{1}";
+        const string formatOfDistinctions = "{0}-{1}";
 
-        var formattedDistinctions = unitsListSnapshot.Select(uls => string.Format(formatOfDestinctions, uls.Name, uls.StartDate));
+        var formattedDistinctions = unitsListSnapshot.Select(uls => string.Format(formatOfDistinctions, uls.Name, uls.StartDate));
         var difference = unitsList.ExceptBy(formattedDistinctions, 
-                                            ul => string.Format(formatOfDestinctions, ul.Name, ul.StartDate))
+                                            ul => string.Format(formatOfDistinctions, ul.Name, ul.StartDate))
             .Where(ul => ul.StartDate.Year == DateTime.Today.Date.Year).ToList();
 
         _log.LogInformation("difference: {difference}", difference.Serialize());

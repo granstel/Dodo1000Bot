@@ -8,9 +8,9 @@ using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
-using Dodo1000Bot.Services.Interfaces;
 using System.Linq;
 using System.Collections.Generic;
+using Dodo1000Bot.Services.Clients;
 
 namespace Dodo1000Bot.Services.Tests
 {
@@ -21,6 +21,7 @@ namespace Dodo1000Bot.Services.Tests
 
         private ILogger<UnitsService> _logMock;
         private Mock<IGlobalApiClient> _globalApiClientMock;
+        private Mock<IPublicApiClient> _publicApiClient;
         private Mock<INotificationsService> _notificationsServiceMock;
         private Mock<ISnapshotsRepository> _snapshotsRepositoryMock;
         private Mock<ICountriesService> _countriesServiceMock;
@@ -46,6 +47,7 @@ namespace Dodo1000Bot.Services.Tests
 
             _logMock = Mock.Of<ILogger<UnitsService>>();
             _globalApiClientMock = _mockRepository.Create<IGlobalApiClient>();
+            _publicApiClient = _mockRepository.Create<IPublicApiClient>();
             _notificationsServiceMock = _mockRepository.Create<INotificationsService>();
             _snapshotsRepositoryMock = _mockRepository.Create<ISnapshotsRepository>();
             _countriesServiceMock = _mockRepository.Create<ICountriesService>();
@@ -53,6 +55,7 @@ namespace Dodo1000Bot.Services.Tests
             _target = new UnitsService(
                 _logMock, 
                 _globalApiClientMock.Object, 
+                _publicApiClient.Object, 
                 _notificationsServiceMock.Object, 
                 _snapshotsRepositoryMock.Object,
                 _countriesServiceMock.Object);
