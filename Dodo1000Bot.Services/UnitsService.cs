@@ -335,8 +335,8 @@ public class UnitsService : CheckAndNotifyService
             Name = u.Name,
             Coords = new CoordinatesModel
             {
-                Lat = u.Location.Lat,
-                Long = u.Location.Long
+                Lat = u.Location.Latitude,
+                Long = u.Location.Longitude
             },
             Address = new AddressModel
             {

@@ -1,5 +1,4 @@
 ﻿using System;
-using Dodo1000Bot.Models.GlobalApi;
 
 namespace Dodo1000Bot.Models.PublicApi;
 
@@ -17,7 +16,7 @@ public class UnitInfo
 
     public UnitType Type { get; set; }
 
-    public CoordinatesModel Location { get; set; }
+    public Location Location { get; set; }
 
     public string Address { get; set; }
 
