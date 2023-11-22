@@ -23,4 +23,8 @@ public class UnitInfo
     public AddressDetails AddressDetails { get; set; }
 
     public DateOnly BeginDateWork { get; set; }
+
+    public bool Approve { get; set; }
+    public bool DeliveryEnabled { get; set; }
+    public bool StationaryEnabled { get; set; }
 }

@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 [assembly: InternalsVisibleTo("Dodo1000Bot.Services.Tests")]
 
 namespace Dodo1000Bot.Services;
-using AllUnitsDictionary = Dictionary<Brands, Dictionary<UnitCountModel, IEnumerable<UnitModel>>>;
+using AllUnitsDictionary = Dictionary<Brands, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>>;
 public class UnitsService : CheckAndNotifyService
 {
     private readonly ILogger<UnitsService> _log;
@@ -300,7 +300,7 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var brand in brands)
         {
-            allUnits.Add(brand, new Dictionary<UnitCountModel, IEnumerable<UnitModel>>());
+            allUnits.Add(brand, new Dictionary<UnitCountModel, IEnumerable<UnitInfo>>());
             var countriesOfBrand = globalApiUnitsCount
                 .Brands.First(b => b.Brand == brand).Countries;
 
@@ -316,39 +316,14 @@ public class UnitsService : CheckAndNotifyService
 
                 var publicAPiDepartments = await Task.WhenAll(departmentsTasks);
 
-                var filteredPublicApiDepartments = publicAPiDepartments.Where(d => d.Type == DepartmentType.Department).ToList();
-                var filteredPublicApiDepartmentsIds = filteredPublicApiDepartments.Select(d => d.Id);
-                var filteredPublicApiUnitsByPublicApiDepartments = filteredPublicApiUnitInfo.Where(u => filteredPublicApiDepartmentsIds.Contains(u.DepartmentId)).ToArray();
+                var filteredPublicApiDepartmentsIds = publicAPiDepartments.Where(d => d.Type == DepartmentType.Department).Select(d => d.Id).Distinct();
+                var filteredPublicApiUnitsByPublicApiDepartments = filteredPublicApiUnitInfo.Where(u => filteredPublicApiDepartmentsIds.Contains(u.DepartmentId));
 
-                var unitsList = GetUnitsList(filteredPublicApiUnitsByPublicApiDepartments);
-                allUnits[brand].Add(country, unitsList);
+                allUnits[brand].Add(country, filteredPublicApiUnitsByPublicApiDepartments);
             }
         }
 
         return allUnits;
-    }
-
-    private IEnumerable<UnitModel> GetUnitsList(UnitInfo[] filteredPublicApiUnitsByPublicApiDepartments)
-    {
-        return filteredPublicApiUnitsByPublicApiDepartments.Select(u => new UnitModel
-        {
-            Name = u.Name,
-            Coords = new CoordinatesModel
-            {
-                Lat = u.Location.Latitude,
-                Long = u.Location.Longitude
-            },
-            Address = new AddressModel
-            {
-                Text = u.Address,
-                Locality = new LocalityModel
-                {
-                    Id = u.AddressDetails.LocalityId,
-                    Name = u.AddressDetails.LocalityName
-                }
-            },
-            StartDate = u.BeginDateWork
-        });
     }
 
     internal async Task AboutNewUnits(AllUnitsDictionary allUnits, BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
@@ -382,7 +357,7 @@ public class UnitsService : CheckAndNotifyService
         _log.LogInformation("Finish AboutNewUnits");
     }
 
-    internal async Task CheckUnitsOfBrandAtCountryAndNotify(IEnumerable<UnitModel> unitsList, Brands brand, int countryId, string countryCode,
+    internal async Task CheckUnitsOfBrandAtCountryAndNotify(IEnumerable<UnitInfo> unitsList, Brands brand, int countryId, string countryCode,
         int restaurantsCountAtBrand, int totalOverall, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
@@ -402,8 +377,8 @@ public class UnitsService : CheckAndNotifyService
 
         var formattedDistinctions = unitsListSnapshot.Select(uls => string.Format(formatOfDistinctions, uls.Name, uls.StartDate));
         var difference = unitsList.ExceptBy(formattedDistinctions, 
-                                            ul => string.Format(formatOfDistinctions, ul.Name, ul.StartDate))
-            .Where(ul => ul.StartDate.Year == DateTime.Today.Date.Year).ToList();
+                                            ul => string.Format(formatOfDistinctions, ul.Name, ul.BeginDateWork))
+            .Where(ul => ul.BeginDateWork.Year == DateTime.Today.Date.Year).ToList();
 
         _log.LogInformation("difference: {difference}", difference.Serialize());
 
@@ -416,10 +391,14 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"Wow! There is new {brand}{brandEmoji} in {unit.Address?.Locality?.Name}{flag}! You can find it on the map👆 " +
+                    Text = $"Wow! There is new {brand}{brandEmoji} in {unit.AddressDetails?.LocalityName}{flag}! You can find it on the map👆 " +
                            $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥",
-                    Address = unit.Address?.Text,
-                    Coordinates = unit.Coords,
+                    Address = unit.Address,
+                    Coordinates = new()
+                    {
+                        Lat = unit.Location.Latitude,
+                        Long = unit.Location.Longitude
+                    },
                     Name = unit.Name
                 }
             };
