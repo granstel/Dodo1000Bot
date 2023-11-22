@@ -47,16 +47,16 @@ public class UnitsService : CheckAndNotifyService
         {
             var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
             _log.LogInformation("unitsCount: {unitsCount}", unitsCount.Serialize());
-            //await AboutTotalOverall(unitsCount, cancellationToken);
-            //await AboutTotalAtBrands(unitsCount, cancellationToken);
-            //await AboutTotalAtCountries(unitsCount, cancellationToken);
-            //await AboutTotalCountriesAtBrands(unitsCount, cancellationToken);
+            await AboutTotalOverall(unitsCount, cancellationToken);
+            await AboutTotalAtBrands(unitsCount, cancellationToken);
+            await AboutTotalAtCountries(unitsCount, cancellationToken);
+            await AboutTotalCountriesAtBrands(unitsCount, cancellationToken);
 
             var snapshotName = nameof(_globalApiClient.UnitsCount);
             var unitsCountSnapshot =
                 await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
-            //_log.LogInformation("unitsCountSnapshot: {unitsCountSnapshot}", unitsCountSnapshot.Serialize());
-            //await AboutNewCountries(unitsCount, unitsCountSnapshot.Data, cancellationToken);
+            _log.LogInformation("unitsCountSnapshot: {unitsCountSnapshot}", unitsCountSnapshot.Serialize());
+            await AboutNewCountries(unitsCount, unitsCountSnapshot.Data, cancellationToken);
 
             var allUnits = await GetAbsolutelyAllUnits(unitsCount, cancellationToken);
 
