@@ -60,10 +60,10 @@ public class UnitsService : CheckAndNotifyService
 
             var allUnits = await GetAbsolutelyAllUnits(unitsCount, cancellationToken);
 
-            await AboutNewUnits(allUnits, unitsCountSnapshot.Data, cancellationToken);
-            //_log.LogInformation("Before UpdateSnapshot at CheckAndNotify");
-            //await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
-            //_log.LogInformation("After UpdateSnapshot at CheckAndNotify");
+            await AboutNewUnits(allUnits, cancellationToken);
+
+            await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
+            await UpdateAllUnitsSnapshot(allUnits, cancellationToken);
         }
         catch (Exception e)
         {
@@ -326,20 +326,15 @@ public class UnitsService : CheckAndNotifyService
         return allUnits;
     }
 
-    internal async Task AboutNewUnits(AllUnitsDictionary allUnits, BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
+    internal async Task AboutNewUnits(AllUnitsDictionary allUnits, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start AboutNewUnits");
-        if (unitsCountSnapshot is null)
-        {
-            _log.LogInformation("unitsCountSnapshot is null");
-            return;
-        }
 
         var brands = allUnits.Keys;
 
         foreach (var brand in brands)
         {
-            var allUnitsAtBrand = allUnits.GetValueOrDefault(brand);
+            Dictionary<UnitCountModel, IEnumerable<UnitInfo>> allUnitsAtBrand = allUnits.GetValueOrDefault(brand);
             var countriesOfBrand = allUnitsAtBrand.Keys;
 
             _log.LogInformation("Brand {brand}", brand);
@@ -415,6 +410,24 @@ public class UnitsService : CheckAndNotifyService
 
         await _snapshotsRepository.Save(newSnapshot, cancellationToken);
         _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
+    }
+
+    private async Task UpdateAllUnitsSnapshot(AllUnitsDictionary allUnits, CancellationToken cancellationToken)
+    {
+        var brands = allUnits.Keys;
+
+        foreach (var brand in brands)
+        {
+            Dictionary<UnitCountModel, IEnumerable<UnitInfo>> allUnitsAtBrand = allUnits.GetValueOrDefault(brand);
+            var countries = allUnitsAtBrand.Keys;
+
+            foreach (var country in countries)
+            {
+                var snapshotName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, country.CountryId);
+                var unitsList = allUnitsAtBrand.GetValueOrDefault(country);
+                await UpdateSnapshot(snapshotName, unitsList, cancellationToken);
+            }
+        }
     }
 
     private IEnumerable<UnitModel> GetUnitsList(BrandData<UnitListModel> unitListModel)
@@ -507,5 +520,10 @@ public class UnitsService : CheckAndNotifyService
     private string GetUnitsOfBrandAtCountrySnapshotName(Brands brand, int countryId)
     {
         return $"{nameof(_globalApiClient.UnitsOfBrandAtCountry)}{brand}{countryId}";
+    }
+
+    private string GetUnitInfoOfBrandAtCountrySnapshotName(Brands brand, int countryId)
+    {
+        return $"{nameof(_publicApiClient.UnitInfo)}{brand}{countryId}";
     }
 }
