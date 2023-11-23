@@ -52,6 +52,7 @@ public class UnitsService : CheckAndNotifyService
             await AboutTotalAtCountries(unitsCount, cancellationToken);
             await AboutTotalCountriesAtBrands(unitsCount, cancellationToken);
 
+            // TODO: GetUnitsCountSnapshot
             var snapshotName = nameof(_globalApiClient.UnitsCount);
             var unitsCountSnapshot =
                 await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
@@ -357,6 +358,7 @@ public class UnitsService : CheckAndNotifyService
     {
         _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
 
+        // TODO: GetUnitsOfBrandAtCountrySnapshot
         var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
         var unitsSnapshot = 
             await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
