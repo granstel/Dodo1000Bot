@@ -54,9 +54,9 @@ public class UnitsService : CheckAndNotifyService
 
             var unitsCountSnapshot = await GetUnitsCountSnapshot(cancellationToken);
             _log.LogInformation("unitsCountSnapshot: {unitsCountSnapshot}", unitsCountSnapshot.Serialize());
-            await AboutNewCountries(unitsCount, unitsCountSnapshot.Data, cancellationToken);
+            await AboutNewCountries(unitsCount, unitsCountSnapshot, cancellationToken);
 
-            var allUnits = await GetAbsolutelyAllUnits(unitsCount, cancellationToken);
+            var allUnits = await GetAllUnits(unitsCount, cancellationToken);
 
             await AboutNewUnits(allUnits, cancellationToken);
 
@@ -291,7 +291,7 @@ public class UnitsService : CheckAndNotifyService
         return unitsCountBrands.ToDictionary(b => b.Brand, b => b.Countries.ToList());
     }
 
-    private async Task<AllUnitsDictionary> GetAbsolutelyAllUnits(BrandListTotalUnitCountListModel globalApiUnitsCount, CancellationToken cancellationToken)
+    private async Task<AllUnitsDictionary> GetAllUnits(BrandListTotalUnitCountListModel globalApiUnitsCount, CancellationToken cancellationToken)
     {
         var allUnits = new AllUnitsDictionary();
         var brands = globalApiUnitsCount.Brands.Select(b => b.Brand).ToList();
@@ -355,9 +355,7 @@ public class UnitsService : CheckAndNotifyService
     {
         _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
 
-        var unitsSnapshot = await GetUnitInfoOfBrandAtCountrySnapshot(brand, countryId, cancellationToken);
-
-        var unitsListSnapshot = unitsSnapshot?.Data;
+        var unitsListSnapshot = await GetUnitInfoOfBrandAtCountrySnapshot(brand, countryId, cancellationToken);
 
         _log.LogInformation("unitsList: {unitsList}", unitsList.Serialize());
         _log.LogInformation("unitsListSnapshot: {unitsListSnapshot}", unitsListSnapshot.Serialize());
@@ -397,22 +395,22 @@ public class UnitsService : CheckAndNotifyService
         _log.LogInformation("Finish CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
     }
 
-    private async Task<Snapshot<BrandListTotalUnitCountListModel>> GetUnitsCountSnapshot(CancellationToken cancellationToken)
+    private async Task<BrandListTotalUnitCountListModel> GetUnitsCountSnapshot(CancellationToken cancellationToken)
     {
         var snapshotName = nameof(_globalApiClient.UnitsCount);
         var unitsCountSnapshot =
             await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
 
-        return unitsCountSnapshot;
+        return unitsCountSnapshot?.Data;
     }
 
-    private async Task<Snapshot<IEnumerable<UnitInfo>>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, int countryId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, int countryId, CancellationToken cancellationToken)
     {
         var snapshotName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, countryId);
         var unitsSnapshot =
             await _snapshotsRepository.Get<IEnumerable<UnitInfo>>(snapshotName, cancellationToken);
 
-        return unitsSnapshot;
+        return unitsSnapshot?.Data;
     }
 
     private async Task UpdateUnitsCountSnapshot(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
