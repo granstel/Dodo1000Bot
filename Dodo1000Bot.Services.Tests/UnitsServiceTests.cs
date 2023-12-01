@@ -253,13 +253,16 @@ namespace Dodo1000Bot.Services.Tests
             var countryCode = _fixture.Create<string>();
 
             var unitName = _fixture.Create<string>();
+            var beginDateWork = DateOnly.FromDateTime(_fixture.Create<DateTime>());
 
             var unitList = _fixture.Build<UnitInfo>()
                 .With(u => u.Name, unitName)
+                .With(u => u.BeginDateWork, beginDateWork)
                 .CreateMany(1);
 
             var unitListSnapshot = _fixture.Build<UnitInfo>()
                 .With(u => u.Name, unitName)
+                .With(u => u.BeginDateWork, beginDateWork)
                 .CreateMany(1);
 
             var restaurantsCountAtBrand = _fixture.Create<int>();
@@ -276,18 +279,19 @@ namespace Dodo1000Bot.Services.Tests
             var countryCode = _fixture.Create<string>();
 
             var unitName = _fixture.Create<string>();
+            var beginDateWork = DateOnly.FromDateTime(_fixture.Create<DateTime>());
+
             var unitList = _fixture.Build<UnitInfo>()
                 .With(u => u.Name, unitName)
-                .CreateMany(1);
+                .With(u => u.BeginDateWork, beginDateWork)
+                .CreateMany(1).ToList();
 
-            var unitListSnapshot = _fixture.Build<UnitInfo>()
-                .With(u => u.Name, unitName)
-                .CreateMany(1)
-                .ToList();
             var deletedUnitIfno = _fixture.Build<UnitInfo>()
                 .With(u => u.Name)
+                .With(u => u.BeginDateWork, beginDateWork)
                 .Create();
-            unitListSnapshot.Add(deletedUnitIfno);
+
+            var unitListSnapshot = new List<UnitInfo> { unitList.First(), deletedUnitIfno };
 
             var restaurantsCountAtBrand = _fixture.Create<int>();
             var totalOverall = _fixture.Create<int>();
