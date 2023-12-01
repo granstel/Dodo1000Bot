@@ -298,8 +298,7 @@ public class UnitsService : CheckAndNotifyService
     {
         var allUnits = new AllUnitsDictionary();
         var brands = globalApiUnitsCount.Brands.Select(b => b.Brand).ToList();
-        var pizzaNamesPublicAPi = new List<string>();
-        var pizzaNamesGlobalAPi = new List<string>();
+
         foreach (var brand in brands)
         {
             allUnits.Add(brand, new Dictionary<UnitCountModel, IEnumerable<UnitInfo>>());
@@ -312,7 +311,7 @@ public class UnitsService : CheckAndNotifyService
                 var filteredPublicApiUnitInfo = publicApiUnitInfo.Where(u => u.DepartmentState == DepartmentState.Open &&
                                           u.State == UnitState.Open &&
                                           u.Type == UnitType.Pizzeria).ToArray();
-                var test = filteredPublicApiUnitInfo.Where(u => u.Name.Contains("тест", StringComparison.InvariantCultureIgnoreCase)).ToList();
+
                 var departmentsTasks = filteredPublicApiUnitInfo.Select(u => u.DepartmentId).Distinct().Select(id =>
                     _publicApiClient.GetDepartmentById(brand, country.CountryCode, id, cancellationToken));
 
@@ -322,22 +321,9 @@ public class UnitsService : CheckAndNotifyService
                 var filteredPublicApiUnitsByPublicApiDepartments = filteredPublicApiUnitInfo.Where(u => filteredPublicApiDepartmentsIds.Contains(u.DepartmentId));
 
                 allUnits[brand].Add(country, filteredPublicApiUnitsByPublicApiDepartments);
-
-                if (brand is Brands.Dodopizza)
-                {
-                    var units = await _globalApiClient.UnitsOfBrandAtCountry(brand, country.CountryId, cancellationToken);
-                    pizzaNamesPublicAPi.AddRange(filteredPublicApiUnitsByPublicApiDepartments.Select(u => u.Name).Distinct());
-                    pizzaNamesGlobalAPi.AddRange(units.Countries.SelectMany(u => u.Pizzerias.Select(p => p.Name).Distinct()));
-                }
             }
         }
 
-        pizzaNamesPublicAPi.Sort();
-        pizzaNamesGlobalAPi.Sort();
-
-        var ser1 = pizzaNamesPublicAPi.Serialize();
-        var ser2 = pizzaNamesGlobalAPi.Serialize();
-        var except = pizzaNamesGlobalAPi.Except(pizzaNamesPublicAPi).ToList();
         return allUnits;
     }
 
