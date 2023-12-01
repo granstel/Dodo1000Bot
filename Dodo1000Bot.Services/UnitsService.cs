@@ -358,21 +358,16 @@ public class UnitsService : CheckAndNotifyService
     {
         _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
 
-        // TODO: GetUnitsOfBrandAtCountrySnapshot
-        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
-        var unitsSnapshot = 
-            await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
+        var unitsSnapshot = await GetUnitInfoOfBrandAtCountrySnapshot(brand, countryId, cancellationToken);
 
-        _log.LogInformation("unitsSnapshot: {unitsSnapshot}", unitsSnapshot.Serialize());
-
-        IEnumerable<UnitModel> unitsListSnapshot = GetUnitsList(unitsSnapshot?.Data);
+        var unitsListSnapshot = unitsSnapshot?.Data;
 
         _log.LogInformation("unitsList: {unitsList}", unitsList.Serialize());
         _log.LogInformation("unitsListSnapshot: {unitsListSnapshot}", unitsListSnapshot.Serialize());
 
         const string formatOfDistinctions = "{0}-{1}";
 
-        var formattedDistinctions = unitsListSnapshot.Select(uls => string.Format(formatOfDistinctions, uls.Name, uls.StartDate));
+        var formattedDistinctions = unitsListSnapshot.Select(uls => string.Format(formatOfDistinctions, uls.Name, uls.BeginDateWork));
         var difference = unitsList.ExceptBy(formattedDistinctions, 
                                             ul => string.Format(formatOfDistinctions, ul.Name, ul.BeginDateWork))
             .Where(ul => ul.BeginDateWork.Year == DateTime.Today.Date.Year).ToList();
@@ -403,6 +398,15 @@ public class UnitsService : CheckAndNotifyService
             await _notificationsService.Save(notification, cancellationToken);
         }
         _log.LogInformation("Finish CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
+    }
+
+    private async Task<Snapshot<IEnumerable<UnitInfo>>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, int countryId, CancellationToken cancellationToken)
+    {
+        var snapshotName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, countryId);
+        var unitsSnapshot =
+            await _snapshotsRepository.Get<IEnumerable<UnitInfo>>(snapshotName, cancellationToken);
+
+        return unitsSnapshot;
     }
 
     private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
