@@ -268,57 +268,33 @@ namespace Dodo1000Bot.Services.Tests
             await _target.CheckUnitsOfBrandAtCountryAndNotify(unitList, unitListSnapshot, brand, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
         }
 
-        // [Test]
-        // public async Task CheckUnitsOfBrandAtCountryAndNotify_LessUnitsThanAtSnapshot_NoAnyNotification()
-        // {
-        //     var brand = _fixture.Create<Brands>();
-        //     var countryId = _fixture.Create<int>();
-        //     var countryCode = _fixture.Create<string>();
-        //
-        //     var unitName = _fixture.Create<string>();
-        //     var unitModel = _fixture.Build<UnitModel>()
-        //         .With(m => m.Name, unitName)
-        //         .Create();
-        //     var unitListModel = _fixture.Build<UnitListModel>()
-        //             .With(m => m.Pizzerias, new []{unitModel})
-        //             .Create();
-        //     var unitsAtCountry = _fixture.Build<BrandData<UnitListModel>>()
-        //             .With(m => m.Countries, new []{unitListModel})
-        //             .Create();
-        //
-        //     var oldUnitName = _fixture.Create<string>();
-        //     var oldUnitModel = _fixture.Build<UnitModel>()
-        //         .With(m => m.Name, oldUnitName)
-        //         .Create();
-        //     var unitModelSnapshot = _fixture.Build<UnitModel>()
-        //         .With(m => m.Name, unitName)
-        //         .Create();
-        //     var unitListModelSnapshot = _fixture.Build<UnitListModel>()
-        //             .With(m => m.Pizzerias, new []{unitModelSnapshot, oldUnitModel})
-        //             .Create();
-        //     var unitsAtCountrySnapshot = _fixture.Build<BrandData<UnitListModel>>()
-        //             .With(m => m.Countries, new []{unitListModelSnapshot})
-        //             .Create();
-        //
-        //     _globalApiClientMock.Setup(c => c.UnitsOfBrandAtCountry(brand, countryId, It.IsAny<CancellationToken>()))
-        //         .ReturnsAsync(unitsAtCountry);
-        //
-        //     var snapshotName = $"UnitsOfBrandAtCountry{brand}{countryId}";
-        //     var snapshot = Snapshot<BrandData<UnitListModel>>.Create(snapshotName, unitsAtCountrySnapshot);
-        //
-        //     _snapshotsRepositoryMock.Setup(r => r.Get<BrandData<UnitListModel>>(snapshotName, CancellationToken.None))
-        //         .ReturnsAsync(snapshot);
-        //
-        //     _snapshotsRepositoryMock.Setup(r => 
-        //         r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
-        //         .Returns(Task.CompletedTask);
-        //
-        //     var restaurantsCountAtBrand = _fixture.Create<int>();
-        //     var totalOverall = _fixture.Create<int>();
-        //
-        //     await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
-        // }
-        //
+        [Test]
+        public async Task CheckUnitsOfBrandAtCountryAndNotify_LessUnitsThanAtSnapshot_NoAnyNotification()
+        {
+            var brand = _fixture.Create<Brands>();
+            var countryId = _fixture.Create<int>();
+            var countryCode = _fixture.Create<string>();
+
+            var unitName = _fixture.Create<string>();
+            var unitList = _fixture.Build<UnitInfo>()
+                .With(u => u.Name, unitName)
+                .CreateMany(1);
+
+            var unitListSnapshot = _fixture.Build<UnitInfo>()
+                .With(u => u.Name, unitName)
+                .CreateMany(1)
+                .ToList();
+            var deletedUnitIfno = _fixture.Build<UnitInfo>()
+                .With(u => u.Name)
+                .Create();
+            unitListSnapshot.Add(deletedUnitIfno);
+
+            var restaurantsCountAtBrand = _fixture.Create<int>();
+            var totalOverall = _fixture.Create<int>();
+
+            await _target.CheckUnitsOfBrandAtCountryAndNotify(unitList, unitListSnapshot, brand, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
+        }
+
         // [Test]
         // public async Task CheckUnitsOfBrandAtCountryAndNotify_NewUnit_Notification()
         // {
