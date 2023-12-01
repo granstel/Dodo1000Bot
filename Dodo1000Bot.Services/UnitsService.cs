@@ -52,10 +52,7 @@ public class UnitsService : CheckAndNotifyService
             await AboutTotalAtCountries(unitsCount, cancellationToken);
             await AboutTotalCountriesAtBrands(unitsCount, cancellationToken);
 
-            // TODO: GetUnitsCountSnapshot
-            var snapshotName = nameof(_globalApiClient.UnitsCount);
-            var unitsCountSnapshot =
-                await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
+            var unitsCountSnapshot = await GetUnitsCountSnapshot(cancellationToken);
             _log.LogInformation("unitsCountSnapshot: {unitsCountSnapshot}", unitsCountSnapshot.Serialize());
             await AboutNewCountries(unitsCount, unitsCountSnapshot.Data, cancellationToken);
 
@@ -63,7 +60,7 @@ public class UnitsService : CheckAndNotifyService
 
             await AboutNewUnits(allUnits, cancellationToken);
 
-            await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
+            await UpdateUnitsCountSnapshot(unitsCount, cancellationToken);
             await UpdateAllUnitsSnapshot(allUnits, cancellationToken);
         }
         catch (Exception e)
@@ -400,6 +397,15 @@ public class UnitsService : CheckAndNotifyService
         _log.LogInformation("Finish CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
     }
 
+    private async Task<Snapshot<BrandListTotalUnitCountListModel>> GetUnitsCountSnapshot(CancellationToken cancellationToken)
+    {
+        var snapshotName = nameof(_globalApiClient.UnitsCount);
+        var unitsCountSnapshot =
+            await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
+
+        return unitsCountSnapshot;
+    }
+
     private async Task<Snapshot<IEnumerable<UnitInfo>>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, int countryId, CancellationToken cancellationToken)
     {
         var snapshotName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, countryId);
@@ -409,13 +415,10 @@ public class UnitsService : CheckAndNotifyService
         return unitsSnapshot;
     }
 
-    private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
+    private async Task UpdateUnitsCountSnapshot(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
     {
-        _log.LogInformation("Start UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
-        var newSnapshot = Snapshot<TData>.Create(snapshotName, data);
-
-        await _snapshotsRepository.Save(newSnapshot, cancellationToken);
-        _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
+        var snapshotName = nameof(_globalApiClient.UnitsCount);
+        await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
     }
 
     private async Task UpdateAllUnitsSnapshot(AllUnitsDictionary allUnits, CancellationToken cancellationToken)
@@ -434,6 +437,15 @@ public class UnitsService : CheckAndNotifyService
                 await UpdateSnapshot(snapshotName, unitsList, cancellationToken);
             }
         }
+    }
+
+    private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
+    {
+        _log.LogInformation("Start UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
+        var newSnapshot = Snapshot<TData>.Create(snapshotName, data);
+
+        await _snapshotsRepository.Save(newSnapshot, cancellationToken);
+        _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
     }
 
     private IEnumerable<UnitModel> GetUnitsList(BrandData<UnitListModel> unitListModel)
