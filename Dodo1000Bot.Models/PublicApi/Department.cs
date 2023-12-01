@@ -8,7 +8,7 @@
 
         public DepartmentType Type { get; set; }
 
-        public int State { get; set; }
+        public DepartmentState State { get; set; }
 
         public object[] SocialNetworkLinks { get; set; }
     }
