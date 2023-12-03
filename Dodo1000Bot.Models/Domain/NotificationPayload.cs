@@ -9,7 +9,7 @@ namespace Dodo1000Bot.Models.Domain
 
         public DateTime? HappenedAt { get; init; }
 
-        public CoordinatesModel Coordinates { get; init; }
+        public Coordinates Coordinates { get; set; }
 
         public string Address { get; init; }
 

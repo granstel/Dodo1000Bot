@@ -387,15 +387,19 @@ public class UnitsService : CheckAndNotifyService
                     Text = $"Wow! There is new {brand}{brandEmoji} in {unit.AddressDetails?.LocalityName}{flag}! You can find it on the map👆 " +
                            $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥",
                     Address = unit.Address,
-                    Coordinates = new()
-                    {
-                        Lat = unit.Location.Latitude,
-                        Long = unit.Location.Longitude
-                    },
                     Name = unit.Name
                 }
             };
 
+            if (unit.Location is { Latitude: not null, Longitude: not null })
+            {
+                notification.Payload.Coordinates = new Coordinates
+                {
+                    Latitude = unit.Location.Latitude.Value,
+                    Longitude = unit.Location.Longitude.Value
+                };
+            }
+            
             await _notificationsService.Save(notification, cancellationToken);
         }
         _log.LogInformation("Finish CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryCode}", brand, countryCode);
