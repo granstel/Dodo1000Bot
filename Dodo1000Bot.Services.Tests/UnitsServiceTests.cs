@@ -304,9 +304,8 @@ namespace Dodo1000Bot.Services.Tests
             var countryCode = _fixture.Create<string>();
             var beginDateWork = DateOnly.FromDateTime(DateTime.Now);
         
-            var localityName = _fixture.Create<string>();
             var newUnitAddress = _fixture.Build<AddressDetails>()
-                    .With(a => a.LocalityName, localityName)
+                    .With(a => a.LocalityName)
                     .Create();
             var newUnitCoordinates = _fixture.Build<Location>()
                 .With(c => c.Latitude)
@@ -326,14 +325,14 @@ namespace Dodo1000Bot.Services.Tests
 
             var unitsList = new List<UnitInfo> { oldUnitModel, newUnitModel };
             var unitListSnapshot = new List<UnitInfo> { oldUnitModel };
-            
+
             var restaurantsCountAtBrand = _fixture.Create<int>();
             var totalOverall = _fixture.Create<int>();
-        
+
             var expectedText =
                 $"Wow! There is new {brand} in {newUnitModel.AddressDetails?.LocalityName}! You can find it on the map👆 " +
                 $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
-        
+
             _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
                 .Callback((Notification notification, CancellationToken _) =>
                 {
@@ -342,84 +341,58 @@ namespace Dodo1000Bot.Services.Tests
                     Assert.AreEqual(notification.Payload.Coordinates.Longitude, newUnitCoordinates.Longitude);
                 })
                 .Returns(Task.CompletedTask);
-        
+
             await _target.CheckUnitsOfBrandAtCountryAndNotify(unitsList, unitListSnapshot, brand, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
         }
-        
-        // [Test]
-        // public async Task CheckUnitsOfBrandAtCountryAndNotify_OldUnitWithNewDate_Notification()
-        // {
-        //     var brand = _fixture.Create<Brands>();
-        //     var countryId = _fixture.Create<int>();
-        //     var countryCode = _fixture.Create<string>();
-        //
-        //     var unitName = _fixture.Create<string>();
-        //
-        //     var unitModelWithoutDate = _fixture.Build<UnitModel>()
-        //         .With(m => m.Name, unitName)
-        //         .Without(m => m.StartDate)
-        //         .Create();
-        //
-        //     var unitLocality = _fixture.Build<LocalityModel>()
-        //         .With(l => l.Name)
-        //         .Create();
-        //     var unitAddress = _fixture.Build<AddressModel>()
-        //         .With(a => a.Locality, unitLocality)
-        //         .Create();
-        //     var unitCoordinates = _fixture.Build<CoordinatesModel>()
-        //         .With(c => c.Lat)
-        //         .With(c => c.Long)
-        //         .Create();
-        //     var unitModelWithDate = _fixture.Build<UnitModel>()
-        //         .With(m => m.Name, unitName)
-        //         .With(m => m.Address, unitAddress)
-        //         .With(m => m.Coords, unitCoordinates)
-        //         .With(m => m.StartDate, DateOnly.FromDateTime(DateTime.Now))
-        //         .Create();
-        //
-        //     var unitListModel = _fixture.Build<UnitListModel>()
-        //             .With(m => m.Pizzerias, new []{unitModelWithDate})
-        //             .Create();
-        //     var unitsAtCountry = _fixture.Build<BrandData<UnitListModel>>()
-        //             .With(m => m.Countries, new []{unitListModel})
-        //             .Create();
-        //
-        //     var unitListModelSnapshot = _fixture.Build<UnitListModel>()
-        //             .With(m => m.Pizzerias, new []{unitModelWithoutDate})
-        //             .Create();
-        //     var unitsAtCountrySnapshot = _fixture.Build<BrandData<UnitListModel>>()
-        //             .With(m => m.Countries, new []{unitListModelSnapshot})
-        //             .Create();
-        //
-        //     _globalApiClientMock.Setup(c => c.UnitsOfBrandAtCountry(brand, countryId, It.IsAny<CancellationToken>()))
-        //         .ReturnsAsync(unitsAtCountry);
-        //
-        //     var snapshotName = $"UnitsOfBrandAtCountry{brand}{countryId}";
-        //     var snapshot = Snapshot<BrandData<UnitListModel>>.Create(snapshotName, unitsAtCountrySnapshot);
-        //
-        //     _snapshotsRepositoryMock.Setup(r => r.Get<BrandData<UnitListModel>>(snapshotName, CancellationToken.None))
-        //         .ReturnsAsync(snapshot);
-        //
-        //     _snapshotsRepositoryMock.Setup(r => 
-        //         r.Save(It.IsAny<Snapshot<BrandData<UnitListModel>>>(), It.IsAny<CancellationToken>()))
-        //         .Returns(Task.CompletedTask);
-        //
-        //     var restaurantsCountAtBrand = _fixture.Create<int>();
-        //     var totalOverall = _fixture.Create<int>();
-        //
-        //     var expectedText =
-        //         $"Wow! There is new {brand} in {unitModelWithDate.Address?.Locality?.Name}! You can find it on the map👆 " +
-        //         $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
-        //
-        //     _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
-        //         .Callback((Notification notification, CancellationToken _) =>
-        //         {
-        //             Assert.AreEqual(notification.Payload.Text, expectedText);
-        //             Assert.AreEqual(notification.Payload.Coordinates, unitCoordinates);
-        //         })
-        //         .Returns(Task.CompletedTask);
-        //
-        //     await _target.CheckUnitsOfBrandAtCountryAndNotify(brand, countryId, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
-        // }
+
+        [Test]
+        public async Task CheckUnitsOfBrandAtCountryAndNotify_OldUnitWithNewDate_Notification()
+        {
+            var brand = _fixture.Create<Brands>();
+            var countryCode = _fixture.Create<string>();
+
+            var unitName = _fixture.Create<string>();
+            var beginDateWork = DateOnly.FromDateTime(DateTime.Now);
+
+            var newUnitAddress = _fixture.Build<AddressDetails>()
+                .With(a => a.LocalityName)
+                .Create();
+            var newUnitCoordinates = _fixture.Build<Location>()
+                .With(c => c.Latitude)
+                .With(c => c.Longitude)
+                .Create();
+            var newUnitModel = _fixture.Build<UnitInfo>()
+                .With(m => m.Name, unitName)
+                .With(m => m.Address)
+                .With(m => m.AddressDetails, newUnitAddress)
+                .With(m => m.Location, newUnitCoordinates)
+                .With(u => u.BeginDateWork, beginDateWork)
+                .Create();
+            var oldUnitModel = _fixture.Build<UnitInfo>()
+                .With(m => m.Name, unitName)
+                .Without(u => u.BeginDateWork)
+                .Create();
+
+            var unitsList = new List<UnitInfo> { newUnitModel };
+            var unitListSnapshot = new List<UnitInfo> { oldUnitModel };
+
+            var restaurantsCountAtBrand = _fixture.Create<int>();
+            var totalOverall = _fixture.Create<int>();
+
+            var expectedText =
+                $"Wow! There is new {brand} in {newUnitModel.AddressDetails?.LocalityName}! You can find it on the map👆 " +
+                $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥";
+
+            _notificationsServiceMock.Setup(n => n.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
+                .Callback((Notification notification, CancellationToken _) =>
+                {
+                    Assert.AreEqual(notification.Payload.Text, expectedText);
+                    Assert.AreEqual(notification.Payload.Coordinates.Latitude, newUnitCoordinates.Latitude);
+                    Assert.AreEqual(notification.Payload.Coordinates.Longitude, newUnitCoordinates.Longitude);
+                })
+                .Returns(Task.CompletedTask);
+
+            await _target.CheckUnitsOfBrandAtCountryAndNotify(unitsList, unitListSnapshot, brand, countryCode, restaurantsCountAtBrand, totalOverall, CancellationToken.None);
+        }
     }
 }
