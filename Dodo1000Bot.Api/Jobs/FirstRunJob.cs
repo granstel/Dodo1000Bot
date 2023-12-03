@@ -11,7 +11,7 @@ public class FirstRunJob: IHostedService
 {
     private readonly IServiceProvider _provider;
 
-    public FirstRunJob(IServiceProvider provider, UnitsService unitsService)
+    public FirstRunJob(IServiceProvider provider)
     {
         _provider = provider;
     }
@@ -23,6 +23,7 @@ public class FirstRunJob: IHostedService
 
         await unitsService.CreateUnitsCountSnapshotIfNotExists(cancellationToken);
         await unitsService.CreateUnitsSnapshotIfNotExists(cancellationToken);
+        //TODO: CreateAllUnitsInfoSnapshot
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

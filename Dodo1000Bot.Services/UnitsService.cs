@@ -456,11 +456,6 @@ public class UnitsService : CheckAndNotifyService
         _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
     }
 
-    private IEnumerable<UnitModel> GetUnitsList(BrandData<UnitListModel> unitListModel)
-    {
-        return unitListModel?.Countries.SelectMany(c => c.Pizzerias).ToList() ?? new List<UnitModel>();
-    }
-
     private async Task CheckAndNotify1000(UnitCountModel totalAtCountry, Brands brand, CancellationToken cancellationToken)
     {
         if (!CheckHelper.CheckRemainder(totalAtCountry.PizzeriaCount, 1000))
