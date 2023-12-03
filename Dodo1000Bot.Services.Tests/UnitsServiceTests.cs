@@ -249,7 +249,6 @@ namespace Dodo1000Bot.Services.Tests
         public async Task CheckUnitsOfBrandAtCountryAndNotify_SameUnitNames_NoAnyNotifications()
         {
             var brand = _fixture.Create<Brands>();
-            var countryId = _fixture.Create<int>();
             var countryCode = _fixture.Create<string>();
 
             var unitName = _fixture.Create<string>();
@@ -275,7 +274,6 @@ namespace Dodo1000Bot.Services.Tests
         public async Task CheckUnitsOfBrandAtCountryAndNotify_LessUnitsThanAtSnapshot_NoAnyNotification()
         {
             var brand = _fixture.Create<Brands>();
-            var countryId = _fixture.Create<int>();
             var countryCode = _fixture.Create<string>();
 
             var unitName = _fixture.Create<string>();
