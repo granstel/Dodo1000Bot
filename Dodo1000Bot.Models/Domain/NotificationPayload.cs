@@ -1,5 +1,4 @@
 ﻿using System;
-using Dodo1000Bot.Models.GlobalApi;
 
 namespace Dodo1000Bot.Models.Domain
 {
