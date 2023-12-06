@@ -35,7 +35,7 @@ public class GlobalApiService : IGlobalApiService
                 return;
             }
 
-            await GetUnitsCountAndUpdateSnapshot(cancellationToken);
+            await GetUnitsCount(cancellationToken);
         }
         catch (Exception e)
         {
@@ -43,11 +43,9 @@ public class GlobalApiService : IGlobalApiService
         }
     }
 
-    public async Task<BrandListTotalUnitCountListModel> GetUnitsCountAndUpdateSnapshot(CancellationToken cancellationToken)
+    public async Task<BrandListTotalUnitCountListModel> GetUnitsCount(CancellationToken cancellationToken)
     {
         var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
-
-        await UpdateUnitsCountSnapshot(unitsCount, cancellationToken);
 
         return unitsCount;
     }
@@ -60,13 +58,15 @@ public class GlobalApiService : IGlobalApiService
 
         return unitsCountSnapshot?.Data;
     }
-    
-    private async Task UpdateUnitsCountSnapshot(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
+
+    public async Task UpdateUnitsCountSnapshot(CancellationToken cancellationToken)
     {
+        var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
+
         var snapshotName = nameof(_globalApiClient.UnitsCount);
         await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
     }
-    
+
     private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start UpdateSnapshot for snapshotName {snapshotName}", snapshotName);

@@ -7,6 +7,7 @@ namespace Dodo1000Bot.Services;
 public interface IGlobalApiService
 {
     Task CreateUnitsCountSnapshotIfNotExists(CancellationToken cancellationToken);
-    Task<BrandListTotalUnitCountListModel> GetUnitsCountAndUpdateSnapshot(CancellationToken cancellationToken);
+    Task<BrandListTotalUnitCountListModel> GetUnitsCount(CancellationToken cancellationToken);
     Task<BrandListTotalUnitCountListModel> GetUnitsCountSnapshot(CancellationToken cancellationToken);
+    Task UpdateUnitsCountSnapshot(CancellationToken cancellationToken);
 }

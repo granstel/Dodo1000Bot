@@ -52,36 +52,6 @@ public class SnapshotsService : ISnapshotsService
         return $"{nameof(_publicApiClient.UnitInfo)}{brand}{countryId}";
     }
 
-    private async Task<BrandListTotalUnitCountListModel> GetUnitsCountSnapshot(CancellationToken cancellationToken)
-    {
-        var snapshotName = nameof(_globalApiClient.UnitsCount);
-        var unitsCountSnapshot =
-            await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
-
-        return unitsCountSnapshot?.Data;
-    }
-
-    public async Task CreateUnitsCountSnapshotIfNotExists(CancellationToken cancellationToken)
-    {
-        try
-        {
-            var unitsCountSnapshot = await GetUnitsCountSnapshot(cancellationToken);
-
-            if (unitsCountSnapshot is not null)
-            {
-                _log.LogInformation("unitsCountSnapshot is not null");
-                return;
-            }
-
-            var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
-
-            await UpdateUnitsCountSnapshot(unitsCount, cancellationToken);
-        }
-        catch (Exception e)
-        {
-            _log.LogError(e, "Can't {methodName}", nameof(CreateUnitsCountSnapshotIfNotExists));
-        }
-    }
 
     public async Task CreateAllUnitsSnapshotIfNotExists(CancellationToken cancellationToken)
     {
@@ -104,7 +74,7 @@ public class SnapshotsService : ISnapshotsService
         }
     }
 
-    private async Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, int countryId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, int countryId, CancellationToken cancellationToken)
     {
         var snapshotName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, countryId);
         var unitsSnapshot =
@@ -156,13 +126,7 @@ public class SnapshotsService : ISnapshotsService
         }
     }
 
-    private async Task UpdateUnitsCountSnapshot(BrandListTotalUnitCountListModel unitsCount, CancellationToken cancellationToken)
-    {
-        var snapshotName = nameof(_globalApiClient.UnitsCount);
-        await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
-    }
-
-    private async Task UpdateAllUnitsSnapshot(AllUnitsDictionary allUnits, CancellationToken cancellationToken)
+    public async Task UpdateAllUnitsSnapshot(AllUnitsDictionary allUnits, CancellationToken cancellationToken)
     {
         var brands = allUnits.Keys;
 

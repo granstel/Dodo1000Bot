@@ -20,9 +20,10 @@ public class FirstRunJob: IHostedService
     {
         await using var scope = _provider.CreateAsyncScope();
         var snapshotsService = scope.ServiceProvider.GetRequiredService<ISnapshotsService>();
+        var globalApiService = scope.ServiceProvider.GetRequiredService<IGlobalApiService>();
 
-        await snapshotsService.CreateUnitsCountSnapshotIfNotExists(cancellationToken);
-        await snapshotsService.CreateUnitsSnapshotIfNotExists(cancellationToken);
+        await globalApiService.CreateUnitsCountSnapshotIfNotExists(cancellationToken);
+        
         await snapshotsService.CreateAllUnitsSnapshotIfNotExists(cancellationToken);
     }
 
