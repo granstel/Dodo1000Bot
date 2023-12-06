@@ -55,7 +55,6 @@ namespace Dodo1000Bot.Services.Tests
 
             _target = new UnitsService(
                 _logMock, 
-                _globalApiClientMock.Object, 
                 _publicApiClient.Object, 
                 _notificationsServiceMock.Object, 
                 _snapshotsRepositoryMock.Object,

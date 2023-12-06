@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
@@ -9,9 +9,10 @@ namespace Dodo1000Bot.Services;
 
 using AllUnitsDictionary = Dictionary<Brands, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>>;
 
-public interface ISnapshotsService
+public interface IPublicApiService
 {
     Task CreateAllUnitsSnapshotIfNotExists(CancellationToken cancellationToken);
     Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, int countryId, CancellationToken cancellationToken);
-    Task UpdateAllUnitsSnapshot(AllUnitsDictionary allUnits, CancellationToken cancellationToken);
+    Task UpdateAllUnitsSnapshot(Dictionary<Brands, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>> allUnits, CancellationToken cancellationToken);
+    Task<AllUnitsDictionary> GetAllUnits(CancellationToken cancellationToken);
 }

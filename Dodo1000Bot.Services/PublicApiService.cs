@@ -14,37 +14,23 @@ namespace Dodo1000Bot.Services;
 
 using AllUnitsDictionary = Dictionary<Brands, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>>;
 
-public class SnapshotsService : ISnapshotsService
+public class PublicApiService : IPublicApiService
 {
-    private readonly ILogger<SnapshotsService> _log;
-    private readonly IGlobalApiClient _globalApiClient;
+    private readonly ILogger<PublicApiService> _log;
     private readonly IPublicApiClient _publicApiClient;
+    private readonly IGlobalApiService _globalApiService;
     private readonly ISnapshotsRepository _snapshotsRepository;
 
-    public SnapshotsService(
-        ILogger<SnapshotsService> log, 
-        IGlobalApiClient globalApiClient, 
+    public PublicApiService(
+        ILogger<PublicApiService> log, 
         IPublicApiClient publicApiClient, 
+        IGlobalApiService globalApiService, 
         ISnapshotsRepository snapshotsRepository)
     {
         _log = log;
-        _globalApiClient = globalApiClient;
         _publicApiClient = publicApiClient;
+        _globalApiService = globalApiService;
         _snapshotsRepository = snapshotsRepository;
-    }
-
-    private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
-    {
-        _log.LogInformation("Start UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
-        var newSnapshot = Snapshot<TData>.Create(snapshotName, data);
-
-        await _snapshotsRepository.Save(newSnapshot, cancellationToken);
-        _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
-    }
-
-    private string GetUnitsOfBrandAtCountrySnapshotName(Brands brand, int countryId)
-    {
-        return $"{nameof(_globalApiClient.UnitsOfBrandAtCountry)}{brand}{countryId}";
     }
 
     private string GetUnitInfoOfBrandAtCountrySnapshotName(Brands brand, int countryId)
@@ -52,12 +38,11 @@ public class SnapshotsService : ISnapshotsService
         return $"{nameof(_publicApiClient.UnitInfo)}{brand}{countryId}";
     }
 
-
     public async Task CreateAllUnitsSnapshotIfNotExists(CancellationToken cancellationToken)
     {
         try
         {
-            var unitsCountSnapshot = await GetUnitsCountSnapshot(cancellationToken);
+            var unitsCountSnapshot = await _globalApiService.GetUnitsCountSnapshot(cancellationToken);
 
             if (unitsCountSnapshot is null)
             {
@@ -65,12 +50,12 @@ public class SnapshotsService : ISnapshotsService
                 return;
             }
 
-            var allUnitsInfo = await GetAllUnits(unitsCountSnapshot, cancellationToken);
+            var allUnitsInfo = await GetAllUnits(cancellationToken);
             await UpdateAllUnitsSnapshot(allUnitsInfo, cancellationToken);
         }
         catch (Exception e)
         {
-            _log.LogError(e, "Can't {methodName}", nameof(CreateUnitsCountSnapshotIfNotExists));
+            _log.LogError(e, "Can't {methodName}", nameof(CreateAllUnitsSnapshotIfNotExists));
         }
     }
 
@@ -83,48 +68,7 @@ public class SnapshotsService : ISnapshotsService
         return unitsSnapshot?.Data;
     }
     
-    public async Task CreateUnitsSnapshotIfNotExists(CancellationToken cancellationToken)
-    {
-        try
-        {
-            var unitsCountSnapshot = await GetUnitsCountSnapshot(cancellationToken);
-
-            if (unitsCountSnapshot is null)
-            {
-                _log.LogInformation("unitsCountSnapshot is null");
-                return;
-            }
-            
-            List<Brands> brands = unitsCountSnapshot.Brands.Select(b => b.Brand).ToList();
-
-            foreach (var brand in brands)
-            {
-                var totalUnitCountListModel = unitsCountSnapshot
-                    .Brands.First(b => b.Brand == brand);
-
-                foreach (var country in totalUnitCountListModel.Countries)
-                {
-                    var countryId = country.CountryId;
-                    var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
-                    var unitsSnapshot = 
-                        await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
-
-                    if (unitsSnapshot?.Data is not null)
-                    {
-                        _log.LogInformation("unitsSnapshot at {brand} in {country} is not null", brand, countryId);
-                        return;
-                    }
-
-                    BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
-                    await UpdateSnapshot(snapshotName, unitsAtCountry, cancellationToken);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            _log.LogError(e, "Can't {methodName}", nameof(CreateUnitsCountSnapshotIfNotExists));
-        }
-    }
+    
 
     public async Task UpdateAllUnitsSnapshot(AllUnitsDictionary allUnits, CancellationToken cancellationToken)
     {
@@ -144,8 +88,9 @@ public class SnapshotsService : ISnapshotsService
         }
     }
     
-    private async Task<AllUnitsDictionary> GetAllUnits(BrandListTotalUnitCountListModel globalApiUnitsCount, CancellationToken cancellationToken)
+    public async Task<AllUnitsDictionary> GetAllUnits(CancellationToken cancellationToken)
     {
+        var globalApiUnitsCount = await _globalApiService.GetUnitsCount(cancellationToken);
         var allUnits = new AllUnitsDictionary();
         var brands = globalApiUnitsCount.Brands.Select(b => b.Brand).ToList();
 
@@ -175,5 +120,14 @@ public class SnapshotsService : ISnapshotsService
         }
 
         return allUnits;
+    }
+
+    private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
+    {
+        _log.LogInformation("Start UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
+        var newSnapshot = Snapshot<TData>.Create(snapshotName, data);
+
+        await _snapshotsRepository.Save(newSnapshot, cancellationToken);
+        _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
     }
 }

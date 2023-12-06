@@ -19,12 +19,12 @@ public class FirstRunJob: IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         await using var scope = _provider.CreateAsyncScope();
-        var snapshotsService = scope.ServiceProvider.GetRequiredService<ISnapshotsService>();
         var globalApiService = scope.ServiceProvider.GetRequiredService<IGlobalApiService>();
+        var publicApiService = scope.ServiceProvider.GetRequiredService<IPublicApiService>();
 
         await globalApiService.CreateUnitsCountSnapshotIfNotExists(cancellationToken);
         
-        await snapshotsService.CreateAllUnitsSnapshotIfNotExists(cancellationToken);
+        await publicApiService.CreateAllUnitsSnapshotIfNotExists(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

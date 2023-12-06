@@ -8,7 +8,6 @@ using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
 using Dodo1000Bot.Models.PublicApi;
-using Dodo1000Bot.Services.Clients;
 using Dodo1000Bot.Services.Extensions;
 using Microsoft.Extensions.Logging;
 
@@ -19,25 +18,22 @@ using AllUnitsDictionary = Dictionary<Brands, Dictionary<UnitCountModel, IEnumer
 public class UnitsService : CheckAndNotifyService
 {
     private readonly ILogger<UnitsService> _log;
-    private readonly IPublicApiClient _publicApiClient;
     private readonly INotificationsService _notificationsService;
-    private readonly ISnapshotsService _snapshotsService;
     private readonly IGlobalApiService _globalApiService;
+    private readonly IPublicApiService _publicApiService;
     private readonly ICountriesService _countriesService;
 
     public UnitsService(
         ILogger<UnitsService> log, 
-        IPublicApiClient publicApiClient, 
         INotificationsService notificationsService, 
-        ISnapshotsService snapshotsService, 
-        IGlobalApiService globalApiService,
+        IGlobalApiService globalApiService, 
+        IPublicApiService publicApiService, 
         ICountriesService countriesService)
     {
         _log = log;
-        _publicApiClient = publicApiClient;
         _notificationsService = notificationsService;
-        _snapshotsService = snapshotsService;
         _globalApiService = globalApiService;
+        _publicApiService = publicApiService;
         _countriesService = countriesService;
     }
 
@@ -56,12 +52,12 @@ public class UnitsService : CheckAndNotifyService
             _log.LogInformation("unitsCountSnapshot: {unitsCountSnapshot}", unitsCountSnapshot.Serialize());
             await AboutNewCountries(unitsCount, unitsCountSnapshot, cancellationToken);
 
-            var allUnits = await GetAllUnits(unitsCount, cancellationToken);
+            var allUnits = await _publicApiService.GetAllUnits(cancellationToken);
 
             await AboutNewUnits(allUnits, cancellationToken);
 
             await _globalApiService.UpdateUnitsCountSnapshot(cancellationToken);
-            await _snapshotsService.UpdateAllUnitsSnapshot(allUnits, cancellationToken);
+            await _publicApiService.UpdateAllUnitsSnapshot(allUnits, cancellationToken);
         }
         catch (Exception e)
         {
@@ -220,39 +216,6 @@ public class UnitsService : CheckAndNotifyService
         return unitsCountBrands.ToDictionary(b => b.Brand, b => b.Countries.ToList());
     }
 
-    private async Task<AllUnitsDictionary> GetAllUnits(BrandListTotalUnitCountListModel globalApiUnitsCount, CancellationToken cancellationToken)
-    {
-        var allUnits = new AllUnitsDictionary();
-        var brands = globalApiUnitsCount.Brands.Select(b => b.Brand).ToList();
-
-        foreach (var brand in brands)
-        {
-            allUnits.Add(brand, new Dictionary<UnitCountModel, IEnumerable<UnitInfo>>());
-            var countriesOfBrand = globalApiUnitsCount
-                .Brands.First(b => b.Brand == brand).Countries;
-
-            foreach (var country in countriesOfBrand)
-            {
-                var publicApiUnitInfo = await _publicApiClient.UnitInfo(brand, country.CountryCode, cancellationToken);
-                var filteredPublicApiUnitInfo = publicApiUnitInfo.Where(u => u.DepartmentState == DepartmentState.Open &&
-                                          u.State == UnitState.Open &&
-                                          u.Type == UnitType.Pizzeria).ToArray();
-
-                var departmentsTasks = filteredPublicApiUnitInfo.Select(u => u.DepartmentId).Distinct().Select(id =>
-                    _publicApiClient.GetDepartmentById(brand, country.CountryCode, id, cancellationToken));
-
-                var publicAPiDepartments = await Task.WhenAll(departmentsTasks);
-
-                var filteredPublicApiDepartmentsIds = publicAPiDepartments.Where(d => d.Type == DepartmentType.Department).Select(d => d.Id).Distinct();
-                var filteredPublicApiUnitsByPublicApiDepartments = filteredPublicApiUnitInfo.Where(u => filteredPublicApiDepartmentsIds.Contains(u.DepartmentId));
-
-                allUnits[brand].Add(country, filteredPublicApiUnitsByPublicApiDepartments);
-            }
-        }
-
-        return allUnits;
-    }
-
     internal async Task AboutNewUnits(AllUnitsDictionary allUnits, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start AboutNewUnits");
@@ -273,7 +236,7 @@ public class UnitsService : CheckAndNotifyService
             foreach (var country in countriesOfBrand)
             {
                 var unitsList = allUnitsAtBrand.GetValueOrDefault(country);
-                var unitsListSnapshot = await _snapshotsService.GetUnitInfoOfBrandAtCountrySnapshot(brand, country.CountryId, cancellationToken);
+                var unitsListSnapshot = await _publicApiService.GetUnitInfoOfBrandAtCountrySnapshot(brand, country.CountryId, cancellationToken);
 
                 await CheckUnitsOfBrandAtCountryAndNotify(unitsList, unitsListSnapshot, brand, country.CountryCode, restaurantsAtBrand, totalOverall, cancellationToken);
             }
