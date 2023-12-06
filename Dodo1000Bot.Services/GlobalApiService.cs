@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Services;
@@ -12,17 +13,19 @@ public class GlobalApiService : IGlobalApiService
     private readonly ILogger<GlobalApiService> _log;
     private readonly IGlobalApiClient _globalApiClient;
     private readonly ISnapshotsRepository _snapshotsRepository;
+    private readonly IMemoryCache _memoryCache;
 
     public GlobalApiService(
         ILogger<GlobalApiService> log, 
         IGlobalApiClient globalApiClient, 
-        ISnapshotsRepository snapshotsRepository)
+        ISnapshotsRepository snapshotsRepository, IMemoryCache memoryCache)
     {
         _log = log;
         _globalApiClient = globalApiClient;
         _snapshotsRepository = snapshotsRepository;
+        _memoryCache = memoryCache;
     }
-    
+
     public async Task CreateUnitsCountSnapshotIfNotExists(CancellationToken cancellationToken)
     {
         try
@@ -35,7 +38,7 @@ public class GlobalApiService : IGlobalApiService
                 return;
             }
 
-            await GetUnitsCount(cancellationToken);
+            await UpdateUnitsCountSnapshot(cancellationToken);
         }
         catch (Exception e)
         {
@@ -45,8 +48,8 @@ public class GlobalApiService : IGlobalApiService
 
     public async Task<BrandListTotalUnitCountListModel> GetUnitsCount(CancellationToken cancellationToken)
     {
-        var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
-
+        var cacheName = nameof(_globalApiClient.UnitsCount);
+        var unitsCount = await _memoryCache.GetOrCreate(cacheName, _ => _globalApiClient.UnitsCount(cancellationToken));
         return unitsCount;
     }
 
@@ -61,7 +64,7 @@ public class GlobalApiService : IGlobalApiService
 
     public async Task UpdateUnitsCountSnapshot(CancellationToken cancellationToken)
     {
-        var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
+        var unitsCount = await GetUnitsCount(cancellationToken);
 
         var snapshotName = nameof(_globalApiClient.UnitsCount);
         await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
@@ -74,5 +77,7 @@ public class GlobalApiService : IGlobalApiService
 
         await _snapshotsRepository.Save(newSnapshot, cancellationToken);
         _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
+        
+        _memoryCache.Remove(snapshotName);
     }
 }
