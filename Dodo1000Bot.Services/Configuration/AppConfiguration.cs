@@ -6,8 +6,6 @@
 
         public DialogflowConfiguration Dialogflow { get; set; }
 
-        public RedisConfiguration Redis { get; set; }
-
         public UnitsJobConfiguration UnitsJob { get; set; }
 
         public StatisticsJobConfiguration StatisticsJob { get; set; }

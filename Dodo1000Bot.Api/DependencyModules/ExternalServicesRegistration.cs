@@ -5,10 +5,8 @@ using Dodo1000Bot.Services.Clients;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Dialogflow.V2;
 using Dodo1000Bot.Services.Configuration;
-using GranSteL.Helpers.Redis;
 using Grpc.Auth;
 using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
 
 namespace Dodo1000Bot.Api.DependencyModules
 {
@@ -17,10 +15,6 @@ namespace Dodo1000Bot.Api.DependencyModules
         internal static void AddExternalServices(this IServiceCollection services, AppConfiguration configuration)
         {
             services.AddSingleton<SessionsClient>(RegisterDialogflowSessionsClient);
-
-            services.AddSingleton<IDatabase>(RegisterRedisClient);
-
-            services.AddSingleton<IRedisCacheService>(RegisterCacheService);
 
             services.AddHttpClient<IGlobalApiClient, GlobalApiClient>(configuration.GlobalApiEndpoint, 
                 nameof(GlobalApiClient));
@@ -45,28 +39,6 @@ namespace Dodo1000Bot.Api.DependencyModules
             var client = clientBuilder.Build();
 
             return client;
-        }
-
-        private static IDatabase RegisterRedisClient(IServiceProvider provider)
-        {
-            var configuration = provider.GetService<RedisConfiguration>();
-
-            var redisClient = ConnectionMultiplexer.Connect(configuration.ConnectionString);
-
-            var dataBase = redisClient.GetDatabase();
-
-            return dataBase;
-        }
-
-        private static RedisCacheService RegisterCacheService(IServiceProvider provider)
-        {
-            var configuration = provider.GetService<RedisConfiguration>();
-
-            var db = provider.GetService<IDatabase>();
-
-            var service = new RedisCacheService(db, configuration.KeyPrefix);
-
-            return service;
         }
     }
 }
