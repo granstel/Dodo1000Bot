@@ -14,6 +14,7 @@ namespace Dodo1000Bot.Api.DependencyModules
             services.AddTransient<ICountriesService, CountriesService>();
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<IGlobalApiService, GlobalApiService>();
+            services.AddTransient<IPublicApiService, PublicApiService>();
 
             services.AddScoped<IDialogflowService, DialogflowService>();
         }

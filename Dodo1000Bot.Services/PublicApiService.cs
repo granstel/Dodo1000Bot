@@ -8,6 +8,7 @@ using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
 using Dodo1000Bot.Models.PublicApi;
 using Dodo1000Bot.Services.Clients;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Services;
@@ -20,22 +21,25 @@ public class PublicApiService : IPublicApiService
     private readonly IPublicApiClient _publicApiClient;
     private readonly IGlobalApiService _globalApiService;
     private readonly ISnapshotsRepository _snapshotsRepository;
+    private readonly IMemoryCache _memoryCache;
 
     public PublicApiService(
         ILogger<PublicApiService> log, 
         IPublicApiClient publicApiClient, 
         IGlobalApiService globalApiService, 
-        ISnapshotsRepository snapshotsRepository)
+        ISnapshotsRepository snapshotsRepository, 
+        IMemoryCache memoryCache)
     {
         _log = log;
         _publicApiClient = publicApiClient;
         _globalApiService = globalApiService;
         _snapshotsRepository = snapshotsRepository;
+        _memoryCache = memoryCache;
     }
 
-    private string GetUnitInfoOfBrandAtCountrySnapshotName(Brands brand, int countryId)
+    private string GetUnitInfoOfBrandAtCountrySnapshotName(Brands brand, string countryCode)
     {
-        return $"{nameof(_publicApiClient.UnitInfo)}{brand}{countryId}";
+        return $"{nameof(_publicApiClient.UnitInfo)}{brand}{countryCode}";
     }
 
     public async Task CreateAllUnitsSnapshotIfNotExists(CancellationToken cancellationToken)
@@ -50,7 +54,7 @@ public class PublicApiService : IPublicApiService
                 return;
             }
 
-            var allUnitsInfo = await GetAllUnits(cancellationToken);
+            var allUnitsInfo = await GetAllUnits(unitsCountSnapshot.Brands.ToList(), cancellationToken);
             await UpdateAllUnitsSnapshot(allUnitsInfo, cancellationToken);
         }
         catch (Exception e)
@@ -59,16 +63,15 @@ public class PublicApiService : IPublicApiService
         }
     }
 
-    public async Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, int countryId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, string countryCode,
+        CancellationToken cancellationToken)
     {
-        var snapshotName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, countryId);
+        var snapshotName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, countryCode);
         var unitsSnapshot =
             await _snapshotsRepository.Get<IEnumerable<UnitInfo>>(snapshotName, cancellationToken);
 
         return unitsSnapshot?.Data;
     }
-    
-    
 
     public async Task UpdateAllUnitsSnapshot(AllUnitsDictionary allUnits, CancellationToken cancellationToken)
     {
@@ -81,45 +84,54 @@ public class PublicApiService : IPublicApiService
 
             foreach (var country in countries)
             {
-                var snapshotName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, country.CountryId);
+                var snapshotName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, country.CountryCode);
                 var unitsList = allUnitsAtBrand.GetValueOrDefault(country);
                 await UpdateSnapshot(snapshotName, unitsList, cancellationToken);
             }
         }
     }
     
-    public async Task<AllUnitsDictionary> GetAllUnits(CancellationToken cancellationToken)
+    public async Task<AllUnitsDictionary> GetAllUnits(IList<BrandTotalUnitCountListModel> brands, CancellationToken cancellationToken)
     {
-        var globalApiUnitsCount = await _globalApiService.GetUnitsCount(cancellationToken);
         var allUnits = new AllUnitsDictionary();
-        var brands = globalApiUnitsCount.Brands.Select(b => b.Brand).ToList();
+        var brandsList = brands.Select(b => b.Brand).ToList();
 
-        foreach (var brand in brands)
+        foreach (var brand in brandsList)
         {
             allUnits.Add(brand, new Dictionary<UnitCountModel, IEnumerable<UnitInfo>>());
-            var countriesOfBrand = globalApiUnitsCount
-                .Brands.First(b => b.Brand == brand).Countries;
+            var countriesOfBrand = brands.First(b => b.Brand == brand).Countries;
 
             foreach (var country in countriesOfBrand)
             {
-                var publicApiUnitInfo = await _publicApiClient.UnitInfo(brand, country.CountryCode, cancellationToken);
-                var filteredPublicApiUnitInfo = publicApiUnitInfo.Where(u => u.DepartmentState == DepartmentState.Open &&
-                                                                             u.State == UnitState.Open &&
-                                                                             u.Type == UnitType.Pizzeria).ToArray();
+                var countryCode = country.CountryCode;
+                var cacheName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, countryCode);
 
-                var departmentsTasks = filteredPublicApiUnitInfo.Select(u => u.DepartmentId).Distinct().Select(id =>
-                    _publicApiClient.GetDepartmentById(brand, country.CountryCode, id, cancellationToken));
+                var unitsInfoOfBrandAtCountry =
+                    await _memoryCache.GetOrCreate(cacheName, _ => GetUnitsInfoOfBrandAtCountry(brand, countryCode, cancellationToken));
 
-                var publicAPiDepartments = await Task.WhenAll(departmentsTasks);
-
-                var filteredPublicApiDepartmentsIds = publicAPiDepartments.Where(d => d.Type == DepartmentType.Department).Select(d => d.Id).Distinct();
-                var filteredPublicApiUnitsByPublicApiDepartments = filteredPublicApiUnitInfo.Where(u => filteredPublicApiDepartmentsIds.Contains(u.DepartmentId));
-
-                allUnits[brand].Add(country, filteredPublicApiUnitsByPublicApiDepartments);
+                allUnits[brand].Add(country, unitsInfoOfBrandAtCountry);
             }
         }
 
         return allUnits;
+    }
+
+    private async Task<IEnumerable<UnitInfo>> GetUnitsInfoOfBrandAtCountry(Brands brand, string countryCode, CancellationToken cancellationToken)
+    {
+        var publicApiUnitInfo = await _publicApiClient.UnitInfo(brand, countryCode, cancellationToken);
+        var filteredPublicApiUnitInfo = publicApiUnitInfo.Where(u => u.DepartmentState == DepartmentState.Open &&
+                                                                     u.State == UnitState.Open &&
+                                                                     u.Type == UnitType.Pizzeria).ToArray();
+
+        var departmentsTasks = filteredPublicApiUnitInfo.Select(u => u.DepartmentId).Distinct().Select(id =>
+            _publicApiClient.GetDepartmentById(brand, countryCode, id, cancellationToken));
+
+        var publicAPiDepartments = await Task.WhenAll(departmentsTasks);
+
+        var filteredPublicApiDepartmentsIds = publicAPiDepartments.Where(d => d.Type == DepartmentType.Department).Select(d => d.Id).Distinct();
+        var filteredPublicApiUnitsByPublicApiDepartments = filteredPublicApiUnitInfo.Where(u => filteredPublicApiDepartmentsIds.Contains(u.DepartmentId));
+
+        return filteredPublicApiUnitsByPublicApiDepartments;
     }
 
     private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
@@ -129,5 +141,7 @@ public class PublicApiService : IPublicApiService
 
         await _snapshotsRepository.Save(newSnapshot, cancellationToken);
         _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
+        
+        _memoryCache.Remove(snapshotName);
     }
 }

@@ -12,7 +12,8 @@ using AllUnitsDictionary = Dictionary<Brands, Dictionary<UnitCountModel, IEnumer
 public interface IPublicApiService
 {
     Task CreateAllUnitsSnapshotIfNotExists(CancellationToken cancellationToken);
-    Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, int countryId, CancellationToken cancellationToken);
+    Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, string countryCode,
+        CancellationToken cancellationToken);
     Task UpdateAllUnitsSnapshot(Dictionary<Brands, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>> allUnits, CancellationToken cancellationToken);
-    Task<AllUnitsDictionary> GetAllUnits(CancellationToken cancellationToken);
+    Task<AllUnitsDictionary> GetAllUnits(IList<BrandTotalUnitCountListModel> brands, CancellationToken cancellationToken);
 }

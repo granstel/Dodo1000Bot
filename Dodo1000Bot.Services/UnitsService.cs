@@ -52,7 +52,7 @@ public class UnitsService : CheckAndNotifyService
             _log.LogInformation("unitsCountSnapshot: {unitsCountSnapshot}", unitsCountSnapshot.Serialize());
             await AboutNewCountries(unitsCount, unitsCountSnapshot, cancellationToken);
 
-            var allUnits = await _publicApiService.GetAllUnits(cancellationToken);
+            var allUnits = await _publicApiService.GetAllUnits(unitsCountSnapshot.Brands.ToList(), cancellationToken);
 
             await AboutNewUnits(allUnits, cancellationToken);
 
@@ -236,7 +236,7 @@ public class UnitsService : CheckAndNotifyService
             foreach (var country in countriesOfBrand)
             {
                 var unitsList = allUnitsAtBrand.GetValueOrDefault(country);
-                var unitsListSnapshot = await _publicApiService.GetUnitInfoOfBrandAtCountrySnapshot(brand, country.CountryId, cancellationToken);
+                var unitsListSnapshot = await _publicApiService.GetUnitInfoOfBrandAtCountrySnapshot(brand, country.CountryCode, cancellationToken);
 
                 await CheckUnitsOfBrandAtCountryAndNotify(unitsList, unitsListSnapshot, brand, country.CountryCode, restaurantsAtBrand, totalOverall, cancellationToken);
             }
