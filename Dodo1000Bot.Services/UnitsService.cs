@@ -219,7 +219,7 @@ public class UnitsService : CheckAndNotifyService
     internal async Task AboutNewUnits(AllUnitsDictionary allUnits, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start AboutNewUnits");
-
+        // TODO: get brands from global API endpoint
         var brands = allUnits.Keys;
 
         var totalOverall = allUnits.Sum(b => b.Value.Sum(c => c.Value.Count()));
@@ -227,6 +227,7 @@ public class UnitsService : CheckAndNotifyService
         foreach (var brand in brands)
         {
             Dictionary<UnitCountModel, IEnumerable<UnitInfo>> allUnitsAtBrand = allUnits.GetValueOrDefault(brand);
+            // TODO: get countries from global API endpoint
             var countriesOfBrand = allUnitsAtBrand.Keys;
 
             _log.LogInformation("Brand {brand}", brand);
