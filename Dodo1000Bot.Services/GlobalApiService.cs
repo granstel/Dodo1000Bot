@@ -18,7 +18,8 @@ public class GlobalApiService : IGlobalApiService
     public GlobalApiService(
         ILogger<GlobalApiService> log, 
         IGlobalApiClient globalApiClient, 
-        ISnapshotsRepository snapshotsRepository, IMemoryCache memoryCache)
+        ISnapshotsRepository snapshotsRepository, 
+        IMemoryCache memoryCache)
     {
         _log = log;
         _globalApiClient = globalApiClient;
