@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 [assembly: InternalsVisibleTo("Dodo1000Bot.Services.Tests")]
 
 namespace Dodo1000Bot.Services;
-using AllUnitsDictionary = Dictionary<string, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>>;
+using AllUnitsDictionary = Dictionary<string, Dictionary<Country, IEnumerable<UnitInfo>>>;
 public class UnitsService : CheckAndNotifyService
 {
     private readonly ILogger<UnitsService> _log;
@@ -52,7 +52,7 @@ public class UnitsService : CheckAndNotifyService
             _log.LogInformation("unitsCountSnapshot: {unitsCountSnapshot}", unitsCountSnapshot.Serialize());
             await AboutNewCountries(unitsCount, unitsCountSnapshot, cancellationToken);
 
-            var allUnits = await _publicApiService.GetAllUnits(unitsCountSnapshot.Brands.ToList(), cancellationToken);
+            var allUnits = await _publicApiService.GetAllUnits(cancellationToken);
 
             await AboutNewUnits(allUnits, cancellationToken);
 
@@ -226,7 +226,7 @@ public class UnitsService : CheckAndNotifyService
 
         foreach (var brand in brandsNames)
         {
-            Dictionary<UnitCountModel, IEnumerable<UnitInfo>> allUnitsAtBrand = allUnits.GetValueOrDefault(brand);
+            Dictionary<Country, IEnumerable<UnitInfo>> allUnitsAtBrand = allUnits.GetValueOrDefault(brand);
             // TODO: get countries from global API endpoint
             var countriesOfBrand = allUnitsAtBrand.Keys;
 
@@ -237,9 +237,9 @@ public class UnitsService : CheckAndNotifyService
             foreach (var country in countriesOfBrand)
             {
                 var unitsList = allUnitsAtBrand.GetValueOrDefault(country);
-                var unitsListSnapshot = await _publicApiService.GetUnitInfoOfBrandAtCountrySnapshot(brand, country.CountryCode, cancellationToken);
+                var unitsListSnapshot = await _publicApiService.GetUnitInfoOfBrandAtCountrySnapshot(brand, country.Code, cancellationToken);
 
-                await CheckUnitsOfBrandAtCountryAndNotify(unitsList, unitsListSnapshot, brand, country.CountryCode, restaurantsAtBrand, totalOverall, cancellationToken);
+                await CheckUnitsOfBrandAtCountryAndNotify(unitsList, unitsListSnapshot, brand, country.Code, restaurantsAtBrand, totalOverall, cancellationToken);
             }
         }
         _log.LogInformation("Finish AboutNewUnits");

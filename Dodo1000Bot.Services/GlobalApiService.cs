@@ -72,7 +72,10 @@ public class GlobalApiService : IGlobalApiService
         await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
     }
 
+    // TODO: cache
     public Task<IEnumerable<Brand>> GetBrands(CancellationToken cancellationToken) => _globalApiClient.GetBrands(cancellationToken);
+    // TODO: cache
+    public Task<IEnumerable<Country>> GetBrandCountries(string brand, CancellationToken cancellationToken) => _globalApiClient.GetBrandCountries(brand, cancellationToken);
 
     private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
     {

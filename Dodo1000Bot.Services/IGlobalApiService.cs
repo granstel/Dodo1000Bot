@@ -12,4 +12,5 @@ public interface IGlobalApiService
     Task<BrandListTotalUnitCountListModel> GetUnitsCountSnapshot(CancellationToken cancellationToken);
     Task UpdateUnitsCountSnapshot(CancellationToken cancellationToken);
     Task<IEnumerable<Brand>> GetBrands(CancellationToken cancellationToken);
+    Task<IEnumerable<Country>> GetBrandCountries(string brand, CancellationToken cancellationToken);
 }

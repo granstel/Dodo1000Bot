@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
 using Dodo1000Bot.Models.PublicApi;
@@ -13,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Services;
 
-using AllUnitsDictionary = Dictionary<string, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>>;
+using AllUnitsDictionary = Dictionary<string, Dictionary<Country, IEnumerable<UnitInfo>>>;
 
 public class PublicApiService : IPublicApiService
 {
@@ -54,7 +53,7 @@ public class PublicApiService : IPublicApiService
                 return;
             }
 
-            var allUnitsInfo = await GetAllUnits(unitsCountSnapshot.Brands.ToList(), cancellationToken);
+            var allUnitsInfo = await GetAllUnits(cancellationToken);
             await UpdateAllUnitsSnapshot(allUnitsInfo, cancellationToken);
         }
         catch (Exception e)
@@ -79,33 +78,33 @@ public class PublicApiService : IPublicApiService
 
         foreach (var brand in brands)
         {
-            Dictionary<UnitCountModel, IEnumerable<UnitInfo>> allUnitsAtBrand = allUnits.GetValueOrDefault(brand);
+            Dictionary<Country, IEnumerable<UnitInfo>> allUnitsAtBrand = allUnits.GetValueOrDefault(brand);
             var countries = allUnitsAtBrand.Keys;
 
             foreach (var country in countries)
             {
-                var snapshotName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, country.CountryCode);
+                var snapshotName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, country.Code);
                 var unitsList = allUnitsAtBrand.GetValueOrDefault(country);
                 await UpdateSnapshot(snapshotName, unitsList, cancellationToken);
             }
         }
     }
     
-    public async Task<AllUnitsDictionary> GetAllUnits(IList<BrandTotalUnitCountListModel> brands1, CancellationToken cancellationToken)
+    public async Task<AllUnitsDictionary> GetAllUnits(CancellationToken cancellationToken)
     {
         var allUnits = new AllUnitsDictionary();
         
-        var brands2 = await _globalApiService.GetBrands(cancellationToken);
-        var brandsNames = brands2.Select(b => b.Name).ToList();
+        var brands = await _globalApiService.GetBrands(cancellationToken);
+        var brandsNames = brands.Select(b => b.Name).ToList();
 
         foreach (var brand in brandsNames)
         {
-            allUnits.Add(brand, new Dictionary<UnitCountModel, IEnumerable<UnitInfo>>());
-            var countriesOfBrand = brands1.First(b => b.Brand == brand).Countries;
+            allUnits.Add(brand, new Dictionary<Country, IEnumerable<UnitInfo>>());
+            var countriesOfBrand = await _globalApiService.GetBrandCountries(brand, cancellationToken);
 
             foreach (var country in countriesOfBrand)
             {
-                var countryCode = country.CountryCode;
+                var countryCode = country.Code;
                 var cacheName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, countryCode);
 
                 var unitsInfoOfBrandAtCountry =
@@ -118,7 +117,7 @@ public class PublicApiService : IPublicApiService
         return allUnits;
     }
 
-    private async Task<IEnumerable<UnitInfo>> GetUnitsInfoOfBrandAtCountry(Brands brand, string countryCode, CancellationToken cancellationToken)
+    private async Task<IEnumerable<UnitInfo>> GetUnitsInfoOfBrandAtCountry(string brand, string countryCode, CancellationToken cancellationToken)
     {
         var publicApiUnitInfo = await _publicApiClient.UnitInfo(brand, countryCode, cancellationToken);
         var filteredPublicApiUnitInfo = publicApiUnitInfo.Where(u => u.DepartmentState == DepartmentState.Open &&

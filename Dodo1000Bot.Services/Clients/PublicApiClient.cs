@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.PublicApi;
 using Dodo1000Bot.Services.Configuration;
 using Dodo1000Bot.Services.Extensions;
@@ -23,7 +22,7 @@ public class PublicApiClient : IPublicApiClient
         _serializerOptions = serializerOptions;
     }
 
-    public async Task<UnitInfo[]> UnitInfo(Brands brand, string countryCode, CancellationToken cancellationToken)
+    public async Task<UnitInfo[]> UnitInfo(string brand, string countryCode, CancellationToken cancellationToken)
     {
         var endpoint = _endpoints.GetValueOrDefault(brand);
         var url = $"{endpoint}{countryCode}/api/v1/unitinfo";
@@ -33,7 +32,8 @@ public class PublicApiClient : IPublicApiClient
         return unitsInfo;
     }
 
-    public async Task<Department> GetDepartmentById(Brands brand, string countryCode, int departmentId, CancellationToken cancellationToken)
+    public async Task<Department> GetDepartmentById(string brand, string countryCode, int departmentId,
+        CancellationToken cancellationToken)
     {
         var endpoint = _endpoints.GetValueOrDefault(brand);
         var url = $"{endpoint}{countryCode}/api/v1/GetDepartmentById/{departmentId}";

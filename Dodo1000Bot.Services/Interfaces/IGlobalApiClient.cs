@@ -14,5 +14,7 @@ namespace Dodo1000Bot.Services
             CancellationToken cancellationToken);
 
         Task<IEnumerable<Brand>> GetBrands(CancellationToken cancellationToken);
+
+        Task<IEnumerable<Country>> GetBrandCountries(string brand, CancellationToken cancellationToken);
     }
 }
