@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Services;
 
-using AllUnitsDictionary = Dictionary<Brands, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>>;
+using AllUnitsDictionary = Dictionary<string, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>>;
 
 public class PublicApiService : IPublicApiService
 {
@@ -37,7 +37,7 @@ public class PublicApiService : IPublicApiService
         _memoryCache = memoryCache;
     }
 
-    private string GetUnitInfoOfBrandAtCountrySnapshotName(Brands brand, string countryCode)
+    private string GetUnitInfoOfBrandAtCountrySnapshotName(string brand, string countryCode)
     {
         return $"{nameof(_publicApiClient.UnitInfo)}{brand}{countryCode}";
     }
@@ -63,7 +63,7 @@ public class PublicApiService : IPublicApiService
         }
     }
 
-    public async Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, string countryCode,
+    public async Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(string brand, string countryCode,
         CancellationToken cancellationToken)
     {
         var snapshotName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, countryCode);
@@ -91,15 +91,17 @@ public class PublicApiService : IPublicApiService
         }
     }
     
-    public async Task<AllUnitsDictionary> GetAllUnits(IList<BrandTotalUnitCountListModel> brands, CancellationToken cancellationToken)
+    public async Task<AllUnitsDictionary> GetAllUnits(IList<BrandTotalUnitCountListModel> brands1, CancellationToken cancellationToken)
     {
         var allUnits = new AllUnitsDictionary();
-        var brandsList = brands.Select(b => b.Brand).ToList();
+        
+        var brands2 = await _globalApiService.GetBrands(cancellationToken);
+        var brandsNames = brands2.Select(b => b.Name).ToList();
 
-        foreach (var brand in brandsList)
+        foreach (var brand in brandsNames)
         {
             allUnits.Add(brand, new Dictionary<UnitCountModel, IEnumerable<UnitInfo>>());
-            var countriesOfBrand = brands.First(b => b.Brand == brand).Countries;
+            var countriesOfBrand = brands1.First(b => b.Brand == brand).Countries;
 
             foreach (var country in countriesOfBrand)
             {

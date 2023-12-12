@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.GlobalApi;
 
@@ -10,4 +11,5 @@ public interface IGlobalApiService
     Task<BrandListTotalUnitCountListModel> GetUnitsCount(CancellationToken cancellationToken);
     Task<BrandListTotalUnitCountListModel> GetUnitsCountSnapshot(CancellationToken cancellationToken);
     Task UpdateUnitsCountSnapshot(CancellationToken cancellationToken);
+    Task<IEnumerable<Brand>> GetBrands(CancellationToken cancellationToken);
 }

@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 [assembly: InternalsVisibleTo("Dodo1000Bot.Services.Tests")]
 
 namespace Dodo1000Bot.Services;
-using AllUnitsDictionary = Dictionary<Brands, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>>;
+using AllUnitsDictionary = Dictionary<string, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>>;
 public class UnitsService : CheckAndNotifyService
 {
     private readonly ILogger<UnitsService> _log;
@@ -219,12 +219,12 @@ public class UnitsService : CheckAndNotifyService
     internal async Task AboutNewUnits(AllUnitsDictionary allUnits, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start AboutNewUnits");
-        // TODO: get brands from global API endpoint
-        var brands = allUnits.Keys;
+        var brands = await _globalApiService.GetBrands(cancellationToken);
+        var brandsNames = brands.Select(b => b.Name).ToList();
 
         var totalOverall = allUnits.Sum(b => b.Value.Sum(c => c.Value.Count()));
 
-        foreach (var brand in brands)
+        foreach (var brand in brandsNames)
         {
             Dictionary<UnitCountModel, IEnumerable<UnitInfo>> allUnitsAtBrand = allUnits.GetValueOrDefault(brand);
             // TODO: get countries from global API endpoint
@@ -248,7 +248,7 @@ public class UnitsService : CheckAndNotifyService
     internal async Task CheckUnitsOfBrandAtCountryAndNotify(
         IEnumerable<UnitInfo> unitsList, 
         IEnumerable<UnitInfo> unitsListSnapshot, 
-        Brands brand,
+        string brand,
         string countryCode,
         int restaurantsCountAtBrand, 
         int totalOverall, 

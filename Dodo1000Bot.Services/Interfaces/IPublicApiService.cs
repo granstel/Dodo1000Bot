@@ -7,13 +7,13 @@ using Dodo1000Bot.Models.PublicApi;
 
 namespace Dodo1000Bot.Services;
 
-using AllUnitsDictionary = Dictionary<Brands, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>>;
+using AllUnitsDictionary = Dictionary<string, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>>;
 
 public interface IPublicApiService
 {
     Task CreateAllUnitsSnapshotIfNotExists(CancellationToken cancellationToken);
-    Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(Brands brand, string countryCode,
+    Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(string brand, string countryCode,
         CancellationToken cancellationToken);
-    Task UpdateAllUnitsSnapshot(Dictionary<Brands, Dictionary<UnitCountModel, IEnumerable<UnitInfo>>> allUnits, CancellationToken cancellationToken);
-    Task<AllUnitsDictionary> GetAllUnits(IList<BrandTotalUnitCountListModel> brands, CancellationToken cancellationToken);
+    Task UpdateAllUnitsSnapshot(AllUnitsDictionary allUnits, CancellationToken cancellationToken);
+    Task<AllUnitsDictionary> GetAllUnits(IList<BrandTotalUnitCountListModel> brands1, CancellationToken cancellationToken);
 }

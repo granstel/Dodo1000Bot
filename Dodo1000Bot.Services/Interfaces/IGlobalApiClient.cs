@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
@@ -12,5 +13,6 @@ namespace Dodo1000Bot.Services
         Task<BrandData<UnitListModel>> UnitsOfBrandAtCountry(Brands brand, int countryId,
             CancellationToken cancellationToken);
 
+        Task<IEnumerable<Brand>> GetBrands(CancellationToken cancellationToken);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.Domain;
@@ -70,6 +71,8 @@ public class GlobalApiService : IGlobalApiService
         var snapshotName = nameof(_globalApiClient.UnitsCount);
         await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
     }
+
+    public Task<IEnumerable<Brand>> GetBrands(CancellationToken cancellationToken) => _globalApiClient.GetBrands(cancellationToken);
 
     private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
     {

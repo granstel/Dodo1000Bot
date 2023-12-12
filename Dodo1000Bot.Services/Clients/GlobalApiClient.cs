@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
@@ -35,6 +36,15 @@ namespace Dodo1000Bot.Services.Clients
             var unitsCount = await _httpClient.GetAsync<BrandData<UnitListModel>>(url, _serializerOptions, cancellationToken);
 
             return unitsCount;
+        }
+
+        public async Task<IEnumerable<Brand>> GetBrands(CancellationToken cancellationToken)
+        {
+            var url = "brands";
+
+            var brands = await _httpClient.GetAsync<IEnumerable<Brand>>(url, _serializerOptions, cancellationToken);
+
+            return brands;
         }
     }
 }
