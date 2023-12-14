@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Microsoft.Extensions.Logging;
 
@@ -41,6 +42,8 @@ public class NotificationsService : INotificationsService
         {
             return;
         }
+
+        notifications = notifications.Where(n => n.Type != NotificationType.NewUnit).ToList();
 
         IEnumerable<Task<IEnumerable<PushedNotification>>> tasks = _notifyServices.Select(s => s.NotifyAbout(notifications, cancellationToken));
 
