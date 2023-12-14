@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
         {
             if (!Uri.TryCreate(endpointUrl, UriKind.Absolute, out Uri result))
             {
-                throw new ArgumentException($"Can't create Uri from {endpointName}. " +
+                throw new ArgumentException($"Can't create Uri from {typeof(TImplementation).Name}. " +
                                             $"Value: {endpointUrl}");
             }
 
