@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
@@ -43,10 +44,15 @@ public class NotificationsRepository : INotificationsRepository
                     ON n.Id = pn.notificationId
                   WHERE pn.id IS NULL", cancellationToken: cancellationToken));
 
-        var notifications = records.Select(r => new Notification(r.Type is NotificationType ? (NotificationType)r.Type : NotificationType.Custom)
+        
+        var notifications = records.Select(r =>
         {
-            Id = r.Id,
-            Payload = JsonSerializer.Deserialize<NotificationPayload>(r.Payload)
+            var type = Enum.Parse<NotificationType>(r.Type.ToString());
+            return new Notification(type)
+            {
+                Id = r.Id,
+                Payload = JsonSerializer.Deserialize<NotificationPayload>(r.Payload)
+            };
         }).ToImmutableArray();
 
         return notifications;
