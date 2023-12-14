@@ -9,12 +9,12 @@ namespace Dodo1000Bot.Api.DependencyModules
         {
             services.AddTransient<IConversationService, ConversationService>();
             services.AddTransient<INotificationsService, NotificationsService>();
-            services.AddTransient<UnitsService>();
+            services.AddScoped<UnitsService>();
             services.AddTransient<StatisticsService>();
             services.AddTransient<ICountriesService, CountriesService>();
             services.AddTransient<IUsersService, UsersService>();
-            services.AddTransient<IGlobalApiService, GlobalApiService>();
-            services.AddTransient<IPublicApiService, PublicApiService>();
+            services.AddScoped<IGlobalApiService, GlobalApiService>();
+            services.AddScoped<IPublicApiService, PublicApiService>();
 
             services.AddScoped<IDialogflowService, DialogflowService>();
         }

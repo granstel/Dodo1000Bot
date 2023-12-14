@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Services;
 
-public class GlobalApiService : IGlobalApiService
+public class GlobalApiService : IGlobalApiService, IAsyncDisposable
 {
     private readonly ILogger<GlobalApiService> _log;
     private readonly IGlobalApiClient _globalApiClient;
@@ -97,5 +97,10 @@ public class GlobalApiService : IGlobalApiService
         _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
         
         _memoryCache.Remove(snapshotName);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await UpdateUnitsCountSnapshot(default);
     }
 }

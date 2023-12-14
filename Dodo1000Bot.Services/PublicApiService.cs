@@ -14,7 +14,7 @@ namespace Dodo1000Bot.Services;
 
 using AllUnitsDictionary = Dictionary<string, Dictionary<Country, IEnumerable<UnitInfo>>>;
 
-public class PublicApiService : IPublicApiService
+public class PublicApiService : IPublicApiService, IAsyncDisposable
 {
     private readonly ILogger<PublicApiService> _log;
     private readonly IPublicApiClient _publicApiClient;
@@ -110,8 +110,8 @@ public class PublicApiService : IPublicApiService
             foreach (var country in countriesOfBrand)
             {
                 var countryCode = country.Code;
-                var cacheName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, countryCode);
 
+                var cacheName = GetUnitInfoOfBrandAtCountrySnapshotName(brand, countryCode);
                 var unitsInfoOfBrandAtCountry =
                     await _memoryCache.GetOrCreate(cacheName, _ => GetUnitsInfoOfBrandAtCountry(brand, countryCode, cancellationToken));
 
@@ -149,5 +149,10 @@ public class PublicApiService : IPublicApiService
         _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
         
         _memoryCache.Remove(snapshotName);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await UpdateAllUnitsSnapshot(default);
     }
 }
