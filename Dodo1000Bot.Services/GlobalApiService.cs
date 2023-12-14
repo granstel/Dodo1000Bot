@@ -32,7 +32,7 @@ public class GlobalApiService : IGlobalApiService
     {
         try
         {
-            var unitsCountSnapshot = await GetUnitsCountSnapshot(cancellationToken);
+            var unitsCountSnapshot = await UnitsCountSnapshot(cancellationToken);
 
             if (unitsCountSnapshot is not null)
             {
@@ -48,14 +48,14 @@ public class GlobalApiService : IGlobalApiService
         }
     }
 
-    public async Task<BrandListTotalUnitCountListModel> GetUnitsCount(CancellationToken cancellationToken)
+    public async Task<BrandListTotalUnitCountListModel> UnitsCount(CancellationToken cancellationToken)
     {
         var cacheName = nameof(_globalApiClient.UnitsCount);
         var unitsCount = await _memoryCache.GetOrCreate(cacheName, _ => _globalApiClient.UnitsCount(cancellationToken));
         return unitsCount;
     }
 
-    public async Task<BrandListTotalUnitCountListModel> GetUnitsCountSnapshot(CancellationToken cancellationToken)
+    public async Task<BrandListTotalUnitCountListModel> UnitsCountSnapshot(CancellationToken cancellationToken)
     {
         var snapshotName = nameof(_globalApiClient.UnitsCount);
         var unitsCountSnapshot =
@@ -66,16 +66,27 @@ public class GlobalApiService : IGlobalApiService
 
     public async Task UpdateUnitsCountSnapshot(CancellationToken cancellationToken)
     {
-        var unitsCount = await GetUnitsCount(cancellationToken);
+        var unitsCount = await UnitsCount(cancellationToken);
 
         var snapshotName = nameof(_globalApiClient.UnitsCount);
         await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
     }
 
-    // TODO: cache
-    public Task<IEnumerable<Brand>> GetBrands(CancellationToken cancellationToken) => _globalApiClient.GetBrands(cancellationToken);
-    // TODO: cache
-    public Task<IEnumerable<Country>> GetBrandCountries(string brand, CancellationToken cancellationToken) => _globalApiClient.GetBrandCountries(brand, cancellationToken);
+    public async Task<IEnumerable<Brand>> GetBrands(CancellationToken cancellationToken)
+    {
+        var cacheName = nameof(_globalApiClient.GetBrands);
+        var brands = await _memoryCache.GetOrCreate(cacheName, _ => _globalApiClient.GetBrands(cancellationToken));
+
+        return brands;
+    }
+
+    public async Task<IEnumerable<Country>> GetBrandCountries(string brand, CancellationToken cancellationToken)
+    {
+        var cacheName = $"{nameof(_globalApiClient.GetBrandCountries)}{brand}";
+        var brandCountries = await _memoryCache.GetOrCreate(cacheName, _ => _globalApiClient.GetBrandCountries(brand, cancellationToken));
+
+        return brandCountries;
+    }
 
     private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
     {

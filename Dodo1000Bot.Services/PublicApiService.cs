@@ -45,7 +45,7 @@ public class PublicApiService : IPublicApiService
     {
         try
         {
-            var unitsCountSnapshot = await _globalApiService.GetUnitsCountSnapshot(cancellationToken);
+            var unitsCountSnapshot = await _globalApiService.UnitsCountSnapshot(cancellationToken);
 
             if (unitsCountSnapshot is null)
             {
@@ -53,8 +53,7 @@ public class PublicApiService : IPublicApiService
                 return;
             }
 
-            var allUnitsInfo = await GetAllUnits(cancellationToken);
-            await UpdateAllUnitsSnapshot(allUnitsInfo, cancellationToken);
+            await UpdateAllUnitsSnapshot(cancellationToken);
         }
         catch (Exception e)
         {
@@ -72,8 +71,9 @@ public class PublicApiService : IPublicApiService
         return unitsSnapshot?.Data;
     }
 
-    public async Task UpdateAllUnitsSnapshot(AllUnitsDictionary allUnits, CancellationToken cancellationToken)
+    public async Task UpdateAllUnitsSnapshot(CancellationToken cancellationToken)
     {
+        var allUnits = await AllUnits(cancellationToken);
         var brands = allUnits.Keys;
 
         foreach (var brand in brands)
@@ -89,11 +89,16 @@ public class PublicApiService : IPublicApiService
             }
         }
     }
-    
-    public async Task<AllUnitsDictionary> GetAllUnits(CancellationToken cancellationToken)
+
+    public async Task<AllUnitsDictionary> AllUnits(CancellationToken cancellationToken)
+    {
+        return await _memoryCache.GetOrCreate(nameof(AllUnits), _ => AllUnitsInternal(cancellationToken));
+    }
+
+    private async Task<AllUnitsDictionary> AllUnitsInternal(CancellationToken cancellationToken)
     {
         var allUnits = new AllUnitsDictionary();
-        
+
         var brands = await _globalApiService.GetBrands(cancellationToken);
         var brandsNames = brands.Select(b => b.Name).ToList();
 

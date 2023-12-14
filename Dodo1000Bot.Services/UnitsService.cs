@@ -41,23 +41,23 @@ public class UnitsService : CheckAndNotifyService
     {
         try
         {
-            var unitsCount = await _globalApiService.GetUnitsCount(cancellationToken);
+            var unitsCount = await _globalApiService.UnitsCount(cancellationToken);
             _log.LogInformation("unitsCount: {unitsCount}", unitsCount.Serialize());
             await AboutTotalOverall(unitsCount, cancellationToken);
             await AboutTotalAtBrands(unitsCount, cancellationToken);
             await AboutTotalAtCountries(unitsCount, cancellationToken);
             await AboutTotalCountriesAtBrands(unitsCount, cancellationToken);
 
-            var unitsCountSnapshot = await _globalApiService.GetUnitsCountSnapshot(cancellationToken);
+            var unitsCountSnapshot = await _globalApiService.UnitsCountSnapshot(cancellationToken);
             _log.LogInformation("unitsCountSnapshot: {unitsCountSnapshot}", unitsCountSnapshot.Serialize());
             await AboutNewCountries(unitsCount, unitsCountSnapshot, cancellationToken);
 
-            var allUnits = await _publicApiService.GetAllUnits(cancellationToken);
+            var allUnits = await _publicApiService.AllUnits(cancellationToken);
 
             await AboutNewUnits(allUnits, cancellationToken);
 
             await _globalApiService.UpdateUnitsCountSnapshot(cancellationToken);
-            await _publicApiService.UpdateAllUnitsSnapshot(allUnits, cancellationToken);
+            await _publicApiService.UpdateAllUnitsSnapshot(cancellationToken);
         }
         catch (Exception e)
         {

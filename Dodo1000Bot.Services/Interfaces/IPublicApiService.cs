@@ -13,6 +13,6 @@ public interface IPublicApiService
     Task CreateAllUnitsSnapshotIfNotExists(CancellationToken cancellationToken);
     Task<IEnumerable<UnitInfo>> GetUnitInfoOfBrandAtCountrySnapshot(string brand, string countryCode,
         CancellationToken cancellationToken);
-    Task UpdateAllUnitsSnapshot(AllUnitsDictionary allUnits, CancellationToken cancellationToken);
-    Task<AllUnitsDictionary> GetAllUnits(CancellationToken cancellationToken);
+    Task UpdateAllUnitsSnapshot(CancellationToken cancellationToken);
+    Task<AllUnitsDictionary> AllUnits(CancellationToken cancellationToken);
 }
