@@ -32,7 +32,7 @@ public class StatisticsService : CheckAndNotifyService
         {
             var statistics = await _realtimeBoardApiClient.Statistics(cancellationToken);
 
-            await AboutOrdersPerMinute(statistics, cancellationToken);
+            // await AboutOrdersPerMinute(statistics, cancellationToken);
             await AboutYearRevenue(statistics, cancellationToken);
         }
         catch (Exception e)
