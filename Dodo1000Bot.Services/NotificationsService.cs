@@ -43,7 +43,7 @@ public class NotificationsService : INotificationsService
             return;
         }
 
-        notifications = notifications.Where(n => n.Type != NotificationType.NewUnit).ToList();
+        notifications = notifications.Where(n => n.Type != NotificationType.Admin).ToList();
 
         IEnumerable<Task<IEnumerable<PushedNotification>>> tasks = _notifyServices.Select(s => s.NotifyAbout(notifications, cancellationToken));
 
