@@ -28,6 +28,8 @@ namespace Dodo1000Bot.Api.DependencyModules
                 nameof(configuration.RealtimeBoardApiClientEndpoint));
             services.AddHttpClient<IRestcountriesApiClient, RestcountriesApiClient>(configuration.RestcountriesApiClientEndpoint, 
                 nameof(configuration.RestcountriesApiClientEndpoint));
+            services.AddHttpClient<IYouTubeClient, YouTubeClient>(configuration.YouTube.Endpoint, 
+                nameof(configuration.RestcountriesApiClientEndpoint));
         }
 
         private static SessionsClient RegisterDialogflowSessionsClient(IServiceProvider provider)

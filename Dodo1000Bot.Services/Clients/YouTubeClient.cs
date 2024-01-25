@@ -8,7 +8,7 @@ using Dodo1000Bot.Services.Extensions;
 
 namespace Dodo1000Bot.Services.Clients;
 
-public class YouTubeClient
+public class YouTubeClient : IYouTubeClient
 {
     private readonly YouTubeConfiguration _configuration;
     private readonly HttpClient _httpClient;
