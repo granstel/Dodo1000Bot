@@ -43,9 +43,9 @@ public class NotificationsService : INotificationsService
             return;
         }
 
-        notifications = notifications.Where(n => n.Type != NotificationType.Admin).ToList();
+        var sortedNotifications = notifications.Where(n => n.Type != NotificationType.Admin).ToList();
 
-        IEnumerable<Task<IEnumerable<PushedNotification>>> tasks = _notifyServices.Select(s => s.NotifyAbout(notifications, cancellationToken));
+        IEnumerable<Task<IEnumerable<PushedNotification>>> tasks = _notifyServices.Select(s => s.NotifyAbout(sortedNotifications, cancellationToken));
 
         IEnumerable<PushedNotification>[] tasksResults = await Task.WhenAll(tasks);
 
