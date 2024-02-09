@@ -21,7 +21,7 @@ namespace Dodo1000Bot.Api
             services.AddSingleton(configuration.PushNotifications);
             services.AddSingleton(configuration.UnitsJob);
             services.AddSingleton(configuration.StatisticsJob);
-            services.AddSingleton(configuration.SocialNetworksJob);
+            services.AddSingleton(configuration.YoutubeJob);
             services.AddSingleton(configuration.Management);
             services.AddSingleton(configuration.YouTube);
 
