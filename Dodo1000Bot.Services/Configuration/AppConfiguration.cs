@@ -26,6 +26,6 @@
 
         public ManagementConfiguration Management { get; set; }
 
-        public YouTubeConfiguration YouTube { get; set; }
+        public YoutubeConfiguration YouTube { get; set; }
     }
 }

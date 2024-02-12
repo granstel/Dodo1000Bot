@@ -10,11 +10,11 @@ namespace Dodo1000Bot.Services.Clients;
 
 public class YouTubeClient : IYouTubeClient
 {
-    private readonly YouTubeConfiguration _configuration;
+    private readonly YoutubeConfiguration _configuration;
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions  _serializerOptions;
 
-    public YouTubeClient(YouTubeConfiguration configuration, HttpClient httpClient, JsonSerializerOptions serializerOptions)
+    public YouTubeClient(YoutubeConfiguration configuration, HttpClient httpClient, JsonSerializerOptions serializerOptions)
     {
         _configuration = configuration;
         _httpClient = httpClient;
