@@ -26,7 +26,7 @@ public class StatisticsService : CheckAndNotifyService
         _notificationsService = notificationsService;
     }
 
-    public override async Task CheckAndNotify(CancellationToken cancellationToken)
+    public async Task CheckAndNotify(CancellationToken cancellationToken)
     {
         try
         {

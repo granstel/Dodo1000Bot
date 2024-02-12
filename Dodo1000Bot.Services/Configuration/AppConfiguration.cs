@@ -12,7 +12,7 @@
 
         public StatisticsJobConfiguration StatisticsJob { get; set; }
 
-        public YoutubeJobConfiguration YoutubeJob { get; set; }
+        public YoutubeConfiguration Youtube { get; set; }
 
         public string GlobalApiEndpoint { get; set; }
 

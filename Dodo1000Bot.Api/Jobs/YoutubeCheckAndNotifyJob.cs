@@ -5,12 +5,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Api.Jobs;
 
-public class YoutubeCheckAndNotifyJob: CheckAndNotifyJob<YoutubeService, YoutubeJobConfiguration>
+public class YoutubeCheckAndNotifyJob: CheckAndNotifyJob<YoutubeService, YoutubeConfiguration>
 {
     public YoutubeCheckAndNotifyJob(
         ILogger<YoutubeCheckAndNotifyJob> log, 
         IServiceProvider provider, 
-        YoutubeJobConfiguration configuration) : base(log, provider, configuration)
+        YoutubeConfiguration configuration) : base(log, provider, configuration)
     {
     }
 }

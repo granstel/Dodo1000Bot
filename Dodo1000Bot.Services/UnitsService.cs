@@ -37,7 +37,7 @@ public class UnitsService : CheckAndNotifyService
         _countriesService = countriesService;
     }
 
-    public override async Task CheckAndNotify(CancellationToken cancellationToken)
+    public async Task CheckAndNotify(CancellationToken cancellationToken)
     {
         try
         {
