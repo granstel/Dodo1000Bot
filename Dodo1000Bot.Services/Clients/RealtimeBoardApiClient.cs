@@ -1,9 +1,9 @@
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.RealtimeBoard;
-using Dodo1000Bot.Services.Extensions;
 
 namespace Dodo1000Bot.Services.Clients
 {
@@ -22,7 +22,7 @@ namespace Dodo1000Bot.Services.Clients
         {
             const string url = "statistics";
 
-            var statistics = await _httpClient.GetAsync<Statistics>(url, _serializerOptions, cancellationToken);
+            var statistics = await _httpClient.GetFromJsonAsync<Statistics>(url, _serializerOptions, cancellationToken);
 
             return statistics;
         }
