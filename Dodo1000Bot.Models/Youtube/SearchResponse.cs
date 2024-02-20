@@ -2,10 +2,10 @@
 
 public class SearchResponse
 {
-    public Items[] Items { get; set; }
+    public Video[] Items { get; set; }
 }
 
-public class Items
+public class Video
 {
     public Id Id { get; set; }
     public Snippet Snippet { get; set; }
