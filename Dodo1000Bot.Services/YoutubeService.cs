@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
@@ -41,7 +42,7 @@ public class YoutubeService: CheckAndNotifyService
                 await _snapshotsRepository.Get<Video[]>(snapshotName, cancellationToken);
             var videos = await _youTubeClient.SearchVideos(channel, cancellationToken);
             
-            var difference = videos.ExceptBy(videosSnapshot.Data.Select(v => v.Id), c => c.Id);
+            var difference = videos.ExceptBy(videosSnapshot.Data.Select(v => v.Id.VideoId), c => c.Id.VideoId);
 
             foreach (var video in difference)
             {
@@ -56,6 +57,43 @@ public class YoutubeService: CheckAndNotifyService
                 await _notificationsService.Save(notification, cancellationToken);
             }
         }
+    }
+
+    public async Task CreateVideosSnapshotIfNotExists(CancellationToken cancellationToken)
+    {
+        foreach (var channel in _configuration.Channels)
+        {
+            try
+            {
+                var snapshotName = GetChannelSnapshotName(channel);
+
+                var videosSnapshot = 
+                    await _snapshotsRepository.Get<Video[]>(snapshotName, cancellationToken);
+
+                if (videosSnapshot?.Data is not null)
+                {
+                    _log.LogInformation("videosSnapshot is not null");
+                    return;
+                }
+
+                var videos = await _youTubeClient.SearchVideos(channel, cancellationToken);
+
+                await UpdateSnapshot(snapshotName, videos, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e, "Can't {methodName}", nameof(CreateVideosSnapshotIfNotExists));
+            }
+        }
+    }
+
+    private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
+    {
+        _log.LogInformation("Start UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
+        var newSnapshot = Snapshot<TData>.Create(snapshotName, data);
+
+        await _snapshotsRepository.Save(newSnapshot, cancellationToken);
+        _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
     }
 
     private string GetChannelSnapshotName(string channel)

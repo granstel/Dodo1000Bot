@@ -1,28 +1,27 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Services;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Dodo1000Bot.Api.Jobs;
 
 public class FirstRunJob: IHostedService
 {
-    private readonly IServiceProvider _provider;
+    private readonly UnitsService _unitsService;
+    private readonly YoutubeService _youtubeService;
 
-    public FirstRunJob(IServiceProvider provider, UnitsService unitsService)
+    public FirstRunJob(UnitsService unitsService, YoutubeService youtubeService)
     {
-        _provider = provider;
+        _unitsService = unitsService;
+        _youtubeService = youtubeService;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await using var scope = _provider.CreateAsyncScope();
-        var unitsService = scope.ServiceProvider.GetRequiredService<UnitsService>();
-
-        await unitsService.CreateUnitsCountSnapshotIfNotExists(cancellationToken);
-        await unitsService.CreateUnitsSnapshotIfNotExists(cancellationToken);
+        await _unitsService.CreateUnitsCountSnapshotIfNotExists(cancellationToken);
+        await _unitsService.CreateUnitsSnapshotIfNotExists(cancellationToken);
+        
+        await _youtubeService.CreateVideosSnapshotIfNotExists(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
