@@ -12,6 +12,6 @@
 
         public NotificationPayload Payload { get; set; }
 
-        public string Distinction => $"{Payload}";
+        public string Distinction => Payload.ToString();
     }
 }
