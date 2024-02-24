@@ -3,9 +3,9 @@
     public class CoordinatesModel
     {
         public float? Lat { get; set; }
-        public float Latitude => Lat.GetValueOrDefault();
+        public float LatitudeOrDefault => Lat.GetValueOrDefault();
 
         public float? Long { get; set; }
-        public float Longitude => Long.GetValueOrDefault();
+        public float LongitudeOrDefault => Long.GetValueOrDefault();
     }
 }

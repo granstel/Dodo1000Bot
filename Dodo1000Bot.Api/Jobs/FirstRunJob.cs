@@ -11,7 +11,7 @@ public class FirstRunJob: IHostedService
 {
     private readonly IServiceProvider _provider;
 
-    public FirstRunJob(IServiceProvider provider, UnitsService unitsService)
+    public FirstRunJob(IServiceProvider provider)
     {
         _provider = provider;
     }
@@ -19,10 +19,12 @@ public class FirstRunJob: IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         await using var scope = _provider.CreateAsyncScope();
-        var unitsService = scope.ServiceProvider.GetRequiredService<UnitsService>();
+        var globalApiService = scope.ServiceProvider.GetRequiredService<IGlobalApiService>();
+        var publicApiService = scope.ServiceProvider.GetRequiredService<IPublicApiService>();
 
-        await unitsService.CreateUnitsCountSnapshotIfNotExists(cancellationToken);
-        await unitsService.CreateUnitsSnapshotIfNotExists(cancellationToken);
+        await globalApiService.CreateUnitsCountSnapshotIfNotExists(cancellationToken);
+        
+        await publicApiService.CreateAllUnitsSnapshotIfNotExists(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

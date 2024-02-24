@@ -5,10 +5,8 @@ using Dodo1000Bot.Services.Clients;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Dialogflow.V2;
 using Dodo1000Bot.Services.Configuration;
-using GranSteL.Helpers.Redis;
 using Grpc.Auth;
 using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
 
 namespace Dodo1000Bot.Api.DependencyModules
 {
@@ -18,16 +16,15 @@ namespace Dodo1000Bot.Api.DependencyModules
         {
             services.AddSingleton<SessionsClient>(RegisterDialogflowSessionsClient);
 
-            services.AddSingleton<IDatabase>(RegisterRedisClient);
-
-            services.AddSingleton<IRedisCacheService>(RegisterCacheService);
-
             services.AddHttpClient<IGlobalApiClient, GlobalApiClient>(configuration.GlobalApiEndpoint, 
-                nameof(configuration.GlobalApiEndpoint));
+                nameof(GlobalApiClient));
+            services.AddHttpClient<IPublicApiClient, PublicApiClient>(nameof(PublicApiClient));
             services.AddHttpClient<IRealtimeBoardApiClient, RealtimeBoardApiClient>(configuration.RealtimeBoardApiClientEndpoint, 
                 nameof(configuration.RealtimeBoardApiClientEndpoint));
             services.AddHttpClient<IRestcountriesApiClient, RestcountriesApiClient>(configuration.RestcountriesApiClientEndpoint, 
                 nameof(configuration.RestcountriesApiClientEndpoint));
+
+            services.AddMemoryCache();
         }
 
         private static SessionsClient RegisterDialogflowSessionsClient(IServiceProvider provider)
@@ -44,28 +41,6 @@ namespace Dodo1000Bot.Api.DependencyModules
             var client = clientBuilder.Build();
 
             return client;
-        }
-
-        private static IDatabase RegisterRedisClient(IServiceProvider provider)
-        {
-            var configuration = provider.GetService<RedisConfiguration>();
-
-            var redisClient = ConnectionMultiplexer.Connect(configuration.ConnectionString);
-
-            var dataBase = redisClient.GetDatabase();
-
-            return dataBase;
-        }
-
-        private static RedisCacheService RegisterCacheService(IServiceProvider provider)
-        {
-            var configuration = provider.GetService<RedisConfiguration>();
-
-            var db = provider.GetService<IDatabase>();
-
-            var service = new RedisCacheService(db, configuration.KeyPrefix);
-
-            return service;
         }
     }
 }

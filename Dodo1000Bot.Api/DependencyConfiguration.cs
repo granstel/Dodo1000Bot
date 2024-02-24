@@ -18,12 +18,12 @@ namespace Dodo1000Bot.Api
             
             services.AddSingleton(configuration);
             services.AddSingleton(configuration.HttpLog);
-            services.AddSingleton(configuration.Redis);
             services.AddSingleton(configuration.Dialogflow);
             services.AddSingleton(configuration.PushNotifications);
             services.AddSingleton(configuration.UnitsJob);
             services.AddSingleton(configuration.StatisticsJob);
             services.AddSingleton(configuration.Management);
+            services.AddSingleton(configuration.PublicApiEndpoints);
 
             services.AddInternalServices();
             services.AddJobs(configuration);

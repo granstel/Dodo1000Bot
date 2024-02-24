@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Dodo1000Bot.Models;
 
 namespace Dodo1000Bot.Services
 {
@@ -35,11 +34,11 @@ namespace Dodo1000Bot.Services
             {"vn", "🇻🇳"},
         };
 
-        public static readonly Dictionary<Brands, string> BrandsEmoji = new()
+        public static readonly Dictionary<string, string> BrandsEmoji = new()
         {
-            { Brands.Dodopizza, "🍕" },
-            { Brands.Drinkit, "☕" },
-            { Brands.Doner42, "🌯" },
+            { "dodopizza", "🍕" },
+            { "drinkit", "☕" },
+            { "doner42", "🌯" },
         };
     }
 }

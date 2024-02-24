@@ -6,13 +6,13 @@
 
         public DialogflowConfiguration Dialogflow { get; set; }
 
-        public RedisConfiguration Redis { get; set; }
-
         public UnitsJobConfiguration UnitsJob { get; set; }
 
         public StatisticsJobConfiguration StatisticsJob { get; set; }
 
         public string GlobalApiEndpoint { get; set; }
+
+        public PublicApiEndpoints PublicApiEndpoints { get; set; }
 
         public string RealtimeBoardApiClientEndpoint { get; set; }
 

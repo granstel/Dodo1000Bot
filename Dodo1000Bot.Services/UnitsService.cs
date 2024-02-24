@@ -7,33 +7,33 @@ using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
 using Dodo1000Bot.Models.GlobalApi;
+using Dodo1000Bot.Models.PublicApi;
 using Dodo1000Bot.Services.Extensions;
-using Dodo1000Bot.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 [assembly: InternalsVisibleTo("Dodo1000Bot.Services.Tests")]
 
 namespace Dodo1000Bot.Services;
-
+using AllUnitsDictionary = Dictionary<string, Dictionary<Country, IEnumerable<UnitInfo>>>;
 public class UnitsService : CheckAndNotifyService
 {
     private readonly ILogger<UnitsService> _log;
-    private readonly IGlobalApiClient _globalApiClient;
     private readonly INotificationsService _notificationsService;
-    private readonly ISnapshotsRepository _snapshotsRepository;
+    private readonly IGlobalApiService _globalApiService;
+    private readonly IPublicApiService _publicApiService;
     private readonly ICountriesService _countriesService;
 
     public UnitsService(
         ILogger<UnitsService> log, 
-        IGlobalApiClient globalApiClient, 
         INotificationsService notificationsService, 
-        ISnapshotsRepository snapshotsRepository, 
+        IGlobalApiService globalApiService, 
+        IPublicApiService publicApiService, 
         ICountriesService countriesService)
     {
         _log = log;
-        _globalApiClient = globalApiClient;
         _notificationsService = notificationsService;
-        _snapshotsRepository = snapshotsRepository;
+        _globalApiService = globalApiService;
+        _publicApiService = publicApiService;
         _countriesService = countriesService;
     }
 
@@ -41,97 +41,27 @@ public class UnitsService : CheckAndNotifyService
     {
         try
         {
-            var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
+            var unitsCount = await _globalApiService.UnitsCount(cancellationToken);
             _log.LogInformation("unitsCount: {unitsCount}", unitsCount.Serialize());
             await AboutTotalOverall(unitsCount, cancellationToken);
             await AboutTotalAtBrands(unitsCount, cancellationToken);
             await AboutTotalAtCountries(unitsCount, cancellationToken);
             await AboutTotalCountriesAtBrands(unitsCount, cancellationToken);
 
-            var snapshotName = nameof(_globalApiClient.UnitsCount);
-            var unitsCountSnapshot = 
-                await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
+            var unitsCountSnapshot = await _globalApiService.UnitsCountSnapshot(cancellationToken);
             _log.LogInformation("unitsCountSnapshot: {unitsCountSnapshot}", unitsCountSnapshot.Serialize());
-            await AboutNewCountries(unitsCount, unitsCountSnapshot.Data, cancellationToken);
-            await AboutNewUnits(unitsCount, unitsCountSnapshot.Data, cancellationToken);
-            _log.LogInformation("Before UpdateSnapshot at CheckAndNotify");
-            await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
-            _log.LogInformation("After UpdateSnapshot at CheckAndNotify");
+            await AboutNewCountries(unitsCount, unitsCountSnapshot, cancellationToken);
+
+            var allUnits = await _publicApiService.AllUnits(cancellationToken);
+
+            await AboutNewUnits(allUnits, cancellationToken);
+
+            await _globalApiService.UpdateUnitsCountSnapshot(cancellationToken);
+            await _publicApiService.UpdateAllUnitsSnapshot(cancellationToken);
         }
         catch (Exception e)
         {
             _log.LogError(e, "Can't check and notify units count");
-        }
-    }
-
-    public async Task CreateUnitsCountSnapshotIfNotExists(CancellationToken cancellationToken)
-    {
-        try
-        {
-            var snapshotName = nameof(_globalApiClient.UnitsCount);
-
-            var unitsCountSnapshot =
-                await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(snapshotName, cancellationToken);
-
-            if (unitsCountSnapshot?.Data is not null)
-            {
-                _log.LogInformation("unitsCountSnapshot is not null");
-                return;
-            }
-
-            var unitsCount = await _globalApiClient.UnitsCount(cancellationToken);
-
-            await UpdateSnapshot(snapshotName, unitsCount, cancellationToken);
-        }
-        catch (Exception e)
-        {
-            _log.LogError(e, "Can't {methodName}", nameof(CreateUnitsCountSnapshotIfNotExists));
-        }
-    }
-
-    public async Task CreateUnitsSnapshotIfNotExists(CancellationToken cancellationToken)
-    {
-        try
-        {
-            var unitsCountSnapshotName = nameof(_globalApiClient.UnitsCount);
-
-            var unitsCountSnapshot =
-                await _snapshotsRepository.Get<BrandListTotalUnitCountListModel>(unitsCountSnapshotName, cancellationToken);
-
-            if (unitsCountSnapshot?.Data is null)
-            {
-                _log.LogInformation("unitsCountSnapshot is null");
-                return;
-            }
-            
-            List<Brands> brands = unitsCountSnapshot.Data.Brands.Select(b => b.Brand).ToList();
-
-            foreach (var brand in brands)
-            {
-                var totalUnitCountListModel = unitsCountSnapshot.Data
-                    .Brands.First(b => b.Brand == brand);
-
-                foreach (var country in totalUnitCountListModel.Countries)
-                {
-                    var countryId = country.CountryId;
-                    var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
-                    var unitsSnapshot = 
-                        await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
-
-                    if (unitsSnapshot?.Data is not null)
-                    {
-                        _log.LogInformation("unitsSnapshot at {brand} in {country} is not null", brand, countryId);
-                        return;
-                    }
-
-                    BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
-                    await UpdateSnapshot(snapshotName, unitsAtCountry, cancellationToken);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            _log.LogError(e, "Can't {methodName}", nameof(CreateUnitsCountSnapshotIfNotExists));
         }
     }
 
@@ -286,61 +216,55 @@ public class UnitsService : CheckAndNotifyService
         return unitsCountBrands.ToDictionary(b => b.Brand, b => b.Countries.ToList());
     }
 
-    internal async Task AboutNewUnits(BrandListTotalUnitCountListModel unitsCount, BrandListTotalUnitCountListModel unitsCountSnapshot, CancellationToken cancellationToken)
+    internal async Task AboutNewUnits(AllUnitsDictionary allUnits, CancellationToken cancellationToken)
     {
         _log.LogInformation("Start AboutNewUnits");
-        if (unitsCountSnapshot is null)
-        {
-            _log.LogInformation("unitsCountSnapshot is null");
-            return;
-        }
+        var brands = await _globalApiService.GetBrands(cancellationToken);
+        var brandsNames = brands.Select(b => b.Name).ToList();
 
-        List<Brands> brands = unitsCount.Brands.Select(b => b.Brand).ToList();
+        var totalOverall = allUnits.Sum(b => b.Value.Sum(c => c.Value.Count()));
 
-        foreach (var brand in brands)
+        foreach (var brand in brandsNames)
         {
-            var countriesOfBrand = unitsCount
-                .Brands.First(b => b.Brand == brand).Countries;
+            Dictionary<Country, IEnumerable<UnitInfo>> allUnitsAtBrand = allUnits.GetValueOrDefault(brand);
+            // TODO: get countries from global API endpoint
+            var countriesOfBrand = allUnitsAtBrand.Keys;
 
             _log.LogInformation("Brand {brand}", brand);
 
-            var restaurantsAtBrand = unitsCount.Brands.Where(b => b.Brand == brand).Select(b => b.Total).FirstOrDefault();
-            var totalOverall = unitsCount.Brands.Sum(b => b.Total);
+            var restaurantsAtBrand = allUnitsAtBrand.Values.Sum(c => c.Count());
 
             foreach (var country in countriesOfBrand)
             {
-                await CheckUnitsOfBrandAtCountryAndNotify(brand, country.CountryId, country.CountryCode, restaurantsAtBrand, totalOverall, cancellationToken);
+                var unitsList = allUnitsAtBrand.GetValueOrDefault(country);
+                var unitsListSnapshot = await _publicApiService.GetUnitInfoOfBrandAtCountrySnapshot(brand, country.Code, cancellationToken);
+
+                await CheckUnitsOfBrandAtCountryAndNotify(unitsList, unitsListSnapshot, brand, country.Code, restaurantsAtBrand, totalOverall, cancellationToken);
             }
         }
         _log.LogInformation("Finish AboutNewUnits");
     }
 
-    internal async Task CheckUnitsOfBrandAtCountryAndNotify(Brands brand, int countryId, string countryCode,
-        int restaurantsCountAtBrand, int totalOverall, CancellationToken cancellationToken)
+    internal async Task CheckUnitsOfBrandAtCountryAndNotify(
+        IEnumerable<UnitInfo> unitsList, 
+        IEnumerable<UnitInfo> unitsListSnapshot, 
+        string brand,
+        string countryCode,
+        int restaurantsCountAtBrand, 
+        int totalOverall, 
+        CancellationToken cancellationToken)
     {
-        _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
-        BrandData<UnitListModel> unitsAtCountry = await _globalApiClient.UnitsOfBrandAtCountry(brand, countryId, cancellationToken);
-
-        _log.LogInformation("unitsAtCountry: {unitsAtCountry}", unitsAtCountry.Serialize());
-
-        var snapshotName = GetUnitsOfBrandAtCountrySnapshotName(brand, countryId);
-        var unitsSnapshot = 
-            await _snapshotsRepository.Get<BrandData<UnitListModel>>(snapshotName, cancellationToken);
-
-        _log.LogInformation("unitsSnapshot: {unitsSnapshot}", unitsSnapshot.Serialize());
-
-        IEnumerable<UnitModel> unitsList = GetUnitsList(unitsAtCountry);
-        IEnumerable<UnitModel> unitsListSnapshot = GetUnitsList(unitsSnapshot?.Data);
+        _log.LogInformation("Start CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryCode {countryCode}", brand, countryCode);
 
         _log.LogInformation("unitsList: {unitsList}", unitsList.Serialize());
         _log.LogInformation("unitsListSnapshot: {unitsListSnapshot}", unitsListSnapshot.Serialize());
 
-        const string formatOfDestinctions = "{0}-{1}";
+        const string formatOfDistinctions = "{0}-{1}";
 
-        var formattedDistinctions = unitsListSnapshot.Select(uls => string.Format(formatOfDestinctions, uls.Name, uls.StartDate));
+        var formattedDistinctions = unitsListSnapshot.Select(uls => string.Format(formatOfDistinctions, uls.Name, uls.BeginDateWork));
         var difference = unitsList.ExceptBy(formattedDistinctions, 
-                                            ul => string.Format(formatOfDestinctions, ul.Name, ul.StartDate))
-            .Where(ul => ul.StartDate.Year == DateTime.Today.Date.Year).ToList();
+                                            ul => string.Format(formatOfDistinctions, ul.Name, ul.BeginDateWork))
+            .Where(ul => ul.BeginDateWork.Year == DateTime.Today.Date.Year).ToList();
 
         _log.LogInformation("difference: {difference}", difference.Serialize());
 
@@ -353,34 +277,25 @@ public class UnitsService : CheckAndNotifyService
             {
                 Payload = new NotificationPayload
                 {
-                    Text = $"Wow! There is new {brand}{brandEmoji} in {unit.Address?.Locality?.Name}{flag}! You can find it on the map👆 " +
+                    Text = $"Wow! There is new {brand}{brandEmoji} in {unit.AddressDetails?.LocalityName}{flag}! You can find it on the map👆 " +
                            $"\r\nIt's {restaurantsCountAtBrand} restaurant of {brand} and {totalOverall} of all Dodo brands 🔥",
-                    Address = unit.Address?.Text,
-                    Coordinates = unit.Coords,
+                    Address = unit.Address,
                     Name = unit.Name
                 }
             };
 
+            if (unit.Location is { Latitude: not null, Longitude: not null })
+            {
+                notification.Payload.Coordinates = new Coordinates
+                {
+                    Latitude = unit.Location.Latitude.Value,
+                    Longitude = unit.Location.Longitude.Value
+                };
+            }
+            
             await _notificationsService.Save(notification, cancellationToken);
         }
-        _log.LogInformation("Before UpdateSnapshot at CheckUnitsOfBrandAtCountryAndNotify");
-        await UpdateSnapshot(snapshotName, unitsAtCountry, cancellationToken);
-        _log.LogInformation("After UpdateSnapshot at CheckUnitsOfBrandAtCountryAndNotify");
-        _log.LogInformation("Finish CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryId}", brand, countryId);
-    }
-
-    private async Task UpdateSnapshot<TData>(string snapshotName, TData data, CancellationToken cancellationToken)
-    {
-        _log.LogInformation("Start UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
-        var newSnapshot = Snapshot<TData>.Create(snapshotName, data);
-
-        await _snapshotsRepository.Save(newSnapshot, cancellationToken);
-        _log.LogInformation("Finish UpdateSnapshot for snapshotName {snapshotName}", snapshotName);
-    }
-
-    private IEnumerable<UnitModel> GetUnitsList(BrandData<UnitListModel> unitListModel)
-    {
-        return unitListModel?.Countries.SelectMany(c => c.Pizzerias).ToList() ?? new List<UnitModel>();
+        _log.LogInformation("Finish CheckUnitsOfBrandAtCountryAndNotify for brand {brand} at countryId {countryCode}", brand, countryCode);
     }
 
     private async Task CheckAndNotify1000(UnitCountModel totalAtCountry, Brands brand, CancellationToken cancellationToken)
@@ -463,10 +378,5 @@ public class UnitsService : CheckAndNotifyService
 
             await _notificationsService.Save(notification, cancellationToken);
         }
-    }
-
-    private string GetUnitsOfBrandAtCountrySnapshotName(Brands brand, int countryId)
-    {
-        return $"{nameof(_globalApiClient.UnitsOfBrandAtCountry)}{brand}{countryId}";
     }
 }
