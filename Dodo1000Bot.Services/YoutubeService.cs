@@ -56,6 +56,8 @@ public class YoutubeService: CheckAndNotifyService
 
                 await _notificationsService.Save(notification, cancellationToken);
             }
+
+            await UpdateSnapshot(snapshotName, videos, cancellationToken);
         }
     }
 
