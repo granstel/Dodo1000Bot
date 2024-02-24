@@ -60,6 +60,11 @@ public class TelegramNotifyService : INotifyService
 
         foreach (var notification in notifications)
         {
+            if (notification.Type is NotificationType.Admin && !user.IsAdmin)
+            {
+                continue;
+            }
+
             var messengerUserId = user.MessengerUserId;
             try
             {

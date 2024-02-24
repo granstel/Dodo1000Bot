@@ -7,5 +7,7 @@
         public string MessengerUserId { get; set; }
 
         public Source MessengerType { get; set; }
+
+        public bool IsAdmin { get; set; }
     }
 }

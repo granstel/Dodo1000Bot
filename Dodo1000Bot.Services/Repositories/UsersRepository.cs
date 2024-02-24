@@ -21,7 +21,7 @@ namespace Dodo1000Bot.Services
         public async Task<IList<User>> GetUsers(Source messengerType, CancellationToken cancellationToken)
         {
             var users = await _connection.QueryAsync<User>(new CommandDefinition(
-                @"SELECT Id, MessengerUserId, MessengerType FROM users
+                @"SELECT Id, MessengerUserId, MessengerType, IsAdmin FROM users
                   WHERE MessengerType = @messengerType",
                 new
                 {
