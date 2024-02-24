@@ -17,7 +17,7 @@ namespace Dodo1000Bot.Api.DependencyModules
             services.AddHttpClient<IRestcountriesApiClient, RestcountriesApiClient>(configuration.RestcountriesApiClientEndpoint, 
                 nameof(configuration.RestcountriesApiClientEndpoint));
             services.AddHttpClient<IYouTubeClient, YouTubeClient>(configuration.YouTube.Endpoint, 
-                nameof(configuration.RestcountriesApiClientEndpoint));
+                nameof(configuration.YouTube));
         }
     }
 }
