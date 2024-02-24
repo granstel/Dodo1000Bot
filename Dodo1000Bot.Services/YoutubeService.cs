@@ -13,6 +13,12 @@ namespace Dodo1000Bot.Services;
 
 public class YoutubeService: CheckAndNotifyService
 {
+    private static readonly string[] LiveBroadcastContentValidValues = new[]
+    {
+        "none",
+        "live"
+    };
+
     private readonly ILogger<YoutubeService> _log;
     private readonly YoutubeConfiguration _configuration;
     private readonly IYouTubeClient _youTubeClient;
@@ -46,6 +52,11 @@ public class YoutubeService: CheckAndNotifyService
 
             foreach (var video in difference)
             {
+                if (!LiveBroadcastContentValidValues.Contains(video.Snippet.LiveBroadcastContent))
+                {
+                    continue;
+                }
+
                 var notification = new Notification(NotificationType.Admin)
                 {
                     Payload = new NotificationPayload
