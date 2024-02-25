@@ -13,9 +13,7 @@ namespace Dodo1000Bot.Services;
 
 public class YoutubeService: CheckAndNotifyService
 {
-    private static readonly string[] LiveBroadcastContentValidValues = new[]
-    {
-        "none",
+    private static readonly string[] LiveBroadcastContentValidValues = {
         "live"
     };
 
