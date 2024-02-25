@@ -14,7 +14,7 @@ public class CheckAndNotifyJob<TService, TConfiguration> : RepeatableJob
 {
     private readonly IServiceProvider _provider;
 
-    public CheckAndNotifyJob(ILogger<CheckAndNotifyJob<TService, TConfiguration>> log,
+    protected CheckAndNotifyJob(ILogger<CheckAndNotifyJob<TService, TConfiguration>> log,
         IServiceProvider provider,
         TConfiguration configuration) : base(log, configuration.RefreshEveryTime)
     {
