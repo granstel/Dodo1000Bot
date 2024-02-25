@@ -60,7 +60,7 @@ public class TelegramNotifyService : INotifyService
 
         foreach (var notification in notifications)
         {
-            if (user.IsAdmin && notification.Type is not NotificationType.Admin)
+            if (notification.Type is NotificationType.Admin && user is not { IsAdmin : true })
             {
                 continue;
             }
