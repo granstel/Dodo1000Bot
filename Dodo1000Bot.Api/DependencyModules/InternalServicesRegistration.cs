@@ -11,6 +11,7 @@ namespace Dodo1000Bot.Api.DependencyModules
             services.AddTransient<INotificationsService, NotificationsService>();
             services.AddTransient<UnitsService>();
             services.AddTransient<StatisticsService>();
+            services.AddTransient<YoutubeService>();
             services.AddTransient<ICountriesService, CountriesService>();
             services.AddTransient<IUsersService, UsersService>();
 

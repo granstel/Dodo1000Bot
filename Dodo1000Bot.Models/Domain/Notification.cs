@@ -8,10 +8,10 @@
         }
         public int Id { get; set; }
 
-        public NotificationType Type { get; }
+        public NotificationType Type { get; init; }
 
         public NotificationPayload Payload { get; set; }
 
-        public string Distinction => $"{Payload}";
+        public string Distinction => Payload.ToString();
     }
 }

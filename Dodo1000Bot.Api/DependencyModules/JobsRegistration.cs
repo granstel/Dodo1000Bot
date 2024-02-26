@@ -13,5 +13,6 @@ public static class JobsRegistration
         services.AddHostedService<PushNotificationsJob>();
         services.AddHostedService<UnitsCheckAndNotifyJob>();
         services.AddHostedService<StatisticsCheckAndNotifyJob>();
+        services.AddHostedService<YoutubeCheckAndNotifyJob>();
     }
 }

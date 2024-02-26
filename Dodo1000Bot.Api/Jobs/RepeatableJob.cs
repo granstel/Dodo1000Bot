@@ -11,7 +11,7 @@ public abstract class RepeatableJob : BackgroundService
     private readonly TimeSpan _repeatEveryTime;
     private readonly string _jobName;
 
-    protected ILogger Log { get; }
+    private ILogger Log { get; }
 
     protected RepeatableJob(ILogger log, TimeSpan repeatEveryTime)
     {

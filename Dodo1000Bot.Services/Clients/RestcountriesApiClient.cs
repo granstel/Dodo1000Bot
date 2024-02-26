@@ -1,9 +1,9 @@
 ﻿using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models.Restcountries;
-using Dodo1000Bot.Services.Extensions;
 
 namespace Dodo1000Bot.Services.Clients;
 
@@ -23,7 +23,7 @@ public class RestcountriesApiClient : IRestcountriesApiClient
         var joinedCodes = string.Join(",", codes);
         var url = $"alpha?codes={joinedCodes}&fields=name";
 
-        var countries = await _httpClient.GetAsync<Country[]>(url, _serializerOptions, cancellationToken);
+        var countries = await _httpClient.GetFromJsonAsync<Country[]>(url, _serializerOptions, cancellationToken);
 
         return countries;
     }

@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace Dodo1000Bot.Services
 {
-    public abstract class CheckAndNotifyService
+    public interface CheckAndNotifyService
     {
-        public abstract Task CheckAndNotify(CancellationToken cancellationToken);
+        public Task CheckAndNotify(CancellationToken cancellationToken);
     }
 }

@@ -111,5 +111,41 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
             Assert.AreEqual(notification.Id, pushedNotification.NotificationId);
             Assert.AreEqual(user.Id, pushedNotification.UserId);
         }
+
+        [Test]
+        public async Task NotifyAbout_AdminNotifications_SentOnlyToAdminUsers()
+        {
+            var payload = _fixture.Build<NotificationPayload>()
+                .With(n => n.Text)
+                .Create();
+            var notification = _fixture.Build<Notification>()
+                .With(n => n.Payload, payload)
+                .With(n => n.Type, NotificationType.Admin)
+                .Create();
+            var ordinaryUser = _fixture.Build<Domain.User>()
+                .With(u => u.Id)
+                .With(u => u.MessengerUserId, _fixture.Create<long>().ToString)
+                .Create();
+            var adminUser = _fixture.Build<Domain.User>()
+                .With(u => u.Id)
+                .With(u => u.MessengerUserId, _fixture.Create<long>().ToString)
+                .With(u => u.IsAdmin, true)
+                .Create();
+
+            var ct = CancellationToken.None;
+
+            _usersRepositoryMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(new []{ adminUser, ordinaryUser });
+            _clientMock.Setup(c => c.SendTextMessageAsync(adminUser.MessengerUserId, notification.Payload.Text,
+            It.IsAny<ParseMode>(), It.IsAny<IEnumerable<MessageEntity>>(), 
+            It.IsAny<bool>(), It.IsAny<bool>(), 
+            It.IsAny<int>(), It.IsAny<bool>(), 
+            It.IsAny<IReplyMarkup>(), ct)).ReturnsAsync(() => null);
+
+            var pushedNotifications = (await _target.NotifyAbout(new []{notification}, ct)).ToArray();
+
+            Assert.IsNotEmpty(pushedNotifications);
+
+            Assert.True(pushedNotifications.All(n => n.UserId == adminUser.Id));
+        }
     }
 }

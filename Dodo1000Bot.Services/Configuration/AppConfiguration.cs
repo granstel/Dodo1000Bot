@@ -23,5 +23,7 @@
         public PushNotificationsConfiguration PushNotifications { get; set; }
 
         public ManagementConfiguration Management { get; set; }
+
+        public YoutubeConfiguration YouTube { get; set; }
     }
 }
