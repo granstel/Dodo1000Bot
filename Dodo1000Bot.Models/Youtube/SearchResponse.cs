@@ -21,4 +21,5 @@ public class Snippet
     public string PublishedAt { get; set; }
     public string LiveBroadcastContent { get; set; }
     public string PublishTime { get; set; }
+    public string Title { get; set; }
 }
