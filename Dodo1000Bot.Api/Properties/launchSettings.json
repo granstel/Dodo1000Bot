@@ -3,7 +3,7 @@
     "Dodo1000Bot.Api": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "applicationUrl": "https://localhost:1502;http://localhost:1402",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
