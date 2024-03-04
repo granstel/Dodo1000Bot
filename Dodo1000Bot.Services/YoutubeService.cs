@@ -45,8 +45,12 @@ public class YoutubeService: CheckAndNotifyService
             var videosSnapshot = 
                 await _snapshotsRepository.Get<Video[]>(snapshotName, cancellationToken);
             var videos = await _youTubeClient.SearchVideos(channel, cancellationToken);
-            
-            var difference = videos.ExceptBy(videosSnapshot.Data.Select(v => v.Id.VideoId), c => c.Id.VideoId);
+            const string formatOfDistinctions = "{0}-{1}";
+
+            var formattedDistinctions = videosSnapshot.Data
+                .Select(v => string.Format(formatOfDistinctions, v.Id.VideoId, v.Snippet.LiveBroadcastContent));
+            var difference = videos.ExceptBy(formattedDistinctions,
+                v => string.Format(formatOfDistinctions, v.Id.VideoId, v.Snippet.LiveBroadcastContent));
 
             foreach (var video in difference)
             {
