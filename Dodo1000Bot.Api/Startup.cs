@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Prometheus;
 
 namespace Dodo1000Bot.Api
 {
@@ -64,6 +65,7 @@ namespace Dodo1000Bot.Api
             app.UseMiddleware<ExceptionsMiddleware>();
 
             app.UseRouting();
+            app.UseHttpMetrics();
 
             if (configuration.HttpLog.Enabled)
             {
@@ -76,6 +78,7 @@ namespace Dodo1000Bot.Api
             app.UseEndpoints(e =>
             {
                 e.MapControllers();
+                e.MapMetrics();
             });
         }
     }
