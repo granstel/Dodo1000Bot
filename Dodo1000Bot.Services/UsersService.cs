@@ -71,6 +71,6 @@ public class UsersService : IUsersService
     public async Task Count(CancellationToken cancellationToken)
     {
         var count = await _usersRepository.Count(cancellationToken);
-        MetricsCollector.Increment("users", count.ToString());
+        MetricsCollector.Set("users", count);
     }
 }

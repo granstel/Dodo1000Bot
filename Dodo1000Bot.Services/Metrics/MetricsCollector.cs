@@ -9,11 +9,16 @@ public static class MetricsCollector
     static MetricsCollector()
     {
         Metrics = Prometheus.Metrics
-            .CreateGauge("metrics", "Custom metrics", "metric_name", "value");
+            .CreateGauge("metrics", "Custom metrics", "metric_name");
     }
 
-    public static void Increment(string key, string value)
+    public static void Increment(string key)
     {
-        Metrics.WithLabels(key, value).Inc();
+        Metrics.WithLabels(key).Inc();
+    }
+
+    public static void Set(string key, double value)
+    {
+        Metrics.WithLabels(key).Set(value);
     }
 }
