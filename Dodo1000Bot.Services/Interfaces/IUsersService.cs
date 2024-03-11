@@ -13,4 +13,6 @@ public interface IUsersService
     Task Delete(User user, CancellationToken cancellationToken);
 
     Task<IList<User>> GetUsers(Source messengerType, CancellationToken cancellationToken);
+
+    Task Count(CancellationToken cancellationToken);
 }
