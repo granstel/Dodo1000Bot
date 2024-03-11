@@ -9,12 +9,12 @@ public class FirstRunJob: IHostedService
 {
     private readonly UnitsService _unitsService;
     private readonly YoutubeService _youtubeService;
-    private readonly UsersService _usersService;
+    private readonly IUsersService _usersService;
 
     public FirstRunJob(
         UnitsService unitsService, 
         YoutubeService youtubeService,
-        UsersService usersService)
+        IUsersService usersService)
     {
         _unitsService = unitsService;
         _youtubeService = youtubeService;
