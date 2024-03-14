@@ -21,4 +21,9 @@ public static class MetricsCollector
     {
         Metrics.WithLabels(key).Set(value);
     }
+
+    public static void Decrement(string key)
+    {
+        Metrics.WithLabels(key).Dec();
+    }
 }
