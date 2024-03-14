@@ -32,8 +32,6 @@ public class UsersService : IUsersService
     {
         await _usersRepository.SaveUser(user, cancellationToken);
 
-        await Count(cancellationToken);
-
         await CheckAndNotifyAboutSubscribers(cancellationToken);
     }
 
