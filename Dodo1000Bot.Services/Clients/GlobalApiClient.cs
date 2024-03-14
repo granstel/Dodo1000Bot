@@ -30,7 +30,7 @@ namespace Dodo1000Bot.Services.Clients
 
         public async Task<BrandData<UnitListModel>> UnitsOfBrandAtCountry(Brands brand, int countryId, CancellationToken cancellationToken)
         {
-            var url = $"{brand}/units/all/{countryId}";
+            var url = $"{brand}/units/all/{countryId}".ToLower();
 
             var unitsCount = await _httpClient.GetFromJsonAsync<BrandData<UnitListModel>>(url, _serializerOptions, cancellationToken);
 
