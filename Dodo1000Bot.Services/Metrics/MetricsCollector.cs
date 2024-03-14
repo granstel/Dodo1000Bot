@@ -12,18 +12,8 @@ public static class MetricsCollector
             .CreateGauge("metrics", "Custom metrics", "metric_name");
     }
 
-    public static void Increment(string key)
-    {
-        Metrics.WithLabels(key).Inc();
-    }
-
     public static void Set(string key, double value)
     {
         Metrics.WithLabels(key).Set(value);
-    }
-
-    public static void Decrement(string key)
-    {
-        Metrics.WithLabels(key).Dec();
     }
 }

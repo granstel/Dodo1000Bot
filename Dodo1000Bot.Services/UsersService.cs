@@ -32,7 +32,7 @@ public class UsersService : IUsersService
     {
         await _usersRepository.SaveUser(user, cancellationToken);
 
-        MetricsCollector.Increment("users");
+        await Count(cancellationToken);
 
         await CheckAndNotifyAboutSubscribers(cancellationToken);
     }
@@ -67,7 +67,7 @@ public class UsersService : IUsersService
     public async Task Delete(User user, CancellationToken cancellationToken)
     {
         await _usersRepository.Delete(user, cancellationToken);
-        MetricsCollector.Decrement("users");
+        await Count(cancellationToken);
     }
 
     public Task<IList<User>> GetUsers(Source messengerType, CancellationToken cancellationToken) =>
