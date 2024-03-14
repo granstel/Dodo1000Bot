@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
+using Dodo1000Bot.Services.Metrics;
 using Microsoft.Extensions.Logging;
 
 [assembly: InternalsVisibleTo("Dodo1000Bot.Services.Tests")]
@@ -61,9 +62,18 @@ public class UsersService : IUsersService
         }
     }
 
-    public Task Delete(User user, CancellationToken cancellationToken) => 
-        _usersRepository.Delete(user, cancellationToken);
+    public async Task Delete(User user, CancellationToken cancellationToken)
+    {
+        await _usersRepository.Delete(user, cancellationToken);
+        await Count(cancellationToken);
+    }
 
     public Task<IList<User>> GetUsers(Source messengerType, CancellationToken cancellationToken) =>
         _usersRepository.GetUsers(messengerType, cancellationToken);
+
+    public async Task Count(CancellationToken cancellationToken)
+    {
+        var count = await _usersRepository.Count(cancellationToken);
+        MetricsCollector.Set("users", count);
+    }
 }

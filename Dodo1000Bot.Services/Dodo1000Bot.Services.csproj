@@ -12,6 +12,7 @@
     <PackageReference Include="GranSteL.Helpers.Redis" Version="1.*" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.*" />
     <PackageReference Include="MySql.Data" Version="8.0.33" />
+    <PackageReference Include="prometheus-net" Version="8.2.1" />
     <PackageReference Include="StackExchange.Redis" Version="2.*" />
     <PackageReference Include="AutoMapper" Version="10.*" />
     <PackageReference Include="System.ServiceModel.Duplex" Version="4.*" />
