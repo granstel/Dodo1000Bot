@@ -71,6 +71,9 @@ public class UsersService : IUsersService
     public Task<IList<User>> GetUsers(Source messengerType, CancellationToken cancellationToken) =>
         _usersRepository.GetUsers(messengerType, cancellationToken);
 
+    public Task<IList<User>> GetAdmins(Source messengerType, CancellationToken cancellationToken) =>
+        _usersRepository.GetAdmins(messengerType, cancellationToken);
+
     public async Task Count(CancellationToken cancellationToken)
     {
         var count = await _usersRepository.Count(cancellationToken);
