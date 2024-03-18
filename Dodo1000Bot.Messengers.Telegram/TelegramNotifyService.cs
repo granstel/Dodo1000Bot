@@ -16,13 +16,13 @@ namespace Dodo1000Bot.Messengers.Telegram;
 public class TelegramNotifyService : INotifyService
 {
     private readonly ILogger<TelegramNotifyService> _log;
-    private readonly IUsersRepository _usersRepository;
+    private readonly IUsersService _usersService;
     private readonly ITelegramBotClient _client;
 
-    public TelegramNotifyService(IUsersRepository usersRepository, ITelegramBotClient client,
+    public TelegramNotifyService(IUsersService usersService, ITelegramBotClient client,
         ILogger<TelegramNotifyService> log)
     {
-        _usersRepository = usersRepository;
+        _usersService = usersService;
         _client = client;
         _log = log;
     }
@@ -37,7 +37,7 @@ public class TelegramNotifyService : INotifyService
             return pushedNotifications;
         }
 
-        IList<User> users = await _usersRepository.GetUsers(Source.Telegram, cancellationToken);
+        IList<User> users = await _usersService.GetUsers(Source.Telegram, cancellationToken);
 
         if (users?.Any() != true)
         {
@@ -81,7 +81,7 @@ public class TelegramNotifyService : INotifyService
             catch (ApiRequestException e) when (e.ErrorCode == 403)
             {
                 _log.LogWarning(e, "Error while send notification to {MessengerUserId}, so user will be deleted", messengerUserId);
-                await _usersRepository.Delete(user, cancellationToken);
+                await _usersService.Delete(user, cancellationToken);
                 return pushedNotifications;
             }
             catch (Exception e)
@@ -104,7 +104,7 @@ public class TelegramNotifyService : INotifyService
 
     public async Task SendToAdmin(Notification notification, CancellationToken cancellationToken)
     {
-        var admins = await _usersRepository.GetAdmins(Source.Telegram, cancellationToken);
+        var admins = await _usersService.GetAdmins(Source.Telegram, cancellationToken);
 
         foreach (var admin in admins)
         {
