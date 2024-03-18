@@ -15,4 +15,6 @@ public interface IUsersService
     Task<IList<User>> GetUsers(Source messengerType, CancellationToken cancellationToken);
 
     Task<IList<User>> GetAdmins(Source telegram, CancellationToken cancellationToken);
+
+    Task Count(CancellationToken cancellationToken);
 }
