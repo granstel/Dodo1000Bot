@@ -59,7 +59,7 @@ public class YoutubeService: CheckAndNotifyService
                     continue;
                 }
 
-                var notification = new Notification(NotificationType.Admin)
+                var notification = new Notification(NotificationType.Video)
                 {
                     Payload = new NotificationPayload
                     {

@@ -14,4 +14,5 @@ public enum NotificationType
     SubscribersCount = 9,
     Admin = 10,
     Emoji = 11,
+    Video = 12,
 }
