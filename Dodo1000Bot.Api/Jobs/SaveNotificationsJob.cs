@@ -10,9 +10,9 @@ namespace Dodo1000Bot.Api.Jobs;
 public class SaveNotificationsJob : BackgroundService
 {
     private readonly ChannelReader<Notification> _notificationsChannel;
-    private readonly NotificationsService _notificationsService;
+    private readonly INotificationsService _notificationsService;
 
-    public SaveNotificationsJob(ChannelReader<Notification> notificationsChannel, NotificationsService notificationsService)
+    public SaveNotificationsJob(ChannelReader<Notification> notificationsChannel, INotificationsService notificationsService)
     {
         _notificationsChannel = notificationsChannel;
         _notificationsService = notificationsService;
