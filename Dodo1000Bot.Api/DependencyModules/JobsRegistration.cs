@@ -29,6 +29,6 @@ public static class JobsRegistration
         services.AddSingleton<ChannelWriter<Notification>>(channel);
         services.AddSingleton<ChannelReader<Notification>>(channel);
 
-        services.AddHostedService<PushNotificationsJob>();
+        services.AddHostedService<SaveNotificationsJob>();
     }
 }

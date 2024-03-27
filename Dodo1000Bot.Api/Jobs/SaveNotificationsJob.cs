@@ -7,12 +7,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace Dodo1000Bot.Api.Jobs;
 
-public class PushNotificationsJob : BackgroundService
+public class SaveNotificationsJob : BackgroundService
 {
     private readonly ChannelReader<Notification> _notificationsChannel;
     private readonly NotificationsService _notificationsService;
 
-    public PushNotificationsJob(ChannelReader<Notification> notificationsChannel, NotificationsService notificationsService)
+    public SaveNotificationsJob(ChannelReader<Notification> notificationsChannel, NotificationsService notificationsService)
     {
         _notificationsChannel = notificationsChannel;
         _notificationsService = notificationsService;
