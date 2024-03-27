@@ -10,7 +10,7 @@ public static class JobsRegistration
     {
         services.AddHostedService(serviceProvider => new MigrationsJob(appConfiguration.MysqlConnectionString, serviceProvider));
         services.AddHostedService<FirstRunJob>();
-        services.AddHostedService<PushNotificationsJob>();
+        services.AddHostedService<PushNotificationsRepeatableJob>();
         services.AddHostedService<UnitsCheckAndNotifyJob>();
         services.AddHostedService<StatisticsCheckAndNotifyJob>();
         services.AddHostedService<YoutubeCheckAndNotifyJob>();
