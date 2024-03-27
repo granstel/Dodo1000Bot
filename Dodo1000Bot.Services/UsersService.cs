@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
@@ -16,16 +17,16 @@ public class UsersService : IUsersService
 {
     private readonly ILogger<UsersService> _log;
     private readonly IUsersRepository _usersRepository;
-    private readonly INotificationsService _notificationsService;
+    private readonly ChannelWriter<Notification> _notificationsChannel;
 
     public UsersService(
         ILogger<UsersService> log, 
         IUsersRepository usersRepository, 
-        INotificationsService notificationsService)
+        ChannelWriter<Notification> notificationsChannel)
     {
         _log = log;
         _usersRepository = usersRepository;
-        _notificationsService = notificationsService;
+        _notificationsChannel = notificationsChannel;
     }
 
     public async Task SaveAndNotify(User user, CancellationToken cancellationToken)
@@ -54,7 +55,7 @@ public class UsersService : IUsersService
                 }
             };
 
-            await _notificationsService.Save(notification, cancellationToken);
+            await _notificationsChannel.WriteAsync(notification, cancellationToken);
         }
         catch (Exception e)
         {
