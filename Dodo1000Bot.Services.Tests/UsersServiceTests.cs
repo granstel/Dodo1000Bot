@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using AutoFixture;
 using Dodo1000Bot.Models.Domain;
@@ -16,7 +17,7 @@ public class UsersServiceTests
 
     private ILogger<UsersService> _logMock;
     private Mock<IUsersRepository> _usersRepositoryMock;
-    private Mock<INotificationsService> _notificationsServiceMock;
+    private Mock<ChannelWriter<Notification>> _notificationsChannelMock;
     
     private UsersService _target;
 
@@ -29,9 +30,9 @@ public class UsersServiceTests
 
         _logMock = Mock.Of<ILogger<UsersService>>();
         _usersRepositoryMock = _mockRepository.Create<IUsersRepository>();
-        _notificationsServiceMock = _mockRepository.Create<INotificationsService>();
+        _notificationsChannelMock = _mockRepository.Create<ChannelWriter<Notification>>();
 
-        _target = new UsersService(_logMock, _usersRepositoryMock.Object, _notificationsServiceMock.Object);
+        _target = new UsersService(_logMock, _usersRepositoryMock.Object, _notificationsChannelMock.Object);
 
         _fixture = new Fixture { OmitAutoProperties = true };
     }
@@ -62,8 +63,8 @@ public class UsersServiceTests
 
         await _target.CheckAndNotifyAboutSubscribers(CancellationToken.None);
 
-        _notificationsServiceMock.Verify(s => 
-            s.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
+        _notificationsChannelMock.Verify(s => 
+            s.WriteAsync(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Test]
@@ -74,10 +75,10 @@ public class UsersServiceTests
 
         var expectedText = $"👥 Hey! I already have {subscribersCount} subscribers! Thank you for staying with me 🤗";
 
-        _notificationsServiceMock.Setup(s => s.Save(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
+        _notificationsChannelMock.Setup(s => s.WriteAsync(It.IsAny<Notification>(), It.IsAny<CancellationToken>()))
             .Callback((Notification notification, CancellationToken _) => 
                 Assert.AreEqual(expectedText, notification.Payload.Text))
-            .Returns(Task.CompletedTask);
+            .Returns(ValueTask.CompletedTask);
 
         await _target.CheckAndNotifyAboutSubscribers(CancellationToken.None);
     }

@@ -8,12 +8,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Api.Jobs;
 
-public class PushNotificationsJob: RepeatableJob
+public class PushNotificationsRepeatableJob: RepeatableJob
 {
     private readonly IServiceProvider _provider;
 
-    public PushNotificationsJob(
-        ILogger<PushNotificationsJob> log,
+    public PushNotificationsRepeatableJob(
+        ILogger<PushNotificationsRepeatableJob> log,
         PushNotificationsConfiguration configuration,
         IServiceProvider provider) : base(log, configuration.EveryTime)
     {
