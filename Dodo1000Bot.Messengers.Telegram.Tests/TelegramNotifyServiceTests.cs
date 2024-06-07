@@ -96,11 +96,19 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
             var ct = CancellationToken.None;
 
             _usersServiceMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(new []{user});
-            _clientMock.Setup(c => c.SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text,
-            It.IsAny<ParseMode>(), It.IsAny<IEnumerable<MessageEntity>>(), 
-            It.IsAny<bool>(), It.IsAny<bool>(), 
-            It.IsAny<int>(), It.IsAny<bool>(), 
-            It.IsAny<IReplyMarkup>(), ct)).ReturnsAsync(() => null);
+            _clientMock.Setup(c => c.SendTextMessageAsync(
+                user.MessengerUserId, //ChatId chatId,
+                notification.Payload.Text, //string text,
+                It.IsAny<int?>(), //int? messageThreadId = null,
+                It.IsAny<ParseMode>(), //ParseMode? parseMode = null,
+                It.IsAny<IEnumerable<MessageEntity>>(), //IEnumerable<MessageEntity>? entities = null,
+                It.IsAny<bool>(), //bool? disableWebPagePreview = null,
+                It.IsAny<bool>(), //bool? disableNotification = null,
+                It.IsAny<bool>(), //bool? protectContent = null,
+                It.IsAny<int>(), //int? replyToMessageId = null,
+                It.IsAny<bool>(), //bool? allowSendingWithoutReply = null,
+                It.IsAny<IReplyMarkup>(), //IReplyMarkup? replyMarkup = null,
+                ct)).ReturnsAsync(() => null);
 
             var pushedNotifications = (await _target.NotifyAbout(new []{notification}, ct)).ToArray();
 
@@ -136,10 +144,16 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
 
             _usersServiceMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(new []{ adminUser, ordinaryUser });
             _clientMock.Setup(c => c.SendTextMessageAsync(adminUser.MessengerUserId, notification.Payload.Text,
-            It.IsAny<ParseMode>(), It.IsAny<IEnumerable<MessageEntity>>(), 
-            It.IsAny<bool>(), It.IsAny<bool>(), 
-            It.IsAny<int>(), It.IsAny<bool>(), 
-            It.IsAny<IReplyMarkup>(), ct)).ReturnsAsync(() => null);
+                It.IsAny<int?>(), //int? messageThreadId = null,
+                It.IsAny<ParseMode>(), //ParseMode? parseMode = null,
+                It.IsAny<IEnumerable<MessageEntity>>(), //IEnumerable<MessageEntity>? entities = null,
+                It.IsAny<bool>(), //bool? disableWebPagePreview = null,
+                It.IsAny<bool>(), //bool? disableNotification = null,
+                It.IsAny<bool>(), //bool? protectContent = null,
+                It.IsAny<int>(), //int? replyToMessageId = null,
+                It.IsAny<bool>(), //bool? allowSendingWithoutReply = null,
+                It.IsAny<IReplyMarkup>(), //IReplyMarkup? replyMarkup = null,
+                ct)).ReturnsAsync(() => null);
 
             var pushedNotifications = (await _target.NotifyAbout(new []{notification}, ct)).ToArray();
 

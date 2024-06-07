@@ -61,7 +61,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         {
             await _target.SetWebhookAsync(It.IsAny<string>(), CancellationToken.None);
 
-            _telegramBotClient.Verify(c => c.SetWebhookAsync(It.IsAny<string>(), null, null, It.IsAny<int>(), null, It.IsAny<bool>(), It.IsAny<CancellationToken>()));
+            _telegramBotClient.Verify(c => c.SetWebhookAsync(It.IsAny<string>(), null, null, It.IsAny<int>(), null, It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<CancellationToken>()));
         }
 
         [Test]
