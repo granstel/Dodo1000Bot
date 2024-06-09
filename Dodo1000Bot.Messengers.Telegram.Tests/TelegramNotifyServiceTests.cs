@@ -11,6 +11,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Requests;
+using Telegram.Bot.Requests.Abstractions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -143,17 +145,14 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
             var ct = CancellationToken.None;
 
             _usersServiceMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(new []{ adminUser, ordinaryUser });
-            _clientMock.Setup(c => c.SendTextMessageAsync(adminUser.MessengerUserId, notification.Payload.Text,
-                It.IsAny<int?>(), //int? messageThreadId = null,
-                It.IsAny<ParseMode>(), //ParseMode? parseMode = null,
-                It.IsAny<IEnumerable<MessageEntity>>(), //IEnumerable<MessageEntity>? entities = null,
-                It.IsAny<bool>(), //bool? disableWebPagePreview = null,
-                It.IsAny<bool>(), //bool? disableNotification = null,
-                It.IsAny<bool>(), //bool? protectContent = null,
-                It.IsAny<int>(), //int? replyToMessageId = null,
-                It.IsAny<bool>(), //bool? allowSendingWithoutReply = null,
-                It.IsAny<IReplyMarkup>(), //IReplyMarkup? replyMarkup = null,
-                ct)).ReturnsAsync(() => null);
+            _clientMock.Setup(c => c.MakeRequestAsync(It.IsAny<SendMessageRequest>(), ct))
+                .Callback((IRequest<Message> request, CancellationToken _) =>
+                {
+                    var sendMessageRequest = request as SendMessageRequest;
+                    Assert.AreEqual(sendMessageRequest?.Text, notification.Payload.Text);
+                    Assert.AreEqual(sendMessageRequest?.ChatId, (ChatId)adminUser.MessengerUserId);
+                })
+                .ReturnsAsync(() => null);
 
             var pushedNotifications = (await _target.NotifyAbout(new []{notification}, ct)).ToArray();
 
