@@ -42,7 +42,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         }
 
         [Test]
-        public async Task GetMeAsync_Invokations_Success()
+        public async Task GetMeAsync_Invocations_Success()
         {
             await _target.GetMeAsync();
 
@@ -50,7 +50,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         }
 
         [Test]
-        public async Task TestApiAsync_Invokations_Success()
+        public async Task TestApiAsync_Invocations_Success()
         {
             await _target.TestApiAsync();
 
