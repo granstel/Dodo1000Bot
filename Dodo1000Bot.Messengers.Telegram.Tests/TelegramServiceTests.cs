@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Telegram.Bot;
+using Telegram.Bot.Requests;
 using Telegram.Bot.Types;
 
 namespace Dodo1000Bot.Messengers.Telegram.Tests
@@ -61,7 +62,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         {
             await _target.SetWebhookAsync(It.IsAny<string>(), CancellationToken.None);
 
-            _telegramBotClient.Verify(c => c.SetWebhookAsync(It.IsAny<string>(), null, null, It.IsAny<int>(), null, It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<CancellationToken>()));
+            _telegramBotClient.Verify(c => c.MakeRequestAsync(It.IsAny<SetWebhookRequest>(), It.IsAny<CancellationToken>()));
         }
 
         [Test]
