@@ -46,7 +46,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         {
             await _target.GetMeAsync();
 
-            _telegramBotClient.Verify(c => c.GetMeAsync(It.IsAny<CancellationToken>()));
+            _telegramBotClient.Verify(c => c.MakeRequestAsync(It.IsAny<GetMeRequest>(), It.IsAny<CancellationToken>()));
         }
 
         [Test]
