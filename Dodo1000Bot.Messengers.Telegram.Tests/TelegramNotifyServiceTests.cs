@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using AutoFixture;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
@@ -14,8 +13,6 @@ using Telegram.Bot;
 using Telegram.Bot.Requests;
 using Telegram.Bot.Requests.Abstractions;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 using Domain = Dodo1000Bot.Models.Domain;
 
 namespace Dodo1000Bot.Messengers.Telegram.Tests
