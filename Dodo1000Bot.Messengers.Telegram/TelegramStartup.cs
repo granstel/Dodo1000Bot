@@ -20,6 +20,11 @@ namespace Dodo1000Bot.Messengers.Telegram
                 services.AddTransient<ITelegramService, TelegramService>();
                 services.AddTransient<ITelegramBotClient>(RegisterTelegramClient);
                 services.AddTransient<INotifyService, TelegramNotifyService>();
+                
+                services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new UnixDateTimeConverter());
+                });
             });
         }
 
