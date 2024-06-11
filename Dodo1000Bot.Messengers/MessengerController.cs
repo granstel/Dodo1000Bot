@@ -22,7 +22,7 @@ namespace Dodo1000Bot.Messengers
         private readonly MessengerConfiguration _configuration;
 
         protected readonly ILogger Log;
-        protected JsonSerializerSettings SerializerSettings;
+        protected object SerializerSettings;
 
         private const string TokenParameter = "token";
 
