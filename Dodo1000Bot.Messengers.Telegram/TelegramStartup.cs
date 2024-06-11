@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using Dodo1000Bot.Messengers.Telegram;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Services;
@@ -24,6 +25,7 @@ namespace Dodo1000Bot.Messengers.Telegram
                 services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
                 {
                     options.JsonSerializerOptions.Converters.Add(new UnixDateTimeConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
                 });
             });
         }
