@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text.Json;
+using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -10,10 +11,11 @@ namespace Dodo1000Bot.Messengers.Telegram
     {
         private readonly ITelegramService _telegramService;
 
-        public TelegramController(ILogger<TelegramController> log, ITelegramService telegramService, TelegramConfiguration configuration)
+        public TelegramController(ILogger<TelegramController> log, ITelegramService telegramService, TelegramConfiguration configuration, JsonSerializerOptions jsonOptions)
             : base(log, telegramService, configuration)
         {
             _telegramService = telegramService;
+            SerializerSettings = jsonOptions;
         }
 
         [HttpGet("TestTelegramApi")]
