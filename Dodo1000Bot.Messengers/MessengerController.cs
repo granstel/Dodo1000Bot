@@ -104,7 +104,7 @@ namespace Dodo1000Bot.Messengers
             var pathBase = request.PathBase.Value;
             var pathSegment = request.Path.Value;
 
-            var url = $"{request.Scheme}://{request.Host}{pathBase}{pathSegment}";
+            var url = $"https://{request.Host}{pathBase}{pathSegment}";
 
             return url;
         }
