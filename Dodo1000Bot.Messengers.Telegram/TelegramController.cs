@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
+using Dodo1000Bot.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types;
 
 namespace Dodo1000Bot.Messengers.Telegram
 {
-    public class TelegramController : MessengerController<Update, string>
+    public class TelegramController : MessengerController<Update, Response>
     {
         private readonly ITelegramService _telegramService;
 
