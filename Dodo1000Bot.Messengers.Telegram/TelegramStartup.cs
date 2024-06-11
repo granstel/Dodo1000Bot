@@ -18,7 +18,7 @@ namespace Dodo1000Bot.Messengers.Telegram
                 services.AddConfiguration<TelegramConfiguration>("appsettings.Telegram.json", Source.Telegram.ToString());
 
                 services.AddTransient<ITelegramService, TelegramService>();
-                services.AddTransient<ITelegramBotClient>(RegisterTelegramClient);
+                services.AddSingleton<ITelegramBotClient>(RegisterTelegramClient);
                 services.AddTransient<INotifyService, TelegramNotifyService>();
                 
                 services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
