@@ -11,7 +11,11 @@ namespace Dodo1000Bot.Messengers.Telegram
     {
         private readonly ITelegramService _telegramService;
 
-        public TelegramController(ILogger<TelegramController> log, ITelegramService telegramService, TelegramConfiguration configuration, JsonSerializerOptions jsonOptions)
+        public TelegramController(
+            ILogger<TelegramController> log, 
+            ITelegramService telegramService, 
+            TelegramConfiguration configuration, 
+            JsonSerializerOptions jsonOptions)
             : base(log, telegramService, configuration)
         {
             _telegramService = telegramService;
