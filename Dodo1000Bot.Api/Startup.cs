@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Prometheus;
@@ -19,10 +20,12 @@ namespace Dodo1000Bot.Api
     public class Startup
     {
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
 
-        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment, ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
+            _environment = environment;
             InternalLoggerFactory.Factory = loggerFactory;
         }
 
@@ -43,7 +46,7 @@ namespace Dodo1000Bot.Api
 
                     return options.JsonSerializerOptions;
                 })
-                .AddMvc()
+                .AddControllers()
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -55,7 +58,7 @@ namespace Dodo1000Bot.Api
                 o.LoggingFields = HttpLoggingFields.All;
             });
 
-            DependencyConfiguration.Configure(services, _configuration);
+            DependencyConfiguration.Configure(services, _configuration, _environment.IsDevelopment());
         }
 
 

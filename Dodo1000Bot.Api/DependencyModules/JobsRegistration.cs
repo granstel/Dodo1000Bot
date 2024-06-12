@@ -8,16 +8,20 @@ namespace Dodo1000Bot.Api.DependencyModules;
 
 public static class JobsRegistration
 {
-    internal static void AddJobs(this IServiceCollection services, AppConfiguration appConfiguration)
+    internal static void AddJobs(this IServiceCollection services, AppConfiguration appConfiguration, bool isDevelopment)
     {
         services.AddHostedService(serviceProvider => new MigrationsJob(appConfiguration.MysqlConnectionString, serviceProvider));
-        services.AddHostedService<FirstRunJob>();
-        services.AddHostedService<PushNotificationsRepeatableJob>();
 
-        services.AddHostedService<UnitsCheckAndNotifyJob>();
-        services.AddHostedService<StatisticsCheckAndNotifyJob>();
-        services.AddHostedService<YoutubeCheckAndNotifyJob>();
-        
+        if (!isDevelopment)
+        {
+            services.AddHostedService<FirstRunJob>();
+            services.AddHostedService<PushNotificationsRepeatableJob>();
+
+            services.AddHostedService<UnitsCheckAndNotifyJob>();
+            services.AddHostedService<StatisticsCheckAndNotifyJob>();
+            services.AddHostedService<YoutubeCheckAndNotifyJob>();
+        }
+
         var channelOptions = new BoundedChannelOptions(1_000)
         {
             FullMode = BoundedChannelFullMode.DropWrite,

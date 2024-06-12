@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using AutoFixture;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
@@ -11,9 +10,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Requests;
+using Telegram.Bot.Requests.Abstractions;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 using Domain = Dodo1000Bot.Models.Domain;
 
 namespace Dodo1000Bot.Messengers.Telegram.Tests
@@ -96,11 +95,13 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
             var ct = CancellationToken.None;
 
             _usersServiceMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(new []{user});
-            _clientMock.Setup(c => c.SendTextMessageAsync(user.MessengerUserId, notification.Payload.Text,
-            It.IsAny<ParseMode>(), It.IsAny<IEnumerable<MessageEntity>>(), 
-            It.IsAny<bool>(), It.IsAny<bool>(), 
-            It.IsAny<int>(), It.IsAny<bool>(), 
-            It.IsAny<IReplyMarkup>(), ct)).ReturnsAsync(() => null);
+            _clientMock.Setup(c => c.MakeRequestAsync(It.IsAny<SendMessageRequest>(), ct))
+                .Callback((IRequest<Message> request, CancellationToken _) =>
+                {
+                    var sendMessageRequest = request as SendMessageRequest;
+                    Assert.AreEqual(sendMessageRequest?.Text, notification.Payload.Text);
+                    Assert.AreEqual(sendMessageRequest?.ChatId, (ChatId)user.MessengerUserId);
+                }).ReturnsAsync(() => null);
 
             var pushedNotifications = (await _target.NotifyAbout(new []{notification}, ct)).ToArray();
 
@@ -135,11 +136,14 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
             var ct = CancellationToken.None;
 
             _usersServiceMock.Setup(r => r.GetUsers(Source.Telegram, ct)).ReturnsAsync(new []{ adminUser, ordinaryUser });
-            _clientMock.Setup(c => c.SendTextMessageAsync(adminUser.MessengerUserId, notification.Payload.Text,
-            It.IsAny<ParseMode>(), It.IsAny<IEnumerable<MessageEntity>>(), 
-            It.IsAny<bool>(), It.IsAny<bool>(), 
-            It.IsAny<int>(), It.IsAny<bool>(), 
-            It.IsAny<IReplyMarkup>(), ct)).ReturnsAsync(() => null);
+            _clientMock.Setup(c => c.MakeRequestAsync(It.IsAny<SendMessageRequest>(), ct))
+                .Callback((IRequest<Message> request, CancellationToken _) =>
+                {
+                    var sendMessageRequest = request as SendMessageRequest;
+                    Assert.AreEqual(sendMessageRequest?.Text, notification.Payload.Text);
+                    Assert.AreEqual(sendMessageRequest?.ChatId, (ChatId)adminUser.MessengerUserId);
+                })
+                .ReturnsAsync(() => null);
 
             var pushedNotifications = (await _target.NotifyAbout(new []{notification}, ct)).ToArray();
 

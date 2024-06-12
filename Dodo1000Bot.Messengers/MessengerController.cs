@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Dodo1000Bot.Messengers
 {
@@ -22,7 +21,7 @@ namespace Dodo1000Bot.Messengers
         private readonly MessengerConfiguration _configuration;
 
         protected readonly ILogger Log;
-        protected JsonSerializerSettings SerializerSettings;
+        protected object SerializerSettings;
 
         private const string TokenParameter = "token";
 
@@ -104,12 +103,12 @@ namespace Dodo1000Bot.Messengers
             var pathBase = request.PathBase.Value;
             var pathSegment = request.Path.Value;
 
-            var url = $"{request.Scheme}://{request.Host}{pathBase}{pathSegment}";
+            var url = $"https://{request.Host}{pathBase}{pathSegment}";
 
             return url;
         }
 
-        private string GetErrors(ModelStateDictionary modelState)
+        protected string GetErrors(ModelStateDictionary modelState)
         {
             return modelState?.Values
                 .SelectMany(v => v.Errors?.Select(e => e.ErrorMessage))

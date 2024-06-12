@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <IsTestProject>true</IsTestProject>
     <IsPackable>false</IsPackable>
     <UserSecretsId>c6b1f816-0cd9-43a9-822e-2f0f49dc2f4c</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="10.*" />
+    <PackageReference Include="AutoMapper" Version="13.*" />
     <PackageReference Include="AutoFixture" Version="4.*" />
     <PackageReference Include="nunit" Version="3.*" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.*" />

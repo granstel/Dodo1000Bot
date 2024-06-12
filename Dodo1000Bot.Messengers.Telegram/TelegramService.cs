@@ -10,7 +10,7 @@ using Telegram.Bot.Types;
 
 namespace Dodo1000Bot.Messengers.Telegram
 {
-    public class TelegramService : MessengerService<Update, string>, ITelegramService
+    public class TelegramService : MessengerService<Update, Response>, ITelegramService
     {
         private readonly ITelegramBotClient _client;
 
@@ -69,13 +69,13 @@ namespace Dodo1000Bot.Messengers.Telegram
             return false;
         }
 
-        protected override async Task<string> AfterAsync(Update input, Response response)
+        protected override async Task<Response> AfterAsync(Update input, Response response)
         {
             var answer = response.Text;
 
             await SendTextMessageAsync(long.Parse(response.ChatHash), answer);
 
-            return answer;
+            return response;
         }
 
         private async Task SendTextMessageAsync(long chatId, string text)

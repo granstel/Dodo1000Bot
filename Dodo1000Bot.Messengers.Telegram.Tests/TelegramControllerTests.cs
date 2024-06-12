@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text.Json;
+using System.Threading.Tasks;
 using AutoFixture;
 using Dodo1000Bot.Messengers.Tests.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
     {
         private Mock<ITelegramService> _telegramService;
         private Mock<TelegramConfiguration> _configuration;
+        private JsonSerializerOptions _jsonOptions;
 
         [SetUp]
         public void InitTest()
@@ -23,8 +25,9 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
             var loggerMock = Mock.Of<ILogger<TelegramController>>();
             _telegramService = MockRepository.Create<ITelegramService>();
             _configuration = MockRepository.Create<TelegramConfiguration>();
+            _jsonOptions = new JsonSerializerOptions();
 
-            Target = new TelegramController(loggerMock, _telegramService.Object, _configuration.Object);
+            Target = new TelegramController(loggerMock, _telegramService.Object, _configuration.Object, _jsonOptions);
         }
 
         [Test]

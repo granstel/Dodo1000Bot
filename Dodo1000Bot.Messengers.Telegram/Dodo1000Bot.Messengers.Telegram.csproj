@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <OutputType>Library</OutputType>
     <UserSecretsId>14ecb2eb-f151-49bb-a3a5-ec5619569d45</UserSecretsId>
   </PropertyGroup>
@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Telegram.Bot" Version="16.*" />
+    <PackageReference Include="Telegram.Bot" Version="19.*" />
   </ItemGroup>
 
   <ItemGroup>

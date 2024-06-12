@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Telegram.Bot;
+using Telegram.Bot.Requests;
 using Telegram.Bot.Types;
 
 namespace Dodo1000Bot.Messengers.Telegram.Tests
@@ -41,15 +42,15 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         }
 
         [Test]
-        public async Task GetMeAsync_Invokations_Success()
+        public async Task GetMeAsync_Invocations_Success()
         {
             await _target.GetMeAsync();
 
-            _telegramBotClient.Verify(c => c.GetMeAsync(It.IsAny<CancellationToken>()));
+            _telegramBotClient.Verify(c => c.MakeRequestAsync(It.IsAny<GetMeRequest>(), It.IsAny<CancellationToken>()));
         }
 
         [Test]
-        public async Task TestApiAsync_Invokations_Success()
+        public async Task TestApiAsync_Invocations_Success()
         {
             await _target.TestApiAsync();
 
@@ -61,7 +62,7 @@ namespace Dodo1000Bot.Messengers.Telegram.Tests
         {
             await _target.SetWebhookAsync(It.IsAny<string>(), CancellationToken.None);
 
-            _telegramBotClient.Verify(c => c.SetWebhookAsync(It.IsAny<string>(), null, null, It.IsAny<int>(), null, It.IsAny<bool>(), It.IsAny<CancellationToken>()));
+            _telegramBotClient.Verify(c => c.MakeRequestAsync(It.IsAny<SetWebhookRequest>(), It.IsAny<CancellationToken>()));
         }
 
         [Test]
