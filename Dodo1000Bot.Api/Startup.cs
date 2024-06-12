@@ -46,7 +46,7 @@ namespace Dodo1000Bot.Api
 
                     return options.JsonSerializerOptions;
                 })
-                .AddMvc()
+                .AddControllers()
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
