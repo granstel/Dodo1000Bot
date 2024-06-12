@@ -1,7 +1,9 @@
 ﻿using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types;
 
@@ -15,7 +17,7 @@ namespace Dodo1000Bot.Messengers.Telegram
             ILogger<TelegramController> log, 
             ITelegramService telegramService, 
             TelegramConfiguration configuration, 
-            JsonSerializerOptions jsonOptions)
+            [FromKeyedServices($"{nameof(TelegramController)}{nameof(JsonSerializerOptions)}")] JsonSerializerOptions jsonOptions)
             : base(log, telegramService, configuration)
         {
             _telegramService = telegramService;
@@ -36,6 +38,17 @@ namespace Dodo1000Bot.Messengers.Telegram
             var user = await _telegramService.GetMeAsync();
 
             return new JsonResult(user);
+        }
+        
+        public new async Task<IActionResult> WebHook(string token, CancellationToken cancellationToken)
+        {
+            
+                // using var memoryReader = new StreamReader(HttpContext.Request.Body);
+                // var bodyReadResult = await memoryReader.ReadToEndAsync(cancellationToken);
+                var update= await JsonSerializer.DeserializeAsync<Update>(HttpContext.Request.Body, SerializerSettings as JsonSerializerOptions, cancellationToken);
+            var response = await _telegramService.ProcessIncomingAsync(update, cancellationToken);
+
+            return Json(response, SerializerSettings);
         }
     }
 }

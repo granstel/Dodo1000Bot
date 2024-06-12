@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Dodo1000Bot.Messengers
 {
@@ -109,7 +108,7 @@ namespace Dodo1000Bot.Messengers
             return url;
         }
 
-        private string GetErrors(ModelStateDictionary modelState)
+        protected string GetErrors(ModelStateDictionary modelState)
         {
             return modelState?.Values
                 .SelectMany(v => v.Errors?.Select(e => e.ErrorMessage))
