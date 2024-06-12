@@ -12,10 +12,10 @@ namespace Dodo1000Bot.Api
 {
     internal static class DependencyConfiguration
     {
-        internal static void Configure(IServiceCollection services, IConfiguration appConfiguration)
+        internal static void Configure(IServiceCollection services, IConfiguration appConfiguration, bool isDevelopment)
         {
             var configuration = appConfiguration.Get<AppConfiguration>();
-            
+
             services.AddSingleton(configuration);
             services.AddSingleton(configuration.HttpLog);
             services.AddSingleton(configuration.PushNotifications);
@@ -25,7 +25,7 @@ namespace Dodo1000Bot.Api
             services.AddSingleton(configuration.YouTube);
 
             services.AddInternalServices();
-            services.AddJobs(configuration);
+            services.AddJobs(configuration, isDevelopment);
 
             services.AddExternalServices(configuration);
             services.AddMigrations(configuration);
