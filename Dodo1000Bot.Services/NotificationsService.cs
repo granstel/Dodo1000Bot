@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
+using Dodo1000Bot.Services.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace Dodo1000Bot.Services;
@@ -25,6 +26,7 @@ public class NotificationsService : INotificationsService
 
     public async Task Save(Notification notification, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Save to DB: {notification}", notification.Serialize());
         if (string.IsNullOrEmpty(notification?.Payload?.Text))
         {
             _logger.LogWarning("Text of notification payload is null or empty");

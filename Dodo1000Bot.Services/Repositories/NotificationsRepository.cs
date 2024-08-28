@@ -9,24 +9,28 @@ using System.Threading.Tasks;
 using Dapper;
 using Dodo1000Bot.Models;
 using Dodo1000Bot.Models.Domain;
+using Dodo1000Bot.Services.Extensions;
+using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 
 namespace Dodo1000Bot.Services;
 
 public class NotificationsRepository : INotificationsRepository
 {
+    private readonly ILogger<NotificationsRepository> _logger;
     private readonly MySqlConnection _connection;
 
-    public NotificationsRepository(MySqlConnection connection)
+    public NotificationsRepository(ILogger<NotificationsRepository> logger, MySqlConnection connection)
     {
+        _logger = logger;
         _connection = connection;
     }
 
     public async Task Save(Notification notification, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(notification?.Payload);
-
-        await _connection.ExecuteAsync(new CommandDefinition(
+        _logger.LogInformation("Save to DB: {payload}, {distinction}", payload, notification?.Distinction);
+        var rowsAffected = await _connection.ExecuteAsync(new CommandDefinition(
             "INSERT IGNORE INTO notifications (Type, Payload, Distinction) VALUES (@type, @payload, @distinction)",
             new
             {
@@ -34,6 +38,7 @@ public class NotificationsRepository : INotificationsRepository
                 payload,
                 notification?.Distinction
             }, cancellationToken: cancellationToken));
+        _logger.LogInformation("{rowsAffected} rows affected", rowsAffected);
     }
 
     public async Task<IList<Notification>> GetNotPushedNotifications(CancellationToken cancellationToken)
