@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Dodo1000Bot.Application/Dodo1000Bot.Application.csproj" />
+  <Project Path="Dodo1000Bot.Domain/Dodo1000Bot.Domain.csproj" />
+  <Project Path="Dodo1000Bot.Infrastructure/Dodo1000Bot.Infrastructure.csproj" />
+  <Project Path="Dodo1000Bot.Presentation.Api/Dodo1000Bot.Presentation.Api.csproj" />
+    
+</Solution>

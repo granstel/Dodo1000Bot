@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Dodo1000Bot.Application\Dodo1000Bot.Application.csproj" />
+      <ProjectReference Include="..\Dodo1000Bot.Infrastructure\Dodo1000Bot.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>
