@@ -87,7 +87,7 @@ public class TelegramNotifyService : INotifyService
             catch (Exception e)
             {
                 _log.LogError(e, "Error while send notification to {MessengerUserId}", messengerUserId);
-                return pushedNotifications;
+                continue;
             }
 
             var pushedNotification = new PushedNotification
